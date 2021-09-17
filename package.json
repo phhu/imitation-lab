@@ -1,0 +1,28 @@
+{
+  "name": "imitation-lab",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "tidy": "standard --fix",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html --open",
+    "build": "rm -f dist/* & parcel build index.html --public-url .",
+    "publish": "scp -r dist/* root@phhu.org:/var/www/imitationlab"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phhu/imitation-lab.git"
+  },
+  "author": "phhu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phhu/imitation-lab/issues"
+  },
+  "homepage": "https://github.com/phhu/imitation-lab#readme",
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-piano": "^3.1.3"
+  }
+}

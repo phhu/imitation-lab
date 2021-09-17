@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script src="6243f7a2c97cc46f78d02551ad03bc75"></script>
+    <script data-parcel-key="7791c1943342c0e779b9533cb9488c27">
+        //document.getElementById('b').click();
+        //document.querySelector('button').click();
+    </script> 
+    <!--
+    <script src="./ticTacToe.js"></script>
+    -->
+</body>
+</html>
