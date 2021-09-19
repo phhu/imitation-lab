@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react'
 //const fp = require('lodash/fp')
-import ReactDOM from "react-dom"
+//import ReactDOM from "react-dom"
 
 import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
 import 'react-piano/dist/styles.css';
 
-
-
-function App() {
+function Keyboard() {
   const firstNote = MidiNumbers.fromNote('c3');
   const lastNote = MidiNumbers.fromNote('c7');
   const keyboardShortcuts = KeyboardShortcuts.create({
@@ -26,8 +24,7 @@ function App() {
         //player.seekTo(0)
         window.midiThru.playNote(midiNumber)
         let o = WebMidi.outputs[0]
-        //player.playNote(0,{pitch:midiNumber,startTime:0,endTime:1})
-
+        player.playNote(0,{pitch:midiNumber,startTime:0,endTime:1})
       }}
       stopNote={(midiNumber) => {
         // Stop playing a given note - see notes below
@@ -41,5 +38,5 @@ function App() {
 }
 
 
-export default App 
+export default Keyboard
 

@@ -3,7 +3,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './style.css'
 
-import App from './funcReact'
+import App from './App'
+var webaudiofont = require('webaudiofont');
+var wafPlayer = new WebAudioFontPlayer();
 
 //const test = <h1>Hello world! How are you?</h1>
 
@@ -19,14 +21,24 @@ player.playNote(0,{pitch:40,startTime:0,endTime:1})
 
 WebMidi.enable(function (err) {
   window.WebMidi = WebMidi
-  console.log(WebMidi.inputs)
-  console.log(WebMidi.outputs)
+  console.log("inputs",WebMidi.inputs)
+  console.log("outputs",WebMidi.outputs)
   window.midiThru = WebMidi.outputs[0]
+  window.midiIn = WebMidi.inputs[0]
+  
+  window.midiPlayer = new core.MIDIPlayer()
+  window.midiPlayer.outputs = [midiThru]
+
+  midiIn.addListener('noteon','all', function(e) {    // all is channel
+    console.log("WebMidi noteon: " + e.note);
+  });
 })
 
+const src = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small';  // 'data/mel_small'
+const model = new music_vae.MusicVAE(src);
+
 ReactDOM.render(<App />, document.getElementById('root'))
-
-
+const melody = require('./melodies')
 
 // MIDI.loadPlugin({
 //   soundfontUrl: "/path/to/soundfonts/",

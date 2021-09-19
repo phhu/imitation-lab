@@ -20,3 +20,8 @@ navigator.requestMIDIAccess()
   console.log(outputs);
 });
 ```
+
+Operations:
+ compare
+ rec
+ vary
