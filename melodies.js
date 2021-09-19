@@ -8,6 +8,14 @@ function toMidi(note) {
   return everyNote.indexOf(note);
 }
 
+const BLANK = { 
+  totalQuantizedSteps: 32,
+  quantizationInfo:{stepsPerQuarter: 4},
+  notes: [
+    {pitch: 60, quantizedStartStep: 0, quantizedEndStep: 2},
+  ]
+};
+
 const MELODY1 = { 
   totalQuantizedSteps: 32,
   quantizationInfo:{stepsPerQuarter: 4},
@@ -51,4 +59,5 @@ const TWINKLE_TWINKLE = {
 module.exports = {
   MELODY1, 
   TWINKLE_TWINKLE,
+  BLANK
 };

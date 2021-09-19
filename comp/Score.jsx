@@ -4,30 +4,55 @@ import React, { useState, useEffect } from 'react'
 //const melody = require('../melodies')
 
 export default (props) => {
-  const divid = `score${props.scoreid}`
+  const scoreDivId = `score${props.scoreid}`
+  let [melody, setMelody] = useState(props.melody)
+  useEffect(() => setMelody(props.melody), [props.melody])
+  let [isVarying, setIsVarying]  = useState(false)
+  //console.log("drawing Score",props.melody,melody,isVarying)
   useEffect(() => {
-    try{
+    try {
       const staff = new core.StaffSVGVisualizer(
-        props.melody,    
-        document.getElementById(divid)
+        melody,    
+        document.getElementById(scoreDivId)
       )
     } catch(e){
-      console.error("no score to draw")
+      console.error("no score to draw",e)
       //console.error("Error in StaffSVGVisualizer:",e)
     }
   })
-  const click = () => {
-    console.log('playing',divid)
+  const play = () => {
+    console.log('playing',scoreDivId)
     //midiPlayer.start(props.melody)
-    player.start(props.melody)
+    player.start(melody)
     //window.player.playNote(0,{pitch:40,startTime:0,endTime:1})
   }
-  //console.log("Score:props",props)
+  const stop = () => {
+    console.log('stopping playing',scoreDivId)
+    //midiPlayer.start(props.melody)
+    player.stop()
+    //window.player.playNote(0,{pitch:40,startTime:0,endTime:1})
+  }
+  const vary = () => {
+    console.log('vary playing',scoreDivId)
+    setIsVarying(true)
+    model.similar(melody,2,0.75)
+      .then(newSamples => {
+        console.log("made samples")
+        setMelody(newSamples[0])
+        setIsVarying(false)
+        //samples = newSamples
+      });
+  }
+
   return (
     <div>
       <div>{props.title}</div>
-      <div id={divid}></div>
-      <button onClick={click}>Play</button>
+      <div id={scoreDivId}></div>
+      <button onClick={play}>Play</button>
+      <button onClick={stop}>Stop</button>
+      <button onClick={vary} style={{
+        backgroundColor: isVarying ? "green": "inherit"
+      }}>Vary</button>
     </div>
   )
 }

@@ -1,59 +1,60 @@
 import React, { useState, useEffect } from 'react'
 import Score from './Score'
+const {BLANK} = require('../melodies')
 const {trim, quantizeNoteSequence} = core.sequences
+const fp = require('lodash/fp')
 
-const recorder = new core.Recorder();
-recorder.setTempo(120);
-recorder.enablePlayClick(true);
+const recorder = new core.Recorder()
+recorder.setTempo(120)
+recorder.enablePlayClick(true)
 
+//should really wait for this
 Promise.all([
   recorder.initialize()
 ])
 
-
-
 export default (props) => {
-  let [recording, setRecording] = useState([])
-
+  let [recording, setRecording] = useState(BLANK)
+  let [isRecording, setIsRecording] = useState(false)
+  console.log("recording",BLANK)
   const record = ()=>{
     console.log("Record: start")
-    recorder.callbackObject = null;
+    recorder.callbackObject = null
     recorder.enablePlayClick(
-      true //document.getElementById("useClick").checked
-    );
-    recorder.start();
-    console.log("recording start"); 
-    //document.getElementById("RECORD (midi)").style['background-color'] =  'red'
+      document.getElementById("useClick").checked
+    )
+    recorder.start()
+    console.log("recording start")
+    setIsRecording(true)
   }
   
   const stop = ()=>{
     console.log("Record: stop")
-    let rec = recorder.stop();
-    //document.getElementById("RECORD (midi)").style['background-color'] =  'inherit'
-    //console.log("recording stop. Rec:",rec);
-    const stepsPerBeat = 4;
-    //const stepsPerBar = 4 * stepsPerBeat;
-    const startTime = rec.notes[0] && rec.notes[0].startTime ;
-    const endTime = rec.notes[0] && rec.notes[rec.notes.length-1].endTime ;
-    rec = trim(rec,startTime,endTime);
-    rec = quantizeNoteSequence(rec,stepsPerBeat)
-    console.log("recording quantized and trimmed:",rec)
-    setRecording(rec)    
-    //showRecording(rec);
-    //testRecordings();
+    setIsRecording(false)
+    fp.pipe(
+      rec => trim(rec,
+        rec.notes[0] && rec.notes[0].startTime,    //startTime
+        rec.notes[0] && rec.notes[rec.notes.length-1].endTime,   //endTime
+      ),
+      rec => quantizeNoteSequence(rec, 8),    // stepsPerBeat
+      rec=>setRecording(rec), 
+    )(recorder.stop()) 
   }
 
   return (
     <div style={{
       "margin":"10px",
-      "backgroundColor": "#ddd",
+      "padding":"5px",
+      "backgroundColor": "#eee",
     }}>
-      RECORDER {props.test}
+      RECORDER
       <br />
-      <input type="checkbox" id="useClick"></input><label htmlFor="useClick">Use click</label>
-      <button id="rec" onClick={record}>REC</button>
+      <button id="rec" onClick={record} style={{
+        backgroundColor: isRecording ? "red" : "inherit"
+      }}>REC</button>
       <button id="stop" onClick={stop}>Stop</button>
-      <Score melody={recording}/>
+      <input type="checkbox" id="useClick"></input><label htmlFor="useClick">Use click</label>
+      <Score scoreid="Rec" melody={recording}/>
     </div>
   )
 }

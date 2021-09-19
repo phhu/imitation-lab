@@ -30,12 +30,15 @@ WebMidi.enable(function (err) {
   window.midiPlayer.outputs = [midiThru]
 
   midiIn.addListener('noteon','all', function(e) {    // all is channel
-    console.log("WebMidi noteon: " + e.note);
+    //console.log("WebMidi noteon: " + e.note);
   });
 })
 
 const src = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small';  // 'data/mel_small'
-const model = new music_vae.MusicVAE(src);
+window.model = new music_vae.MusicVAE(src);
+const prepare = Promise.all([
+  window.model.initialize()
+])
 
 ReactDOM.render(<App />, document.getElementById('root'))
 const melody = require('./melodies')

@@ -20,7 +20,7 @@ function Keyboard() {
       noteRange={{ first: firstNote, last: lastNote }}
       playNote={(midiNumber) => {
         // Play a given note - see notes below
-        console.log("playing",midiNumber)
+        //console.log("playing",midiNumber)
         //player.seekTo(0)
         window.midiThru.playNote(midiNumber)
         let o = WebMidi.outputs[0]
@@ -28,7 +28,7 @@ function Keyboard() {
       }}
       stopNote={(midiNumber) => {
         // Stop playing a given note - see notes below
-        console.log("stopping",midiNumber)
+        //console.log("stopping",midiNumber)
         window.midiThru.stopNote(midiNumber)
       }}
       width={1000}
