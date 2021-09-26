@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react'
-//import ReactDOM from "react-dom"
-
-//const melody = require('../melodies')
+import {useAsyncHook} from  './hooks'
 
 export default (props) => {
   const scoreDivId = `score${props.scoreid}`
-  let [melody, setMelody] = useState(props.melody)
-  useEffect(() => setMelody(props.melody), [props.melody])
+  //let [melodies, setMelodies] = useState(props.melodies)
+
+
+  const [newMelodies, loading] = useAsyncHook( 
+    (melodies)=> model.interpolate(melodies,3,0.5))(props.melodies)
+
+  console.log("loading",loading,newMelodies)
+  const melody = newMelodies[1] || props.melodies[0]
+  
   let [isVarying, setIsVarying]  = useState(false)
   //console.log("drawing Score",props.melody,melody,isVarying)
   useEffect(() => {
@@ -20,6 +25,9 @@ export default (props) => {
       //console.error("Error in StaffSVGVisualizer:",e)
     }
   })
+
+
+
   const play = () => {
     console.log('playing',scoreDivId,melody)
     midiPlayer.stop()

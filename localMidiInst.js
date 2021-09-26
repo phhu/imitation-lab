@@ -22,7 +22,7 @@ WebMidi.enable(function (err) {
     //midiNoteOff(e.note.number);
     var envelope = wafPlayer.queueWaveTable(
       audioContext, audioContext.destination, tone, 0, 
-      e.note.number, 123456789, e.note.velocity / 100
+      e.note.number, 999999, 1    // 123456789     e.note.velocity / 2000000
     );
     midiNotes.push({pitch: e.note.number,envelope });
   })

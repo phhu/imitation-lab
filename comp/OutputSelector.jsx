@@ -5,7 +5,7 @@ export default ({
   change=(value)=>{},
   values=(o,i)=>i,
   displayValues=(o,i)=>o.name,
-  initial=0
+  initial=0,
 }={}) => {
 
   const [value, setValue] = useState(initial)

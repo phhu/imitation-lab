@@ -16,29 +16,44 @@ Promise.all([
 export default (props) => {
   let [recording, setRecording] = useState(BLANK)
   let [isRecording, setIsRecording] = useState(false)
-  console.log("recording",BLANK)
+  let [noteBeenPlayed, setNoteBeenPlayed] = useState(0)
+  //console.log("recording",BLANK)
+  recorder.callbackObject = {
+    noteOn:function(a,b,c){
+      console.log("rec note on");
+      setNoteBeenPlayed(1)
+      setTimeout(()=>setNoteBeenPlayed(0),100)
+    },
+    //run:function(a,b,c){console.log("rec note run",tidyAndSetRec(a))},
+  }
   const record = ()=>{
-    console.log("Record: start")
-    recorder.callbackObject = null
+    //console.log("Record: start")
+    //recorder.callbackObject = null
+
     recorder.enablePlayClick(
       document.getElementById("useClick").checked
     )
     recorder.start()
-    console.log("recording start")
+    //console.log("recording start")
     setIsRecording(true)
   }
   
+  const tidyAndSetRec = fp.pipe(
+    rec => trim(rec,
+      rec.notes[0] && rec.notes[0].startTime,    //startTime
+      rec.notes[0] && rec.notes[rec.notes.length-1].endTime,   //endTime
+    ),
+    //rec => (console.log("rec PreQuant",rec),rec),
+    rec => quantizeNoteSequence(rec, 8),    // stepsPerBeat
+    //rec => ({...rec,tempos:[{qpm: 120, time: 0}]}),
+    //rec => (console.log("rec PostQuant",rec),rec),
+    rec=>setRecording(rec), 
+  )
+
   const stop = ()=>{
-    console.log("Record: stop")
+    //console.log("Record: stop")
     setIsRecording(false)
-    fp.pipe(
-      rec => trim(rec,
-        rec.notes[0] && rec.notes[0].startTime,    //startTime
-        rec.notes[0] && rec.notes[rec.notes.length-1].endTime,   //endTime
-      ),
-      rec => quantizeNoteSequence(rec, 8),    // stepsPerBeat
-      rec=>setRecording(rec), 
-    )(recorder.stop()) 
+    tidyAndSetRec(recorder.stop()) 
   }
 
   return (
@@ -54,6 +69,7 @@ export default (props) => {
       }}>REC</button>
       <button id="stop" onClick={stop}>Stop</button>
       <input type="checkbox" id="useClick"></input><label htmlFor="useClick">Use click</label>
+      <div>{noteBeenPlayed}</div>
       <Score scoreid="Rec" melody={recording}/>
     </div>
   )
