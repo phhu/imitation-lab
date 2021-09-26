@@ -21,15 +21,16 @@ export default (props) => {
     }
   })
   const play = () => {
-    console.log('playing',scoreDivId)
-    //midiPlayer.start(props.melody)
-    player.start(melody)
+    console.log('playing',scoreDivId,melody)
+    midiPlayer.stop()
+    midiPlayer.start(melody)
+    //player.start(melody)
     //window.player.playNote(0,{pitch:40,startTime:0,endTime:1})
   }
   const stop = () => {
     console.log('stopping playing',scoreDivId)
-    //midiPlayer.start(props.melody)
-    player.stop()
+    midiPlayer.stop()
+    //player.stop()
     //window.player.playNote(0,{pitch:40,startTime:0,endTime:1})
   }
   const vary = () => {

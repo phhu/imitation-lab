@@ -5,34 +5,61 @@ import './style.css'
 
 import App from './App'
 var webaudiofont = require('webaudiofont');
-var wafPlayer = new WebAudioFontPlayer();
 
-//const test = <h1>Hello world! How are you?</h1>
+//(function(){
+  const tone = _tone_0000_JCLive_sf2_file;
+  const AudioContextFunc = window.AudioContext || window.webkitAudioContext;
+  const audioContext = new AudioContextFunc();
+  const wafPlayer = new WebAudioFontPlayer();
+  wafPlayer.loader.decodeAfterLoading(audioContext, '_tone_0000_JCLive_sf2_file');
+//}())
 
-import WebMidi, { InputEventNoteon, InputEventNoteoff } from "webmidi";
+//import WebMidi, { InputEventNoteon, InputEventNoteoff } from "webmidi";
+const {BLANK} = require('./melodies')
 //import {core} from "@magenta/music";
-
+window.melodies = require('./melodies')
+window.webMidiPlayer = require('./localMidiInst')
 //window.core = core
-window.a = "test"
 window.player = new core.Player()
 window.recorder = new core.Recorder()
-player.playNote(0,{pitch:40,startTime:0,endTime:1})
+//player.playNote(0,{pitch:40,startTime:0,endTime:1})
 //p.playNote(23,{duration:23, pitch:45})
 
-WebMidi.enable(function (err) {
-  window.WebMidi = WebMidi
-  console.log("inputs",WebMidi.inputs)
-  console.log("outputs",WebMidi.outputs)
-  window.midiThru = WebMidi.outputs[0]
-  window.midiIn = WebMidi.inputs[0]
-  
-  window.midiPlayer = new core.MIDIPlayer()
-  window.midiPlayer.outputs = [midiThru]
-
-  midiIn.addListener('noteon','all', function(e) {    // all is channel
-    //console.log("WebMidi noteon: " + e.note);
-  });
+window.midiPlayer = new core.MIDIPlayer()
+//window.midiPlayer.outputs = [midiThru]
+//midiPlayer.playNoteDown(50)
+midiPlayer.requestMIDIAccess().then(() => {
+  // For example, use only the first port. If you omit this,
+  // a message will be sent to all ports.
+  //midiPlayer.outputs = [midiPlayer.availableOutputs[0]]
+  midiPlayer.outputs = midiPlayer.availableOutputs.slice(0,2)
+  midiPlayer.start(BLANK);
+  midiPlayer.playNoteDown({pitch:50})
+  ReactDOM.render(<App />, document.getElementById('root'))
+  // window.midiThruOut = midiPlayer.availableOutputs[0]
+  // window.midiThruIn = midiPlayer.availableOutputs[0]
+  // midiThruIn.addEventListener("noteon","all",(e)=>{
+  //   //console.log("note on midi input",e)
+  //   //midiNoteOff(e.note.number);
+  //   var envelope = wafPlayer.queueWaveTable(
+  //     audioContext, audioContext.destination, tone, 0, 
+  //     e.note.number, 123456789, e.note.velocity / 100
+  //   );
+  //   midiNotes.push({pitch: e.note.number,envelope });
+  // })
+  // const midiNoteOff = pitch => midiNotes.forEach((note,i,arr)=>{
+  //   if(note.pitch === pitch){
+  //     note.envelope.cancel();
+  //     arr.splice(i, 1);
+  //   }
+  // })
+  // midiThruIn.addListener("noteoff",1,(e)=>{
+  //   //console.log("note off midi input",e)
+  //   midiNoteOff(e.note.number);
+  // })
 })
+
+
 
 const src = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small';  // 'data/mel_small'
 window.model = new music_vae.MusicVAE(src);
@@ -40,8 +67,7 @@ const prepare = Promise.all([
   window.model.initialize()
 ])
 
-ReactDOM.render(<App />, document.getElementById('root'))
-const melody = require('./melodies')
+
 
 // MIDI.loadPlugin({
 //   soundfontUrl: "/path/to/soundfonts/",
