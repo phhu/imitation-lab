@@ -4,7 +4,11 @@ import ReactDOM from 'react-dom'
 import './style.css'
 
 import App from './App'
+import {Provider,useSelector, useStore} from 'react-redux'
+import {store} from './reduxStore'
+import {preloadedState} from './reduxModel'
 
+import fp from 'lodash/fp'
 
 //import WebMidi, { InputEventNoteon, InputEventNoteoff } from "webmidi";
 //import {core} from "@magenta/music";
@@ -12,25 +16,22 @@ import App from './App'
 
 window.localMidiInst = require('./localMidiInst')
 window.melodies = require('./melodies')
+
 window.player = new core.Player()
 window.midiPlayer = new core.MIDIPlayer()
 
-midiPlayer.requestMIDIAccess().then(() => {
-  // For example, use only the first port. If you omit this,
-  // a message will be sent to all ports.
-  //midiPlayer.outputs = [midiPlayer.availableOutputs[0]]
+window.model = new music_vae.MusicVAE(preloadedState.src);
+
+Promise.all([
+  midiPlayer.requestMIDIAccess(),
+  window.model.initialize(),
+]).then(results => {
   midiPlayer.outputs = midiPlayer.availableOutputs.slice(0,2)
-  //midiPlayer.start(melodies.BLANK);
-  //midiPlayer.playNoteDown({pitch:50})
-  ReactDOM.render(<App />, document.getElementById('root'))
+  ReactDOM.render(
+    <Provider store={store}>
+      <App />
+    </Provider>, 
+    document.getElementById('root')
+  )
 })
-
-//set up google magenta
-const src = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2';
-//const src = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small';  // 'data/mel_small'
-window.model = new music_vae.MusicVAE(src);
-const prepare = Promise.all([
-  window.model.initialize()
-])
-
 

@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import {useAsyncHook} from  './hooks'
+import {useDispatch, useSelector, useStore} from 'react-redux'
 
 export default (props) => {
   const scoreDivId = `score${props.scoreid}`
-  //let [melodies, setMelodies] = useState(props.melodies)
+  let [melodies, setMelodies] = useState(props.melodies)
 
-
+        // preparedModel
+      // .then(()=>model.interpolate(melodies,3,0.5)))
+      // (props.melodies)
   const [newMelodies, loading] = useAsyncHook( 
-    (melodies)=> model.interpolate(melodies,3,0.5))(props.melodies)
-
+    (melodies)=> window.model.interpolate(melodies,3,0.5))
+      (props.melodies);
+  
   console.log("loading",loading,newMelodies)
   const melody = newMelodies[1] || props.melodies[0]
   
@@ -26,12 +30,11 @@ export default (props) => {
     }
   })
 
-
-
+  const store = useStore()
   const play = () => {
     console.log('playing',scoreDivId,melody)
     midiPlayer.stop()
-    midiPlayer.start(melody)
+    midiPlayer.start(melody,store.getState().tempo)
     //player.start(melody)
     //window.player.playNote(0,{pitch:40,startTime:0,endTime:1})
   }

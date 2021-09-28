@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 
 export default function ValueInput({
   change = (value)=>{console.log("changed to",value)},
-  initial = 0
+  initial = 0,
+  validate = x=> parseInt(x),
 }={}){
   const [value, setValue] = useState(initial)
   //const onChange = (value)=>{console.log("changed")}
@@ -13,13 +14,22 @@ export default function ValueInput({
   }
   const prevValue = usePrevious(value)
   if (prevValue != value){
-    change(value)
+    change(validate(value))
   }
   
+  const makeOnClick = diff => e => {
+    //console.log("e",e)
+    //shiftKey ctrlKey altKey metaKey
+    if (e.shiftKey) {diff *=10}
+    if (e.ctrlKey) {diff *=2}
+    if (e.altKey) {diff *=12}
+    setValue(parseInt(value)+diff)
+  }
+
   return <div>
       <input size="5" type="text"  {...{value,onChange}}></input>
-      <button onClick={()=>setValue(parseInt(value)-1)}>-</button>
-      <button onClick={()=>setValue(parseInt(value)+1)}>+</button>
+      <button onClick={makeOnClick(-1)}>-</button>
+      <button onClick={makeOnClick(+1)}>+</button>
     </div>
 }
 

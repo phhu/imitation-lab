@@ -7,14 +7,14 @@ export const useAsyncHook = fn => (...args) => {
 
   React.useEffect(() => {
     //if (x !== "") {
-    console.log("running effect")
+    console.log("running effect",fn,args)
     fn(...args).then(res => {
-      setLoading(false)
       console.log("res",res)
+      setLoading(false)
       setResult(res)        
     })
     //}
-  }, args)
+  }, [])
 
   return [result, loading]
 }
