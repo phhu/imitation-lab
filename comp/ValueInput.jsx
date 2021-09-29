@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react'
+//import {useDispatch, useSelector, useStore} from 'react-redux'
 
 export default function ValueInput({
   change = (value)=>{console.log("changed to",value)},
-  initial = 0,
+  value = 0,
   validate = x=> parseInt(x),
 }={}){
-  const [value, setValue] = useState(initial)
+  //const [value, setValue] = useState(initial)
   //const onChange = (value)=>{console.log("changed")}
   const onChange = e => {
     //console.log("changing")
-    setValue(e.target.value)
+    //setValue(e.target.value)
     //change(e.target.value)
   }
   const prevValue = usePrevious(value)
@@ -23,7 +24,7 @@ export default function ValueInput({
     if (e.shiftKey) {diff *=10}
     if (e.ctrlKey) {diff *=2}
     if (e.altKey) {diff *=12}
-    setValue(parseInt(value)+diff)
+    change(parseInt(value)+diff)
   }
 
   return <div>

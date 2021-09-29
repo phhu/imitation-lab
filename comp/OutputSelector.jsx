@@ -5,12 +5,12 @@ export default ({
   change=(value)=>{},
   values=(o,i)=>i,
   displayValues=(o,i)=>o.name,
-  initial=0,
+  value=0,
 }={}) => {
 
-  const [value, setValue] = useState(initial)
+  //const [value, setValue] = useState(initial)
   const onChange = e => {
-    setValue(e.target.value)
+    //setValue(e.target.value)
     change(e.target.value)
   }
 

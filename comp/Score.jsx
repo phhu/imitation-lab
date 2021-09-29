@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react'
 import {useDispatch, useSelector, useStore} from 'react-redux'
 import {change} from '../reduxStore'
 import {removeNonJson} from '../utilsMelody'
+import {BLANK} from '../melodies'
 
 const {transposeMelody} = require('../utilsMelody')
+const {trim, quantizeNoteSequence,isQuantizedSequence} = core.sequences
 
 export default ({meme,scoreid,title}) => {
-  const transpose = useSelector(s=>s.memes[meme].transpose)
-  const src = useSelector(s=>s.memes[meme].src)
+  const transpose = useSelector(s=>s?.memes[meme]?.transpose) || 0
+  const src = useSelector(s=>s?.memes[meme]?.src) || BLANK
+  const variationCount = useSelector(s=>s?.memes[meme]?.variationCount || 0)
   const store = useStore()
   const dispatch = useDispatch()
   
@@ -20,7 +23,7 @@ export default ({meme,scoreid,title}) => {
   useEffect(() => {
     try {
       const staff = new core.StaffSVGVisualizer(       // WaterfallSVGVisualizer is bad...
-        melody,    
+        isQuantizedSequence(melody) ? melody : quantizeNoteSequence(melody),    
         document.getElementById(scoreDivId)
       )
     } catch(e){
@@ -32,7 +35,11 @@ export default ({meme,scoreid,title}) => {
   const play = () => {
     console.log('playing',scoreDivId,melody)
     midiPlayer.stop()
-    midiPlayer.start(melody,store.getState().tempo)
+    if(isQuantizedSequence(melody)){
+      midiPlayer.start(melody,store.getState().tempo)
+    } else {
+      midiPlayer.start(melody)
+    }
     //player.start(melody)
     //window.player.playNote(0,{pitch:40,startTime:0,endTime:1})
   }
@@ -65,7 +72,7 @@ export default ({meme,scoreid,title}) => {
         dispatch(change.memeSrc({
           meme,
           melody: {
-            title: melody.title+"_0",
+            title: melody.title,
             ...removeNonJson( newSamples[0])
           },
           transpose:0
@@ -76,7 +83,7 @@ export default ({meme,scoreid,title}) => {
 
   return (
     <div>
-      <div>{melody.title || title}</div>
+      <div>{melody.title || title} {variationCount || ''}</div>
       <div id={scoreDivId}></div>
       <button onClick={play}>Play</button>
       <button onClick={stop}>Stop</button>

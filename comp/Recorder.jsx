@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import {useDispatch, useSelector, useStore} from 'react-redux'
+import {change} from '../reduxStore'
+import {removeNonJson} from '../utilsMelody'
+
 import Score from './Score'
 const {BLANK} = require('../melodies')
 const {trim, quantizeNoteSequence} = core.sequences
@@ -13,13 +17,17 @@ Promise.all([
   recorder.initialize()
 ])
 
-export default (props) => {
-  let [recording, setRecording] = useState(BLANK)
+export default function Recorder(props) {
+  // let [recording, setRecording] = useState(BLANK)
   let [isRecording, setIsRecording] = useState(false)
   let [noteBeenPlayed, setNoteBeenPlayed] = useState(0)
+  const recording = useSelector(s=>s?.memes?.recording?.src)
+  const store = useStore()
+
+  const dispatch = useDispatch()
   //console.log("recording",BLANK)
   recorder.callbackObject = {
-    noteOn:function(a,b,c){
+    noteOn: function(a,b,c){
       console.log("rec note on");
       setNoteBeenPlayed(1)
       setTimeout(()=>setNoteBeenPlayed(0),100)
@@ -33,8 +41,10 @@ export default (props) => {
     recorder.enablePlayClick(
       document.getElementById("useClick").checked
     )
+    recorder.setTempo(store.getState().tempo)
     recorder.start()
     //console.log("recording start")
+    //dispatch(change.
     setIsRecording(true)
   }
   
@@ -43,11 +53,12 @@ export default (props) => {
       rec.notes[0] && rec.notes[0].startTime,    //startTime
       rec.notes[0] && rec.notes[rec.notes.length-1].endTime,   //endTime
     ),
-    //rec => (console.log("rec PreQuant",rec),rec),
-    rec => quantizeNoteSequence(rec, 8),    // stepsPerBeat
+    rec => (console.log("rec PreQuant",rec),rec),
+    //rec => quantizeNoteSequence(rec, 8),    // stepsPerBeat
     //rec => ({...rec,tempos:[{qpm: 120, time: 0}]}),
     //rec => (console.log("rec PostQuant",rec),rec),
-    rec=>setRecording(rec), 
+    removeNonJson,
+    rec=>dispatch(change.recording(rec)), 
   )
 
   const stop = ()=>{
@@ -70,7 +81,7 @@ export default (props) => {
       <button id="stop" onClick={stop}>Stop</button>
       <input type="checkbox" id="useClick"></input><label htmlFor="useClick">Use click</label>
       <div>{noteBeenPlayed}</div>
-      <Score scoreid="Rec" melody={recording}/>
+      <Score scoreid="Rec" meme="recording"/>
     </div>
   )
 }

@@ -11,13 +11,13 @@ import ValueInput from './comp/ValueInput'
 
 import {Provider, useDispatch, useSelector, useStore} from 'react-redux'
 import {change} from './reduxStore'
-
+import {makeNote} from './utilsMelody'
 const melody = require('./melodies')
 
 function App() {
-  const test={test:1}
   const store=useStore()
   const tempo = useSelector(s=>s.tempo)
+  const midiOutput = useSelector(s=>s.midiOutput)
   const dispatch = useDispatch()
   console.log("rendering app")
   return <div id="app">
@@ -28,24 +28,31 @@ function App() {
       melody.TWINKLE_TWINKLE
     ]} /> */}
     <Keyboard />
-    {/* <Recorder {...test}/> */}
+    <Recorder />
     <OutputSelector 
       options={midiPlayer.availableOutputs}
-      initial={1}
+      value={midiOutput}
       change={(value)=>{
         midiPlayer.outputs = [midiPlayer.availableOutputs[value]]
-        //window.midiThru = WebMidi.outputs[value]
+        dispatch(change.midiOutput(value))
         console.log("output changed to",value)
       }}
     />
-    <ValueInput initial={tempo} change={x=>{
+    <ValueInput value={tempo} change={x=>{
       dispatch(change.tempo(x))
-      console.log("setting tempo",x)
+      //console.log("setting tempo",x)
     }} />
 
-    <button onClick={()=>Tone.start()}>Start</button>
-    <button onClick={()=>console.log(store.getState())}>State</button>
-    <button onClick={()=>{console.log("playing note");midiPlayer.playNoteDown({pitch:51,velocity:50})}}>play note</button>
+    {/* <button onClick={()=>Tone.start()}>Start</button> */}
+    <button onClick={
+      ()=>console.log(store.getState())
+    }>State</button>
+    <button onClick={()=>{
+      //console.log("playing note")
+      const note = makeNote(51)    // {pitch:50,velocity:50}  
+      midiPlayer.playNoteDown(note)
+      setTimeout(()=>midiPlayer.playNoteUp(note) ,500)
+    }}>play note</button>
   </div>
 }
 

@@ -51,8 +51,8 @@ function Keyboard(props) {
         width={width}
         keyboardShortcuts={keyboardShortcuts}
       />
-      <ValueInput initial={firstNote} change={(value)=>{
-        console.log("changed value",value,parseInt(value)>40,parseInt(value))
+      <ValueInput value={firstNote} change={(value)=>{
+        //console.log("changed value",value,parseInt(value)>40,parseInt(value))
         const x = parseInt(value)
         //if (x>40){
           dispatch(change.keysFirst(x))
