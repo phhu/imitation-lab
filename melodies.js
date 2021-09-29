@@ -59,7 +59,7 @@ module.exports = {
   },
   TWINKLE_TWINKLE: {
     title:"Twinkle Twinkle",
-    totalQuantizedSteps: 32,
+    totalQuantizedSteps: 64,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
       {pitch: 60, quantizedStartStep: 0, quantizedEndStep: 2},
@@ -120,7 +120,7 @@ module.exports = {
   },
   LIBERTANGO_2: { 
     title: "Libertango",
-    totalQuantizedSteps: 64,
+    totalQuantizedSteps: 32,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
       {pitch: toMidi('E4'), quantizedStartStep: 2, quantizedEndStep: 4},

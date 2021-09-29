@@ -4,34 +4,36 @@ import React, { useState, useEffect, useRef } from 'react'
 export default function ValueInput({
   change = (value)=>{console.log("changed to",value)},
   value = 0,
-  validate = x=> parseInt(x),
+  validate = x=>parseInt(x),
+  title = "",
+  step = 1,
 }={}){
   //const [value, setValue] = useState(initial)
   //const onChange = (value)=>{console.log("changed")}
   const onChange = e => {
     //console.log("changing")
     //setValue(e.target.value)
-    //change(e.target.value)
+    change(e.target.value)
   }
   const prevValue = usePrevious(value)
   if (prevValue != value){
-    change(validate(value))
+    //change(validate(value))
   }
   
   const makeOnClick = diff => e => {
-    //console.log("e",e)
     //shiftKey ctrlKey altKey metaKey
     if (e.shiftKey) {diff *=10}
     if (e.ctrlKey) {diff *=2}
     if (e.altKey) {diff *=12}
-    change(parseInt(value)+diff)
+    change(parseFloat(value)+diff)
   }
 
-  return <div>
+  return <span>
+      <span>{title} </span>
       <input size="5" type="text"  {...{value,onChange}}></input>
-      <button onClick={makeOnClick(-1)}>-</button>
-      <button onClick={makeOnClick(+1)}>+</button>
-    </div>
+      <button onClick={makeOnClick(-parseFloat(step))}>-</button>
+      <button onClick={makeOnClick(+parseFloat(step))}>+</button>
+    </span>
 }
 
 

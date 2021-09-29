@@ -14,7 +14,7 @@ import fp from 'lodash/fp'
 //import {core} from "@magenta/music";
 //window.core = core
 
-window.localMidiInst = require('./localMidiInst')
+//window.localMidiInst = require('./comp/LocalMidiInst')
 window.melodies = require('./melodies')
 
 window.player = new core.Player()

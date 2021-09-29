@@ -14,7 +14,7 @@ export default ({meme,scoreid,title}) => {
   const store = useStore()
   const dispatch = useDispatch()
   
-  console.log("score",meme, transpose)
+  //console.log("score",meme, transpose)
   const scoreDivId = `score${scoreid}`
   const melody = transposeMelody(parseInt(transpose) || 0)(src)
 
@@ -22,8 +22,9 @@ export default ({meme,scoreid,title}) => {
   //console.log("drawing Score",props.melody,melody,isVarying)
   useEffect(() => {
     try {
-      const staff = new core.StaffSVGVisualizer(       // WaterfallSVGVisualizer is bad...
-        isQuantizedSequence(melody) ? melody : quantizeNoteSequence(melody),    
+      // WaterfallSVGVisualizer is bad...
+      const staff = new core.StaffSVGVisualizer(       
+        isQuantizedSequence(melody) ? melody : quantizeNoteSequence(melody,4),    
         document.getElementById(scoreDivId)
       )
     } catch(e){
@@ -33,18 +34,15 @@ export default ({meme,scoreid,title}) => {
   })
 
   const play = () => {
-    console.log('playing',scoreDivId,melody)
+    //console.log('playing',scoreDivId,melody)
     midiPlayer.stop()
-    if(isQuantizedSequence(melody)){
-      midiPlayer.start(melody,store.getState().tempo)
-    } else {
-      midiPlayer.start(melody)
-    }
-    //player.start(melody)
-    //window.player.playNote(0,{pitch:40,startTime:0,endTime:1})
+    midiPlayer.start(
+      melody,
+      isQuantizedSequence(melody) ? store.getState().tempo : undefined
+    )
   }
   const stop = () => {
-    console.log('stopping playing',scoreDivId)
+    //console.log('stopping playing',scoreDivId)
     midiPlayer.stop()
     //player.stop()
     //window.player.playNote(0,{pitch:40,startTime:0,endTime:1})
@@ -75,7 +73,7 @@ export default ({meme,scoreid,title}) => {
             title: melody.title,
             ...removeNonJson( newSamples[0])
           },
-          transpose:0
+          transpose: 0
         }))
         setIsVarying(false)
       });

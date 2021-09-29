@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 //const fp = require('lodash/fp')
 //import ReactDOM from "react-dom"
 
@@ -8,6 +8,7 @@ import ScoreAsync from './comp/ScoreAsync'
 import Recorder from './comp/Recorder'
 import OutputSelector from './comp/OutputSelector'
 import ValueInput from './comp/ValueInput'
+import LocalMidiInst from './comp/LocalMidiInst'
 
 import {Provider, useDispatch, useSelector, useStore} from 'react-redux'
 import {change} from './reduxStore'
@@ -20,6 +21,8 @@ function App() {
   const midiOutput = useSelector(s=>s.midiOutput)
   const dispatch = useDispatch()
   console.log("rendering app")
+  const btnRecord = useRef()
+  const btnStop = useRef()
   return <div id="app">
     <Score scoreid="1" meme="goal" />
     <Score scoreid="2" meme="initial" />
@@ -28,7 +31,7 @@ function App() {
       melody.TWINKLE_TWINKLE
     ]} /> */}
     <Keyboard />
-    <Recorder />
+    <Recorder {...{btnRecord,btnStop}} />
     <OutputSelector 
       options={midiPlayer.availableOutputs}
       value={midiOutput}
@@ -38,21 +41,50 @@ function App() {
         console.log("output changed to",value)
       }}
     />
-    <ValueInput value={tempo} change={x=>{
-      dispatch(change.tempo(x))
-      //console.log("setting tempo",x)
-    }} />
-
+    <ValueInput title="Tempo" value={tempo} change={ x=>dispatch(change.tempo(x)) } />
+    <LocalMidiInst />
     {/* <button onClick={()=>Tone.start()}>Start</button> */}
-    <button onClick={
-      ()=>console.log(store.getState())
-    }>State</button>
+
+    <button onClick={()=>{
+      console.log("playing seq")
+      const state= store.getState()
+      midiPlayer.stop()
+      midiPlayer.setTempo(state.tempo)
+      midiPlayer.start(state.memes.initial.src)
+        // .then(()=>{
+        //   console.log("playing 2")
+        //   return midiPlayer.start(state.memes.initial.src)
+        // })
+        .then(()=>{
+          console.log("playing 3")
+          midiPlayer.start(state.memes.recording.src)
+        })
+
+    }}>play seq</button>
+    <button onClick={()=>{
+      console.log("btnRecord",btnRecord.current)
+      //window.btnRecord = btnRecord.current
+      btnRecord.current.click()
+      setTimeout(()=>btnStop.current.click(),4000)
+    }}>doRec</button>
+
+    <hr />
+
     <button onClick={()=>{
       //console.log("playing note")
       const note = makeNote(51)    // {pitch:50,velocity:50}  
       midiPlayer.playNoteDown(note)
       setTimeout(()=>midiPlayer.playNoteUp(note) ,500)
     }}>play note</button>
+    <button onClick={
+      ()=>console.log(store.getState())
+    }>State</button>
+    <button onClick={()=>{
+      console.log("resetting")
+      localStorage.removeItem("state")
+      window.location.reload(false)
+    }}>Reset</button>
+  
   </div>
 }
 

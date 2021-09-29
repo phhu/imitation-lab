@@ -10,17 +10,20 @@ const state = store.getState()
 */
 const fp = require('lodash/fp')
 import melodies from './melodies'
-import {removeNonJson} from './utilsMelody'
+import {removeNonJson,roundToDPs} from './utilsMelody'
 
 export const preloadedState = { 
   midiOutput: 0,
   tempo: 120,
+  localMidiInst: {
+    volume: 0.5,
+    on: true,
+  },
   bars: 2,
   src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small',
   // src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2',
-
   keys: {
-    first: 40,
+    first: 47,
     count: 37,
     width: 900,
   },
@@ -48,6 +51,8 @@ const limit = (min, max) => x => Math.min(Math.max(min,x),max)
 //(state,{payload})
 export const actions = {
   "tempo": (state,{payload})=>{state.tempo=payload},
+  "volume": (state,{payload})=>{state.localMidiInst.volume=limit(0,1)(roundToDPs(2)(payload))},
+  "localInstOn": (state,{payload})=>{state.localMidiInst.on=(!!payload)},
   "midiOutput": (state,{payload})=>{state.midiOutput=payload},
   "keysFirst": (state,{payload})=>{
     state.keys.first=limit(12,70)(parseInt(payload))

@@ -21,6 +21,7 @@ export default function Recorder(props) {
   // let [recording, setRecording] = useState(BLANK)
   let [isRecording, setIsRecording] = useState(false)
   let [noteBeenPlayed, setNoteBeenPlayed] = useState(0)
+  // useClick should be in global state...
   const recording = useSelector(s=>s?.memes?.recording?.src)
   const store = useStore()
 
@@ -28,7 +29,7 @@ export default function Recorder(props) {
   //console.log("recording",BLANK)
   recorder.callbackObject = {
     noteOn: function(a,b,c){
-      console.log("rec note on");
+      //console.log("rec note on");
       setNoteBeenPlayed(1)
       setTimeout(()=>setNoteBeenPlayed(0),100)
     },
@@ -53,7 +54,7 @@ export default function Recorder(props) {
       rec.notes[0] && rec.notes[0].startTime,    //startTime
       rec.notes[0] && rec.notes[rec.notes.length-1].endTime,   //endTime
     ),
-    rec => (console.log("rec PreQuant",rec),rec),
+    //rec => (console.log("rec PreQuant",rec),rec),
     //rec => quantizeNoteSequence(rec, 8),    // stepsPerBeat
     //rec => ({...rec,tempos:[{qpm: 120, time: 0}]}),
     //rec => (console.log("rec PostQuant",rec),rec),
@@ -75,11 +76,12 @@ export default function Recorder(props) {
     }}>
       RECORDER
       <br />
-      <button id="rec" onClick={record} style={{
+      <button id="rec" ref={props.btnRecord} onClick={record} style={{
         backgroundColor: isRecording ? "red" : "inherit"
       }}>REC</button>
-      <button id="stop" onClick={stop}>Stop</button>
-      <input type="checkbox" id="useClick"></input><label htmlFor="useClick">Use click</label>
+      <button id="stop"  ref={props.btnStop}  onClick={stop}>Stop</button>
+      <input type="checkbox" id="useClick"></input>
+      <label htmlFor="useClick">Use click</label>
       <div>{noteBeenPlayed}</div>
       <Score scoreid="Rec" meme="recording"/>
     </div>
