@@ -24,7 +24,6 @@ export const saveState = (state) => {
 
 export {actions}
 
-console.log("reducers",reducer)
 export const store = configureStore({
   reducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware() ,//.concat(logger),

@@ -1,22 +1,31 @@
 import React, { useState, useEffect } from 'react'
 import {useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from '../reduxStore'
-import {removeNonJson} from '../utilsMelody'
+import {removeNonJson, forceQuantized} from '../utilsMelody'
 import {melodies} from '../melodies'
 import Selector from './Selector'
 
 const {transposeMelody} = require('../utilsMelody')
-const {trim, quantizeNoteSequence,isQuantizedSequence} = core.sequences
+const {isQuantizedSequence} = core.sequences
+import {varyMelody} from '../vary'
+import {interpolateMelodies} from '../interpolate'
 
-async function fetchTodos(dispatch, getState) {
-  const response = await client.get('/fakeApi/todos')
-  dispatch({ type: 'todos/todosLoaded', payload: response.todos })
-}
 
-export default ({meme,scoreid,title,hasSelect=true}) => {
-  const transpose = useSelector(s=>s?.memes[meme]?.transpose) || 0
-  const src = useSelector(s=>s?.memes[meme]?.src) || melodies.BLANK
-  const variationCount = useSelector(s=>s?.memes[meme]?.variationCount || 0)
+export default ({
+  meme,scoreid,title,
+  hasSelect=true, margin="10px", padding="5px",
+  interpolationTarget
+}) => {
+  const {
+    transpose=0,
+    src=melodies.BLANK,
+    variationCount=0,
+    matchesRecording=false,
+    isVarying=false,
+  } = useSelector(s=>s?.memes[meme])
+  // const src = useSelector(s=>s?.memes[meme]?.src) || melodies.BLANK
+  // const variationCount = useSelector(s=>s?.memes[meme]?.variationCount || 0)
+  // const matchesRecording = useSelector(s=>s?.memes[meme]?.matchesRecording || false)
   const store = useStore()
   const dispatch = useDispatch()
   
@@ -24,13 +33,12 @@ export default ({meme,scoreid,title,hasSelect=true}) => {
   const scoreDivId = `score${scoreid}`
   const melody = transposeMelody(parseInt(transpose) || 0)(src)
 
-  let [isVarying, setIsVarying] = useState(false)
   //console.log("drawing Score",props.melody,melody,isVarying)
   useEffect(() => {
     try {
       // WaterfallSVGVisualizer is bad...
       const staff = new core.StaffSVGVisualizer(       
-        isQuantizedSequence(melody) ? melody : quantizeNoteSequence(melody,4),    
+        forceQuantized({stepsPerQuarter:4})(melody),    
         document.getElementById(scoreDivId)
       )
     } catch(e){
@@ -51,40 +59,14 @@ export default ({meme,scoreid,title,hasSelect=true}) => {
     midiPlayer.stop()
   }
   const varyButtonId = "btn_" + scoreDivId
-  const vary = () => {
-    console.log('vary playing',scoreDivId)
-    setIsVarying(true)
-    document.querySelector(`#${varyButtonId}`).style.backgroundColor="red"
-    model.similar(melody,2,0.75)
-      .then(newSamples => {
-        console.log("made samples")
-        //newSamples.forEach((ns,i)=>ns.title=melody.title+"_"+i)
-        // const n = newSamples[0]
-        // {
-        //   notes: n.notes,
-        //   totalQuantizedSteps: n.totalQuantizedSteps,
-        //   quantizationInfo: n.quantizationInfo,
-        // }
-        // console.log("tidied",
-        //   newSamples[0],
-        //   //removeNonJson( newSamples[0]),
-        //   //JSON.stringify({...newSamples[0]})
-        // )
-        dispatch(actions.memeSrc({
-          meme,
-          melody: {
-            title: melody.title,
-            key: melody.key,
-            ...removeNonJson(newSamples[0])
-          },
-          transpose: 0
-        }))
-        setIsVarying(false)
-      });
-  }
+  const vary = () => dispatch(varyMelody({melody,meme}))
 
   return (
-    <div>
+    <div style={{
+      margin,
+      padding,
+      "backgroundColor": matchesRecording ? "#afa" : "#eee",
+    }}>
       {/* <div>{melody.title} </div> */}
       {hasSelect && (
       <Selector
@@ -93,12 +75,24 @@ export default ({meme,scoreid,title,hasSelect=true}) => {
         values={(o,i)=>o.key}
         displayValues={(o,i)=>o.title}
         change={(value)=>{
-          dispatch(actions.memeSrc({
-            meme,
-            melody: melodies[value],
-            transpose: 0
-          }))        
-        }}     
+          if (interpolationTarget){
+            console.log("interpolating",interpolationTarget)
+            dispatch(interpolateMelodies({
+              // sourceMelody,
+              // goalMelody,
+              melody: melodies[value],
+              meme,
+              interpolationTarget,              
+            }))
+          } else {
+            console.log("not interpolating",interpolationTarget)
+            dispatch(actions.memeSrc({
+              meme,
+              melody: melodies[value],
+              transpose: 0
+            }))
+          }
+        }}
       />
       )} {variationCount || ''}
       <div id={scoreDivId}></div>

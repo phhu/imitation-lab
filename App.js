@@ -25,13 +25,9 @@ function App() {
   const btnStop = useRef()
   return <div id="app">
     <Score scoreid="1" meme="goal" />
-    <Score scoreid="2" meme="initial" />
-    {/* <ScoreAsync title="Interpolated"  scoreid="3" melodies={[
-      melody.LIBERTANGO,
-      melody.TWINKLE_TWINKLE
-    ]} /> */}
-    <Keyboard />
+    <Score scoreid="2" meme="initial" interpolationTarget="goal" />
     <Recorder {...{btnRecord,btnStop}} />
+    <Keyboard />
     <Selector 
       options={midiPlayer.availableOutputs}
       value={midiOutput}
@@ -41,7 +37,11 @@ function App() {
         console.log("output changed to",value)
       }}
     />
-    <ValueInput title="Tempo" value={tempo} change={ x=>dispatch(actions.tempo(x)) } />
+    <ValueInput 
+      title="Tempo" 
+      value={tempo} 
+      change={ x=>dispatch(actions.tempo(x)) } 
+    />
     <LocalMidiInst />
     {/* <button onClick={()=>Tone.start()}>Start</button> */}
 
@@ -61,8 +61,17 @@ function App() {
         })
 
     }}>play seq</button>
+    
+    <button onClick={(e)=>{
+      const state= store.getState()
+      midiPlayer.start(state.memes.initial.src)
+      .then(()=>{
+        btnRecord.current.click()
+        setTimeout(()=>btnStop.current.click(),4000)
+      })
+    }}>PlayRec</button>
+
     <button onClick={()=>{
-      console.log("btnRecord",btnRecord.current)
       //window.btnRecord = btnRecord.current
       btnRecord.current.click()
       setTimeout(()=>btnStop.current.click(),4000)

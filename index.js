@@ -1,4 +1,7 @@
 // index.js
+// needed to get async to work with parcel 
+// see https://flaviocopes.com/parcel-regeneratorruntime-not-defined/
+import 'regenerator-runtime/runtime'   
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './style.css'

@@ -11,8 +11,11 @@ const state = store.getState()
 
 import { createSlice } from '@reduxjs/toolkit'
 const fp = require('lodash/fp')
+import {cloneDeep} from 'lodash'
 import {melodies} from './melodies'
 import {removeNonJson,roundToDPs} from './utilsMelody'
+import {varyMelody} from './vary'
+import {interpolateMelodies} from './interpolate'
 
 export const initialState = { 
   midiOutput: 0,
@@ -31,17 +34,17 @@ export const initialState = {
   },
   memes: { 
     goal: {
-      src: melodies.LIBERTANGO_2,
+      src: cloneDeep(melodies.LIBERTANGO_2),
       transpose: 0,
       variationCount: 0,
     },
     initial: {
-      src: melodies.TWINKLE_TWINKLE_2,
+      src: cloneDeep(melodies.TWINKLE_TWINKLE_2),
       transpose: -12,
       variationCount: 0,
     },
     recording: {
-      src: melodies.BLANK,
+      src: cloneDeep(melodies.BLANK),
       transpose: 0,
       variationCount: 0,
     },
@@ -62,14 +65,50 @@ const slice = createSlice({
     },
     "keysWidth": (state,{payload})=>{state.keys.width=payload},
     "memeSrc": (state,{payload})=>{
-      state.memes[payload.meme].src=payload.melody
-      state.memes[payload.meme].transpose=payload.transpose
-      state.memes[payload.meme].variationCount+=1
-    },
+      const m = state.memes[payload.meme]
+      m.src=payload.melody
+      m.transpose=payload.transpose
+      m.variationCount+=1
+      m.matchesRecording=null  //null=unknown
+    },  
     "recording": (state,{payload}) => {
-      state.memes.recording.src=removeNonJson(payload)
+      const {recording, matches=[]} = payload
+      if (recording){
+        state.memes.recording.src=removeNonJson(recording)
+      }
+      Object.entries(matches).forEach(
+        ([key,val]) => {state.memes[key].matchesRecording = val} 
+      )
     }
-  }
+  },
+  extraReducers: (builder) => {builder
+    .addCase(varyMelody.pending, (state, {meta,payload,type}) => {
+      //console.log("got varyMelody.pending")
+      const m = state.memes[meta.arg.meme]
+      m.isVarying = true
+    })
+    .addCase(varyMelody.fulfilled, (state, {meta,payload,type}) => {
+      const m = state.memes[meta.arg.meme]
+      const {key,title} = meta.arg.melody
+      m.src={title, key, ...payload}
+      m.transpose=0
+      m.variationCount+=1
+      m.matchesRecording=null  //null=unknown
+      m.isVarying = false
+    })
+    .addCase(varyMelody.rejected, (state, action) => {
+      console.error("varyMelody rejected",action)
+    })
+    .addCase(interpolateMelodies.pending, (state, {meta,payload,type}) => {
+      console.log("got interpolateMelodies.pending")
+    })
+    .addCase(interpolateMelodies.fulfilled, (state, {meta,payload,type}) => {
+      console.log("got interpolateMelodies.fulfilled")
+    })
+    .addCase(interpolateMelodies.rejected, (state, action) => {
+      console.error("interpolateMelodies rejected",action)
+    })
+  },
 })
 
 //export const { todoAdded, todoToggled, todosLoading } = todosSlice.actions

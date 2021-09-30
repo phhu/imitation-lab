@@ -1,16 +1,26 @@
 import {actions} from './reduxStore'
-const sequencesMatch = (seq1,seq2) => { 
-  if (seq1.notes.length !== seq2.notes.length){return false;}
+import {mapValues} from 'lodash'
+
+const sequencesMatch = (baseSeq,compSeq) => { 
+  if (baseSeq.notes.length !== compSeq.notes.length){return false;}
   
-  for (let i=0 ; i<seq1.notes.length; i++){
-    if(seq1.notes[i].pitch !== seq2.notes[i].pitch){return false;}
+  for (let i=0 ; i<baseSeq.notes.length; i++){
+    if(baseSeq.notes[i].pitch !== compSeq.notes[i].pitch){return false;}
   }
   return true;
 };
 
-const matchRecording = rec => (dispatch, getState) => {
-  console.log("in matchRecording")
-  dispatch(actions.recording(rec))
+const matchRecording = (recording, sendRecording=true) => (dispatch, getState) => {
+  const {memes} = getState()
+  const matches = mapValues(
+    memes,
+    (meme,key)=>((key==="recording") ? null : 
+      sequencesMatch(meme.src,recording)),
+    )
+  dispatch(actions.recording({
+    recording: sendRecording && recording,
+    matches
+  }))
 }
 
 module.exports = {

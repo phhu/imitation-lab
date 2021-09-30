@@ -25,3 +25,5 @@ Operations:
  compare
  rec
  vary
+
+Youtube loop example: https://codepen.io/ekwibrium/pen/JjKeyLY?editors=0010

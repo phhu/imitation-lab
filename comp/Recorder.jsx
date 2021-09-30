@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import {useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from '../reduxStore'
-import {removeNonJson} from '../utilsMelody'
+import {forceQuantized,removeNonJson} from '../utilsMelody'
 import {matchRecording} from '../compare'
+
 
 import Score from './Score'
 const {BLANK} = require('../melodies')
@@ -84,7 +85,13 @@ export default function Recorder(props) {
       <input type="checkbox" id="useClick"></input>
       <label htmlFor="useClick">Use click</label>
       &nbsp;| <span>{noteBeenPlayed}</span>
-      <Score scoreid="Rec" meme="recording" hasSelect={false} />
+      <Score 
+        scoreid="Rec" 
+        meme="recording" 
+        hasSelect={false} 
+        padding="0px" 
+        margin="0px"
+      />
     </div>
   )
 }
