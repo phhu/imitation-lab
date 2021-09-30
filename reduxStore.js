@@ -1,7 +1,5 @@
 import {createReducer, createAction, configureStore} from '@reduxjs/toolkit'
-import {preloadedState,actions} from './reduxModel'
-
-//import {Provider, shallowEqual, useDispatch, useSelector,useStore } from 'react-redux'
+import {reducer,actions,initialState} from './reduxMainSlice'
 
 export const loadState = () => {
   try {
@@ -24,21 +22,14 @@ export const saveState = (state) => {
   }
 };
 
-export const change = Object.keys(actions).reduce(
-  (acc,cur)=>(acc[cur]=createAction(cur),acc),{}
-)
+export {actions}
 
-const reducer = createReducer(preloadedState, builder => 
-  Object.entries(actions).forEach(([name,fn])=>
-    builder.addCase(name,fn)
-  )
-)
-
+console.log("reducers",reducer)
 export const store = configureStore({
   reducer,
-  //middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware() ,//.concat(logger),
   devTools: process.env.NODE_ENV !== 'production',
-  preloadedState: loadState() || preloadedState,
+  preloadedState: loadState() || initialState,
   //enhancers: [reduxBatch],
 })
 

@@ -1,3 +1,5 @@
+import {mapValues} from 'lodash'
+
 var everyNote = 'C,C#,D,D#,E,F,F#,G,G#,A,A#,B,'.repeat(20).split(',').map( function(x,i) {
   return x + '' + Math.floor(i/12);
 });
@@ -16,14 +18,16 @@ const nd = spec => ({...spec,
   pitch: spec.pitch || toMidi(spec.note)
 })
 
-module.exports = {
+const melodiesInt = {
   NONE: { 
+    title: "None",
     totalQuantizedSteps: 16,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
     ]
   },
   BLANK: { 
+    title: "Blank",
     totalQuantizedSteps: 16,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
@@ -31,6 +35,7 @@ module.exports = {
     ]
   },
   BASIC: { 
+    title: "Basic",
     totalQuantizedSteps: 64,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
@@ -41,6 +46,7 @@ module.exports = {
     ]
   },
   MELODY1: { 
+    title:"Melody 1",
     totalQuantizedSteps: 32,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
@@ -96,7 +102,7 @@ module.exports = {
     ],
   },
   TWINKLE_TWINKLE_2: {
-    title:"Twinkle Twinkle",
+    title:"Twinkle Twinkle 2",
     totalQuantizedSteps: 32,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
@@ -119,7 +125,7 @@ module.exports = {
     ],
   },
   LIBERTANGO_2: { 
-    title: "Libertango",
+    title: "Libertango 2",
     totalQuantizedSteps: 32,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
@@ -180,6 +186,7 @@ module.exports = {
     ]
   },
   UNDER_PRESSURE: { 
+    title: "Under Pressure",
     totalQuantizedSteps: 62,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
@@ -217,6 +224,7 @@ module.exports = {
     ]
   },
   MELODY3: {
+    title: "Melody 3",
     totalQuantizedSteps: 32,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
@@ -238,3 +246,8 @@ module.exports = {
     ],
   }
 }
+
+export const melodies = mapValues(melodiesInt,(value,key,obj)=>{
+  console.log("vko",value,key,obj)
+  return {...value,key} 
+})

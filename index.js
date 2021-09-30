@@ -6,7 +6,7 @@ import './style.css'
 import App from './App'
 import {Provider,useSelector, useStore} from 'react-redux'
 import {store} from './reduxStore'
-import {preloadedState} from './reduxModel'
+import {initialState} from './reduxMainSlice'
 
 import fp from 'lodash/fp'
 
@@ -15,12 +15,12 @@ import fp from 'lodash/fp'
 //window.core = core
 
 //window.localMidiInst = require('./comp/LocalMidiInst')
-window.melodies = require('./melodies')
+window.melodies = require('./melodies').melodies
 
 window.player = new core.Player()
 window.midiPlayer = new core.MIDIPlayer()
 
-window.model = new music_vae.MusicVAE(preloadedState.src);
+window.model = new music_vae.MusicVAE(initialState.src);
 
 Promise.all([
   midiPlayer.requestMIDIAccess(),

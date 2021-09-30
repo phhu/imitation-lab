@@ -4,14 +4,14 @@ import React, { useState, useEffect, useRef } from 'react'
 
 import Keyboard from './comp/Keyboard'
 import Score from './comp/Score'
-import ScoreAsync from './comp/ScoreAsync'
+//import ScoreAsync from './comp/ScoreAsync'
 import Recorder from './comp/Recorder'
-import OutputSelector from './comp/OutputSelector'
+import Selector from './comp/Selector'
 import ValueInput from './comp/ValueInput'
 import LocalMidiInst from './comp/LocalMidiInst'
 
 import {Provider, useDispatch, useSelector, useStore} from 'react-redux'
-import {change} from './reduxStore'
+import {actions} from './reduxStore'
 import {makeNote} from './utilsMelody'
 const melody = require('./melodies')
 
@@ -32,16 +32,16 @@ function App() {
     ]} /> */}
     <Keyboard />
     <Recorder {...{btnRecord,btnStop}} />
-    <OutputSelector 
+    <Selector 
       options={midiPlayer.availableOutputs}
       value={midiOutput}
       change={(value)=>{
         midiPlayer.outputs = [midiPlayer.availableOutputs[value]]
-        dispatch(change.midiOutput(value))
+        dispatch(actions.midiOutput(value))
         console.log("output changed to",value)
       }}
     />
-    <ValueInput title="Tempo" value={tempo} change={ x=>dispatch(change.tempo(x)) } />
+    <ValueInput title="Tempo" value={tempo} change={ x=>dispatch(actions.tempo(x)) } />
     <LocalMidiInst />
     {/* <button onClick={()=>Tone.start()}>Start</button> */}
 

@@ -1,7 +1,7 @@
 import WebMidi, { InputEventNoteon, InputEventNoteoff } from "webmidi"
 import React, { useState, useEffect } from 'react'
 import {useDispatch, useSelector, useStore} from 'react-redux'
-import {change} from '../reduxStore'
+import {actions} from '../reduxStore'
 import ValueInput from './ValueInput'
 import Checkbox from './Checkbox'   // http://react.tips/checkboxes-in-react-16/
 const {cancelNote} = require('../utils')
@@ -72,12 +72,12 @@ export default function LocalMidiInst(props){
       title="Volume" 
       value={volume} 
       step="0.1"
-      change={ x=>dispatch(change.volume(x)) } 
+      change={ x=>dispatch(actions.volume(x)) } 
     /> | 
     <Checkbox  
       label="on"
       checked={isOn}
-      onChange={ e=>dispatch(change.localInstOn(e.target.checked))  }
+      onChange={ e=>dispatch(actions.localInstOn(e.target.checked))  }
     />
   </div>
 }

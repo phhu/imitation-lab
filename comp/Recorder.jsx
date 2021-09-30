@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import {useDispatch, useSelector, useStore} from 'react-redux'
-import {change} from '../reduxStore'
+import {actions} from '../reduxStore'
 import {removeNonJson} from '../utilsMelody'
+import {matchRecording} from '../compare'
 
 import Score from './Score'
 const {BLANK} = require('../melodies')
@@ -45,7 +46,6 @@ export default function Recorder(props) {
     recorder.setTempo(store.getState().tempo)
     recorder.start()
     //console.log("recording start")
-    //dispatch(change.
     setIsRecording(true)
   }
   
@@ -59,7 +59,8 @@ export default function Recorder(props) {
     //rec => ({...rec,tempos:[{qpm: 120, time: 0}]}),
     //rec => (console.log("rec PostQuant",rec),rec),
     removeNonJson,
-    rec=>dispatch(change.recording(rec)), 
+    //rec=>dispatch(actions.recording(rec)), 
+    rec=>dispatch(matchRecording(rec)), 
   )
 
   const stop = ()=>{
@@ -82,8 +83,10 @@ export default function Recorder(props) {
       <button id="stop"  ref={props.btnStop}  onClick={stop}>Stop</button>
       <input type="checkbox" id="useClick"></input>
       <label htmlFor="useClick">Use click</label>
-      <div>{noteBeenPlayed}</div>
-      <Score scoreid="Rec" meme="recording"/>
+      &nbsp;| <span>{noteBeenPlayed}</span>
+      <Score scoreid="Rec" meme="recording" hasSelect={false} />
     </div>
   )
 }
+
+

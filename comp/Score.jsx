@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import {useDispatch, useSelector, useStore} from 'react-redux'
-import {change} from '../reduxStore'
+import {actions} from '../reduxStore'
 import {removeNonJson} from '../utilsMelody'
-import {BLANK} from '../melodies'
+import {melodies} from '../melodies'
+import Selector from './Selector'
 
 const {transposeMelody} = require('../utilsMelody')
 const {trim, quantizeNoteSequence,isQuantizedSequence} = core.sequences
 
-export default ({meme,scoreid,title}) => {
+async function fetchTodos(dispatch, getState) {
+  const response = await client.get('/fakeApi/todos')
+  dispatch({ type: 'todos/todosLoaded', payload: response.todos })
+}
+
+export default ({meme,scoreid,title,hasSelect=true}) => {
   const transpose = useSelector(s=>s?.memes[meme]?.transpose) || 0
-  const src = useSelector(s=>s?.memes[meme]?.src) || BLANK
+  const src = useSelector(s=>s?.memes[meme]?.src) || melodies.BLANK
   const variationCount = useSelector(s=>s?.memes[meme]?.variationCount || 0)
   const store = useStore()
   const dispatch = useDispatch()
@@ -42,10 +48,7 @@ export default ({meme,scoreid,title}) => {
     )
   }
   const stop = () => {
-    //console.log('stopping playing',scoreDivId)
     midiPlayer.stop()
-    //player.stop()
-    //window.player.playNote(0,{pitch:40,startTime:0,endTime:1})
   }
   const varyButtonId = "btn_" + scoreDivId
   const vary = () => {
@@ -67,11 +70,12 @@ export default ({meme,scoreid,title}) => {
         //   //removeNonJson( newSamples[0]),
         //   //JSON.stringify({...newSamples[0]})
         // )
-        dispatch(change.memeSrc({
+        dispatch(actions.memeSrc({
           meme,
           melody: {
             title: melody.title,
-            ...removeNonJson( newSamples[0])
+            key: melody.key,
+            ...removeNonJson(newSamples[0])
           },
           transpose: 0
         }))
@@ -81,7 +85,22 @@ export default ({meme,scoreid,title}) => {
 
   return (
     <div>
-      <div>{melody.title || title} {variationCount || ''}</div>
+      {/* <div>{melody.title} </div> */}
+      {hasSelect && (
+      <Selector
+        value={melody.key}
+        options={Object.values(melodies)}
+        values={(o,i)=>o.key}
+        displayValues={(o,i)=>o.title}
+        change={(value)=>{
+          dispatch(actions.memeSrc({
+            meme,
+            melody: melodies[value],
+            transpose: 0
+          }))        
+        }}     
+      />
+      )} {variationCount || ''}
       <div id={scoreDivId}></div>
       <button onClick={play}>Play</button>
       <button onClick={stop}>Stop</button>

@@ -8,11 +8,13 @@ const dispatch = useDispatch(change.someVar(value))
 const store = useStore()
 const state = store.getState()
 */
+
+import { createSlice } from '@reduxjs/toolkit'
 const fp = require('lodash/fp')
-import melodies from './melodies'
+import {melodies} from './melodies'
 import {removeNonJson,roundToDPs} from './utilsMelody'
 
-export const preloadedState = { 
+export const initialState = { 
   midiOutput: 0,
   tempo: 120,
   localMidiInst: {
@@ -46,24 +48,30 @@ export const preloadedState = {
   },
 }
 
-//const actn = (pathFn) => (state,{payload}) => { pathFn(state)=payload }
 const limit = (min, max) => x => Math.min(Math.max(min,x),max)
-//(state,{payload})
-export const actions = {
-  "tempo": (state,{payload})=>{state.tempo=payload},
-  "volume": (state,{payload})=>{state.localMidiInst.volume=limit(0,1)(roundToDPs(2)(payload))},
-  "localInstOn": (state,{payload})=>{state.localMidiInst.on=(!!payload)},
-  "midiOutput": (state,{payload})=>{state.midiOutput=payload},
-  "keysFirst": (state,{payload})=>{
-    state.keys.first=limit(12,70)(parseInt(payload))
-  },
-  "keysWidth": (state,{payload})=>{state.keys.width=payload},
-  "memeSrc": (state,{payload})=>{
-    state.memes[payload.meme].src=payload.melody
-    state.memes[payload.meme].transpose=payload.transpose
-    state.memes[payload.meme].variationCount+=1
-  },
-  "recording": (state,{payload}) => {
-    state.memes.recording.src=removeNonJson(payload)
+const slice = createSlice({
+  name: 'main',
+  initialState,
+  reducers: {
+    "tempo": (state,{payload})=>{state.tempo=payload},
+    "volume": (state,{payload})=>{state.localMidiInst.volume=limit(0,1)(roundToDPs(2)(payload))},
+    "localInstOn": (state,{payload})=>{state.localMidiInst.on=(!!payload)},
+    "midiOutput": (state,{payload})=>{state.midiOutput=payload},
+    "keysFirst": (state,{payload})=>{
+      state.keys.first=limit(12,70)(parseInt(payload))
+    },
+    "keysWidth": (state,{payload})=>{state.keys.width=payload},
+    "memeSrc": (state,{payload})=>{
+      state.memes[payload.meme].src=payload.melody
+      state.memes[payload.meme].transpose=payload.transpose
+      state.memes[payload.meme].variationCount+=1
+    },
+    "recording": (state,{payload}) => {
+      state.memes.recording.src=removeNonJson(payload)
+    }
   }
-}
+})
+
+//export const { todoAdded, todoToggled, todosLoading } = todosSlice.actions
+export const {actions,reducer} = slice
+export default slice.reducer

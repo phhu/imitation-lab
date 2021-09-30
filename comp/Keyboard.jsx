@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import {useDispatch, useSelector, useStore} from 'react-redux'
-import {change} from '../reduxStore'
+import {actions} from '../reduxStore'
 
 import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano'
 import 'react-piano/dist/styles.css'
@@ -55,7 +55,7 @@ function Keyboard(props) {
         //console.log("changed value",value,parseInt(value)>40,parseInt(value))
         const x = parseInt(value)
         //if (x>40){
-          dispatch(change.keysFirst(x))
+          dispatch(actions.keysFirst(x))
           const note = makeNote(parseInt(x))
           midiPlayer.playNoteDown(note)
           setTimeout(()=>midiPlayer.playNoteUp(note) ,100 )
