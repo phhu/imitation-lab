@@ -21,13 +21,13 @@ export default function LocalMidiInst(props){
   const volume = useSelector(s=>s.localMidiInst.volume ?? 0.5)
   const isOn = useSelector(s=>s.localMidiInst.on ?? true)
   useEffect(()=>{
-    WebMidi.enable(function (err) {
-      if (err) console.error("WebMidi error",err)
-      //window.WebMidi = WebMidi
-      //console.log("inputs",WebMidi.inputs)
-      //console.log("outputs",WebMidi.outputs)
-      const midiThruIn = WebMidi.inputs[0]
-      //const midiThruOut = WebMidi.outputs[0]
+    // WebMidi.enable(function (err) {
+    //   if (err) console.error("WebMidi error",err)
+    //   //window.WebMidi = WebMidi
+    //   //console.log("inputs",WebMidi.inputs)
+    //   //console.log("outputs",WebMidi.outputs)
+    //   const midiThruIn = WebMidi.inputs[0]
+    //   //const midiThruOut = WebMidi.outputs[0]
 
       midiThruIn.addListener("noteon","all",(e)=>{
         //console.log("*localMidiInst note on",e)
@@ -64,7 +64,7 @@ export default function LocalMidiInst(props){
           midiNoteOff(e.note.number)
         }
       })
-    })
+    //})
   })
   return <div>
     LOCALMIDIINST | 

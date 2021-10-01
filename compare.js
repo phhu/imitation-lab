@@ -2,6 +2,7 @@ import {actions} from './reduxStore'
 import {mapValues} from 'lodash'
 
 const sequencesMatch = (baseSeq,compSeq) => { 
+  if (baseSeq === null || compSeq ===null){return false;}
   if (baseSeq.notes.length !== compSeq.notes.length){return false;}
   
   for (let i=0 ; i<baseSeq.notes.length; i++){

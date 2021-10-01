@@ -28,8 +28,8 @@ export const initialState = {
   src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small',
   // src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2',
   keys: {
-    first: 47,
-    count: 37,
+    first: 43,
+    count: 38,
     width: 900,
   },
   memes: { 

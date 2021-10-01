@@ -13,7 +13,7 @@ const fp = require('lodash/fp')
 const recorder = new core.Recorder()
 recorder.setTempo(120)
 recorder.enablePlayClick(true)
-
+window.recorder = recorder
 //should really wait for this
 Promise.all([
   recorder.initialize()
@@ -51,10 +51,10 @@ export default function Recorder(props) {
   }
   
   const tidyAndSetRec = fp.pipe(
-    rec => trim(rec,
+    rec => (rec===null ? rec :trim(rec,
       rec.notes[0] && rec.notes[0].startTime,    //startTime
       rec.notes[0] && rec.notes[rec.notes.length-1].endTime,   //endTime
-    ),
+    )),
     //rec => (console.log("rec PreQuant",rec),rec),
     //rec => quantizeNoteSequence(rec, 8),    // stepsPerBeat
     //rec => ({...rec,tempos:[{qpm: 120, time: 0}]}),
