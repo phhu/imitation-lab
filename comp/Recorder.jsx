@@ -3,10 +3,9 @@ import {useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from '../reduxStore'
 import {forceQuantized,removeNonJson} from '../utilsMelody'
 import {matchRecording} from '../compare'
-
+import Checkbox from './Checkbox'
 
 import Score from './Score'
-const {BLANK} = require('../melodies')
 const {trim, quantizeNoteSequence} = core.sequences
 const fp = require('lodash/fp')
 
@@ -20,20 +19,22 @@ Promise.all([
 ])
 
 export default function Recorder(props) {
-  // let [recording, setRecording] = useState(BLANK)
-  let [isRecording, setIsRecording] = useState(false)
-  let [noteBeenPlayed, setNoteBeenPlayed] = useState(0)
+  //let [isRecording, setIsRecording] = useState(false)
+  //let [noteBeenPlayed, setNoteBeenPlayed] = useState(0)
   // useClick should be in global state...
-  const recording = useSelector(s=>s?.memes?.recording?.src)
+  const {
+    isRecording, 
+    useClick,
+    noteJustPlayed,
+  } = useSelector(s=>s.recorder)
   const store = useStore()
-
   const dispatch = useDispatch()
-  //console.log("recording",BLANK)
+
   recorder.callbackObject = {
     noteOn: function(a,b,c){
-      //console.log("rec note on");
-      setNoteBeenPlayed(1)
-      setTimeout(()=>setNoteBeenPlayed(0),100)
+      dispatch(actions.noteJustPlayed(true))
+      //setNoteBeenPlayed(1)
+      setTimeout(()=>dispatch(actions.noteJustPlayed(false)),100)  //setNoteBeenPlayed(0)
     },
     //run:function(a,b,c){console.log("rec note run",tidyAndSetRec(a))},
   }
@@ -41,13 +42,11 @@ export default function Recorder(props) {
     //console.log("Record: start")
     //recorder.callbackObject = null
 
-    recorder.enablePlayClick(
-      document.getElementById("useClick").checked
-    )
+    recorder.enablePlayClick(useClick)
     recorder.setTempo(store.getState().tempo)
     recorder.start()
     //console.log("recording start")
-    setIsRecording(true)
+    dispatch(actions.isRecording(true))
   }
   
   const tidyAndSetRec = fp.pipe(
@@ -66,7 +65,7 @@ export default function Recorder(props) {
 
   const stop = ()=>{
     //console.log("Record: stop")
-    setIsRecording(false)
+    dispatch(actions.isRecording(false))
     tidyAndSetRec(recorder.stop()) 
   }
 
@@ -76,15 +75,19 @@ export default function Recorder(props) {
       "padding":"5px",
       "backgroundColor": "#eee",
     }}>
-      RECORDER
-      <br />
+      RECORDER &nbsp;&nbsp;
       <button id="rec" ref={props.btnRecord} onClick={record} style={{
         backgroundColor: isRecording ? "red" : "inherit"
       }}>REC</button>
       <button id="stop"  ref={props.btnStop}  onClick={stop}>Stop</button>
-      <input type="checkbox" id="useClick"></input>
-      <label htmlFor="useClick">Use click</label>
-      &nbsp;| <span>{noteBeenPlayed}</span>
+      <Checkbox 
+        checked={useClick} 
+        label="Use click"
+        onChange={e=>dispatch(actions.useClick(e.target.checked))}
+      />    
+      {/* <input type="checkbox" id="useClick"></input>
+      <label htmlFor="useClick">Use click</label> */}
+      &nbsp; <span>{noteJustPlayed?'♪':''}</span>
       <Score 
         scoreid="Rec" 
         meme="recording" 

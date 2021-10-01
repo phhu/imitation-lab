@@ -18,7 +18,7 @@ import WebMidi, { InputEventNoteon, InputEventNoteoff } from "webmidi";
 //window.core = core
 
 //window.localMidiInst = require('./comp/LocalMidiInst')
-window.melodies = require('./melodies').melodies
+window.melodies = require('./melodies').melodies   // n
 
 window.player = new core.Player()
 window.midiPlayer = new core.MIDIPlayer()
@@ -26,9 +26,10 @@ window.midiPlayer = new core.MIDIPlayer()
 window.model = new music_vae.MusicVAE(initialState.src);
 window.WebMidi = WebMidi
 
+// set up globals before launching app
 Promise.all([
   midiPlayer.requestMIDIAccess(),
-  window.model.initialize(),
+  window.model.initialize(),   // magenta model
   new Promise((resolve,reject) => {
     WebMidi.enable(function (err) {
       if (err) {
@@ -45,7 +46,7 @@ Promise.all([
   //window.midiThruOut = WebMidi.outputs[0]
 
   ReactDOM.render(
-    <Provider store={store}>
+    <Provider store={store}>     
       <App />
     </Provider>, 
     document.getElementById('root')

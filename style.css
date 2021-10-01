@@ -1,1 +1,7 @@
 p {font-family:"Times new roman"}
+
+.box{
+  margin: 10px; 
+  padding: 5px;
+  background-color: #eee;
+}

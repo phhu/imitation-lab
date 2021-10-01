@@ -4,18 +4,26 @@ import {useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from '../reduxStore'
 import ValueInput from './ValueInput'
 import Checkbox from './Checkbox'   // http://react.tips/checkboxes-in-react-16/
-const {cancelNote} = require('../utils')
+//const {cancelNote} = require('../utils')
 var webaudiofont = require('webaudiofont');
 
 const tone = _tone_0000_JCLive_sf2_file;
 const AudioContextFunc = window.AudioContext || window.webkitAudioContext;
 const audioContext = new AudioContextFunc();
-const wafPlayer = new WebAudioFontPlayer();
+const wafPlayer = new WebAudioFontPlayer(); //see https://github.com/surikov/webaudiofont/wiki
 wafPlayer.loader.decodeAfterLoading(audioContext, '_tone_0000_JCLive_sf2_file');
+
+const cancelNote = pitch=>(note,i,arr)=>{
+  if(note.pitch === pitch){
+    note.envelope.cancel();
+    arr.splice(i, 1);
+  }
+}
 
 export default function LocalMidiInst(props){
 
   const midiNotes = []
+
   const store = useStore()
   const dispatch = useDispatch()
   const volume = useSelector(s=>s.localMidiInst.volume ?? 0.5)
@@ -28,7 +36,7 @@ export default function LocalMidiInst(props){
     //   //console.log("outputs",WebMidi.outputs)
     //   const midiThruIn = WebMidi.inputs[0]
     //   //const midiThruOut = WebMidi.outputs[0]
-
+      
       midiThruIn.addListener("noteon","all",(e)=>{
         //console.log("*localMidiInst note on",e)
         /*  see https://github.com/surikov/webaudiofont
@@ -65,9 +73,9 @@ export default function LocalMidiInst(props){
         }
       })
     //})
-  })
-  return <div>
-    LOCALMIDIINST | 
+  },[])
+  return <div className="box">
+    INTERNAL INSTRUMENT | 
     <ValueInput 
       title="Volume" 
       value={volume} 

@@ -20,9 +20,16 @@ import {interpolateMelodies} from './interpolate'
 export const initialState = { 
   midiOutput: 0,
   tempo: 120,
+  player: {
+    playClick: false
+  },
   localMidiInst: {
     volume: 0.5,
     on: true,
+  },
+  recorder: {
+    isRecording: false,
+    useClick: false,
   },
   bars: 2,
   src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small',
@@ -39,8 +46,8 @@ export const initialState = {
       variationCount: 0,
     },
     initial: {
-      src: cloneDeep(melodies.TWINKLE_TWINKLE_2),
-      transpose: -12,
+      src: cloneDeep(melodies.TWINKLE_TWINKLE_2T),
+      transpose: 0,
       variationCount: 0,
     },
     recording: {
@@ -49,6 +56,10 @@ export const initialState = {
       variationCount: 0,
     },
   },
+  melodies: cloneDeep(melodies),
+  interpolations: [],
+  history: [],
+
 }
 
 const limit = (min, max) => x => Math.min(Math.max(min,x),max)
@@ -57,6 +68,10 @@ const slice = createSlice({
   initialState,
   reducers: {
     "tempo": (state,{payload})=>{state.tempo=payload},
+    "isRecording": (state,{payload})=>{state.recorder.isRecording=!!payload},
+    "useClick": (state,{payload})=>{state.recorder.useClick=!!payload},
+    "playClick": (state,{payload})=>{state.player.playClick=!!payload},
+    "noteJustPlayed": (state,{payload})=>{state.recorder.noteJustPlayed=!!payload},
     "volume": (state,{payload})=>{state.localMidiInst.volume=limit(0,1)(roundToDPs(2)(payload))},
     "localInstOn": (state,{payload})=>{state.localMidiInst.on=(!!payload)},
     "midiOutput": (state,{payload})=>{state.midiOutput=payload},
@@ -68,7 +83,9 @@ const slice = createSlice({
       const m = state.memes[payload.meme]
       m.src=payload.melody
       m.transpose=payload.transpose
-      m.variationCount+=1
+      m.variationCount=
+        (payload.resetVarationCount?0:m.variationCount) +
+        (payload.incVariationCount?1:0)
       m.matchesRecording=null  //null=unknown
     },  
     "recording": (state,{payload}) => {

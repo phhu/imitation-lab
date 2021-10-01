@@ -1,6 +1,6 @@
 import { createAsyncThunk} from '@reduxjs/toolkit'
 import {removeNonJson, forceQuantized} from './utilsMelody'
-import {melodies} from './melodies'
+//import {melodies} from './melodies'
 // https://magenta.github.io/magenta-js/music/classes/_music_vae_model_.musicvae.html#interpolate
   /* interpolate(
       inputSequences: INoteSequence[], 
@@ -27,16 +27,6 @@ export const interpolateMelodies = createAsyncThunk(
       .map(m=>m.src)
       .map(forceQuantized({stepsPerQuarter}))
       .map(removeNonJson)
-    // const inputSequences = [melodies.LIBERTANGO,melodies.TWINKLE_TWINKLE]
-    // const inputSequences = [melodies.LIBERTANGO,melodies.TWINKLE_TWINKLE]
-    // const inputSequences = [melodies.LIBERTANGO_2,melodies.TWINKLE_TWINKLE_2]
-    // const inputSequences = [
-    //   //melodies.MELODY1,
-    //   //melodies.MELODY3,
-    //   melodies.LIBERTANGO_2,
-    //   melodies.TWINKLE_TWINKLE_2,
-    // ]
-    // const inputSequences = [melodies.MELODY3,melodies.MELODY1]
     console.log("inputSequences",inputSequences)
     const newMelodies = await model.interpolate(
       inputSequences,

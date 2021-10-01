@@ -7,23 +7,25 @@ import Score from './comp/Score'
 //import ScoreAsync from './comp/ScoreAsync'
 import Recorder from './comp/Recorder'
 import Selector from './comp/Selector'
+import Checkbox from './comp/Checkbox'
 import ValueInput from './comp/ValueInput'
 import LocalMidiInst from './comp/LocalMidiInst'
 
 import {Provider, useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from './reduxStore'
 import {makeNote} from './utilsMelody'
-const melody = require('./melodies')
 
 function App() {
   const store=useStore()
   const tempo = useSelector(s=>s.tempo)
   const midiOutput = useSelector(s=>s.midiOutput)
+  const {playClick} = useSelector(s=>s.player)
   const dispatch = useDispatch()
   console.log("rendering app")
   const btnRecord = useRef()
   const btnStop = useRef()
-
+  
+  midiPlayer.playClick = playClick
   const playRec = (e) =>{
     const state= store.getState()
     midiPlayer.isPlaying() && midiPlayer.stop()
@@ -43,91 +45,98 @@ function App() {
       //},0)
     })
   }
-
+  const addPedalListener = (inputs) => {
+    inputs.forEach(input => {
+      input.addListener("controlchange","all",(e)=>{
+        if (e.controller.name==="sustenutopedal" && e.value===127){
+          playRec()
+        }
+      })
+      input.addListener("noteon","all",(e)=>{
+        
+      })
+    })
+  }
+  addPedalListener(WebMidi.inputs)
   // https://stackoverflow.com/questions/43503964/onkeydown-event-not-working-on-divs-in-react
   return <div id="app" tabIndex={-1} onKeyUp={(e) => {
-    //console.log("key",e)
-    if (e.key===" "){playRec()}
-  }}>
-    <Score scoreid="1" meme="goal" />
-    <Score scoreid="2" meme="initial" interpolationTarget="goal" />
+      //console.log("key",e)
+      if (e.key===" "){playRec()}
+    }}>
+    <Score scoreid="1" meme="goal" title="GOAL" />
+    <Score scoreid="2" meme="initial" title="WORKING" />
     <Recorder {...{btnRecord,btnStop}} />
     <Keyboard />
-    <Selector 
-      options={midiPlayer.availableOutputs}
-      value={midiOutput}
-      change={(value)=>{
-        midiPlayer.outputs = [midiPlayer.availableOutputs[value]]
-        dispatch(actions.midiOutput(value))
-        console.log("output changed to",value)
-        const input = WebMidi.inputs[value]
-        // input && input.addListener("noteon","all",(e)=>{
-        //   const key = e.note.number
-        //   console.log("key",key)
-        // })
-        input && input.addListener("controlchange","all",(e)=>{
-          console.log("control",e)
-          if (e.controller.name==="sustenutopedal" && e.value===127){
-            console.log("playrec")
-            playRec()
-          }
-        })
-      }}
-    />
-    <ValueInput 
-      title="Tempo" 
-      value={tempo} 
-      change={ x=>dispatch(actions.tempo(x)) } 
-    />
+   
     <LocalMidiInst />
     {/* <button onClick={()=>Tone.start()}>Start</button> */}
 
-    <button onClick={()=>{
-      console.log("playing seq")
-      const state= store.getState()
-      midiPlayer.stop()
-      midiPlayer.setTempo(state.tempo)
-      midiPlayer.start(state.memes.initial.src)
-        // .then(()=>{
-        //   console.log("playing 2")
-        //   return midiPlayer.start(state.memes.initial.src)
-        // })
-        .then(()=>{
-          console.log("playing 3")
-          midiPlayer.start(state.memes.recording.src)
+    <div className="box">
+      CONTROLS &nbsp;&nbsp;
+      Midi out <Selector 
+        options={midiPlayer.availableOutputs}
+        value={midiOutput}
+        change={(value)=>{
+          midiPlayer.outputs = [midiPlayer.availableOutputs[value]]
+          dispatch(actions.midiOutput(value))
+          console.log("output changed to",value)
+        }}
+      /> &nbsp;&nbsp;
+      <ValueInput 
+        title="Tempo" 
+        value={tempo} 
+        change={ x=>dispatch(actions.tempo(x)) } 
+      />
+      <Checkbox 
+        checked={playClick} 
+        label="Click on play"
+        onChange={e=>dispatch(actions.playClick(e.target.checked))}
+      /> 
+      <br />
+      <button onClick={()=>{
+        console.log("playing seq")
+        const state= store.getState()
+        midiPlayer.stop()
+        midiPlayer.setTempo(state.tempo)
+        midiPlayer.start(state.memes.initial.src)
+          .then(()=>{
+            console.log("playing 3")
+            midiPlayer.start(state.memes.recording.src)
+          })
+
+      }}>Play Review</button>
+
+      <button onClick={playRec}>Play Rec Review</button>
+
+      <button onClick={()=>{
+        //window.btnRecord = btnRecord.current
+        btnRecord.current.click()
+        setTimeout(()=>btnStop.current.click(),4000)
+      }}>Timed Rec</button>
+    </div>
+
+    <div className="box">
+      DEBUG &nbsp;&nbsp;
+      {/* <button onClick={()=>{
+        //console.log("playing note")
+        const note = makeNote(51)    // {pitch:50,velocity:50}  
+        midiPlayer.playNoteDown(note)
+        setTimeout(()=>midiPlayer.playNoteUp(note) ,500)
+      }}>play note</button> */}
+      <button onClick={
+        ()=>console.log(store.getState())
+      }>State</button>
+      <button onClick={()=>{
+        console.log("resetting, including midi reset")
+        localStorage.removeItem("state")
+        window.location.reload(false)
+
+        WebMidi.outputs.forEach(o=>{
+          o.stopNote("all")
+          o.sendReset()
         })
-
-    }}>play seq</button>
-
-    <button onClick={playRec}>PlayRec</button>
-
-    <button onClick={()=>{
-      //window.btnRecord = btnRecord.current
-      btnRecord.current.click()
-      setTimeout(()=>btnStop.current.click(),4000)
-    }}>doRec</button>
-
-    <hr />
-
-    <button onClick={()=>{
-      //console.log("playing note")
-      const note = makeNote(51)    // {pitch:50,velocity:50}  
-      midiPlayer.playNoteDown(note)
-      setTimeout(()=>midiPlayer.playNoteUp(note) ,500)
-    }}>play note</button>
-    <button onClick={
-      ()=>console.log(store.getState())
-    }>State</button>
-    <button onClick={()=>{
-      console.log("resetting, including midi reset")
-      localStorage.removeItem("state")
-      window.location.reload(false)
-
-      WebMidi.outputs.forEach(o=>{
-        o.stopNote("all")
-        o.sendReset()
-      })
-    }}>Reset</button>
+      }}>Reset</button>
+    </div>
   
   </div>
 }

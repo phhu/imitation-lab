@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import {useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from '../reduxStore'
 import {removeNonJson, forceQuantized} from '../utilsMelody'
-import {melodies} from '../melodies'
+//import {melodies} from '../melodies'
 import Selector from './Selector'
 
 const {transposeMelody} = require('../utilsMelody')
@@ -14,7 +14,7 @@ import {interpolateMelodies} from '../interpolate'
 export default ({
   meme,scoreid,title,
   hasSelect=true, margin="10px", padding="5px",
-  interpolationTarget
+  interpolationTarget, 
 }) => {
   const {
     transpose=0,
@@ -67,40 +67,41 @@ export default ({
       padding,
       "backgroundColor": matchesRecording ? "#afa" : "#eee",
     }}>
-      {/* <div>{melody.title} </div> */}
+      {title && (<span>{title} </span>)}
       {hasSelect && (
       <Selector
         value={melody.key}
-        options={Object.values(melodies)}
+        options={Object.values(store.getState().melodies)}
         values={(o,i)=>o.key}
         displayValues={(o,i)=>o.title}
         change={(value)=>{
-          if (interpolationTarget){
-            console.log("interpolating",interpolationTarget)
-            dispatch(interpolateMelodies({
-              // sourceMelody,
-              // goalMelody,
-              melody: melodies[value],
-              meme,
-              interpolationTarget,              
-            }))
-          } else {
-            console.log("not interpolating",interpolationTarget)
+          // if (interpolationTarget){
+          //   console.log("interpolating",interpolationTarget)
+          //   dispatch(interpolateMelodies({
+          //     // sourceMelody,
+          //     // goalMelody,
+          //     melody: store.getState().melodies[value],
+          //     meme,
+          //     interpolationTarget,              
+          //   }))
+          // } else {
+           // console.log("not interpolating",interpolationTarget)
             dispatch(actions.memeSrc({
               meme,
-              melody: melodies[value],
-              transpose: 0
+              melody: store.getState().melodies[value],
+              transpose: 0, 
+              resetVarationCount: true,
             }))
-          }
+          //}
         }}
       />
-      )} {variationCount || ''}
+      )} 
       <div id={scoreDivId}></div>
       <button onClick={play}>Play</button>
       <button onClick={stop}>Stop</button>
       <button onClick={vary} id={varyButtonId} style={{
         backgroundColor: isVarying ? "green": "inherit"
-      }}>Vary</button>
+      }}>Vary{variationCount?` (${variationCount})`:''}</button>
     </div>
   )
 }
