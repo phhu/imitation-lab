@@ -82,4 +82,8 @@ for octave shift
         _this.onStopNoteInput(midiNumber);
       }
     });
-    ```
+```
+
+# Magenta reference
+
+See https://hello-magenta.glitch.me/

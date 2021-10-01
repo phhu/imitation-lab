@@ -16,6 +16,7 @@ import {Provider, useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from './reduxStore'
 import {makeNote} from './utilsMelody'
 import {interpolateMelodies} from './interpolate'
+import {nextMelody} from './next'
 
 function App() {
   const store=useStore()
@@ -66,9 +67,11 @@ function App() {
       //console.log("key",e)
       if (e.key===" "){playRec()}
     }}>
-    <Score scoreid="1" meme="goal" title="GOAL" />
+    <Score scoreid="1" meme="goal" title="A" />
     {/* <Score scoreid="2" meme="initial" title="INITIAL" /> */}
-    <Score scoreid="3" meme="working" title="WORKING" />
+    <Score scoreid="2" meme="b" title="B" />
+    <Score scoreid="3" meme="c" title="C" />
+    <Score scoreid="99" meme="working" title="WORKING" />
     <Recorder {...{btnRecord,btnStop}} />
     <Keyboard />
    
@@ -96,7 +99,9 @@ function App() {
         label="Click on play"
         onChange={e=>dispatch(actions.playClick(e.target.checked))}
       /> 
+
       <br />
+      
       <button onClick={()=>{
         console.log("playing seq")
         const state= store.getState()
@@ -117,6 +122,13 @@ function App() {
         btnRecord.current.click()
         setTimeout(()=>btnStop.current.click(),4000)
       }}>Timed Rec</button>
+
+      <button onClick={()=>{
+        dispatch(nextMelody())
+      }}>Next</button>
+
+
+
     </div>
 
     <div className="box">
@@ -127,15 +139,20 @@ function App() {
         midiPlayer.playNoteDown(note)
         setTimeout(()=>midiPlayer.playNoteUp(note) ,500)
       }}>play note</button> */}
+
       <button 
         onClick={()=>{
-          dispatch(interpolateMelodies({source: "working", target:"goal"}))
+          dispatch(interpolateMelodies({
+            sources: ["working","goal","b","c"]
+          }))
         }}
         className = {isInterpolating ? "interpolating": ""}
       >Interpolate</button>
+      
       <button onClick={
         ()=>console.log(store.getState())
       }>State</button>
+      
       <button onClick={()=>{
         console.log("resetting, including midi reset")
         localStorage.removeItem("state")
@@ -146,6 +163,7 @@ function App() {
           o.sendReset()
         })
       }}>Reset</button>
+    
     </div>
     <InterpolationViewer />
   

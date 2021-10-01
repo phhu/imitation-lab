@@ -26,6 +26,15 @@ window.midiPlayer = new core.MIDIPlayer()
 window.model = new music_vae.MusicVAE(initialState.src);
 window.WebMidi = WebMidi
 
+ReactDOM.render(
+  <div className="box">
+    <div>Loading... Please be patient... 
+  (Initializing Google Magenta can take a while)</div>
+    <div>Please use Chrome Browser.</div>
+    <div>Magenta src: {initialState.src}</div>
+  </div>, 
+  document.getElementById('root')
+)
 // set up globals before launching app
 Promise.all([
   midiPlayer.requestMIDIAccess(),

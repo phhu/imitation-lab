@@ -1,5 +1,6 @@
 import { createAsyncThunk} from '@reduxjs/toolkit'
 import {removeNonJson, forceQuantized} from './utilsMelody'
+const {trim} = core.sequences
 //import {melodies} from './melodies'
 // https://magenta.github.io/magenta-js/music/classes/_music_vae_model_.musicvae.html#interpolate
   /* interpolate(
@@ -14,14 +15,13 @@ import {removeNonJson, forceQuantized} from './utilsMelody'
 export const interpolateMelodies = createAsyncThunk(
   'meme/interpolate',
   async ({
-    source,
-    target,
+    sources,
     stepsPerQuarter=8,
-    count = 10,
-    temperature = 0.5,
+    count = 8,
+    temperature = 1,
   }, {dispatch,getState}) => {
-    const {memes} = getState()
-    const inputSequences = [memes[source],memes[target]]
+    const {memes, interpolate} = getState()
+    const inputSequences = sources.map(s=>memes[s])
       .map(m=>m.src)
       .map(forceQuantized({stepsPerQuarter}))
       .map(removeNonJson)
@@ -32,7 +32,9 @@ export const interpolateMelodies = createAsyncThunk(
       temperature
     )
     //console.log("new melodies",newMelodies)
-    return newMelodies.map(removeNonJson)
+    return newMelodies
+      .map(x=>trim(x,0,4*4*2))    // 4 beats, two bars - remove dangling beats
+      .map(removeNonJson)
   },{}
 )
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {useAsyncHook} from  './hooks'
+import {useAsyncHook} from  '../comp/hooks'
 import {useDispatch, useSelector, useStore} from 'react-redux'
 
 export default (props) => {

@@ -10,11 +10,16 @@ const everyNote = 'C,C#,D,D#,E,F,F#,G,G#,A,A#,B,'.repeat(20).split(',').map( fun
 const toMidi = (note) => everyNote.indexOf(note);
 const s = 16
 
-const nd = spec => ({...spec,
-  quantizedEndStep:spec.start+spec.dur,
-  quantizedStartStep:spec.start,
-  pitch: spec.pitch || toMidi(spec.note)
-})
+let lastStart = 0
+const nd = spec => {
+  spec.start ??= lastStart + spec.dur
+  lastStart = spec.start
+  return ({...spec,
+    quantizedEndStep:spec.start+spec.dur,
+    quantizedStartStep:spec.start,
+    pitch: spec.pitch || toMidi(spec.note)
+  })
+}
 
 const melodiesInt = {
   NONE: { 
@@ -43,8 +48,33 @@ const melodiesInt = {
       nd({pitch: 60, start: 48, dur: 16}),
     ]
   },
+  BASIC_2: { 
+    title: "Basic_2",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({pitch: 60, start: 0, dur: 8}),
+      nd({pitch: 60, start: 8, dur: 8}),
+      nd({pitch: 60, start: 16, dur:8}),
+      nd({pitch: 60, start: 24, dur:8}),
+    ]
+  },
+  FRERE_2: { 
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({pitch: 48, start: 0, dur: 4}),
+      nd({pitch: 50, dur: 4}),
+      nd({pitch: 52, dur:4}),
+      nd({pitch: 48,  dur:4}),
+      nd({pitch: 48, dur: 4}),
+      nd({pitch: 50, dur: 4}),
+      nd({pitch: 52, dur:4}),
+      nd({pitch: 48,  dur:4}),
+    ]
+  },
   MELODY1: { 
-    title:"Melody 1",
+    title:"Lick",
     totalQuantizedSteps: 32,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
@@ -220,27 +250,30 @@ const melodiesInt = {
       {pitch: 55, quantizedStartStep: 3*s+10, quantizedEndStep: 3*s+12},
     ]
   },
-  MELODY3: {
-    title: "Melody 3",
-    totalQuantizedSteps: 32,
-    quantizationInfo:{stepsPerQuarter: 4},
+  DRUMS:{
     notes: [
-      {pitch: 60, quantizedStartStep: 0, quantizedEndStep: 2},
-      {pitch: 60, quantizedStartStep: 2, quantizedEndStep: 4},
-      {pitch: 67, quantizedStartStep: 4, quantizedEndStep: 6},
-      {pitch: 67, quantizedStartStep: 6, quantizedEndStep: 8},
-      {pitch: 69, quantizedStartStep: 8, quantizedEndStep: 10},
-      {pitch: 69, quantizedStartStep: 10, quantizedEndStep: 12},
-      {pitch: 67, quantizedStartStep: 12, quantizedEndStep: 16},
-
-      {pitch: 65, quantizedStartStep: 16, quantizedEndStep: 18},
-      {pitch: 65, quantizedStartStep: 18, quantizedEndStep: 20},
-      {pitch: 64, quantizedStartStep: 20, quantizedEndStep: 22},
-      {pitch: 64, quantizedStartStep: 22, quantizedEndStep: 24},
-      {pitch: 62, quantizedStartStep: 24, quantizedEndStep: 26},
-      {pitch: 62, quantizedStartStep: 26, quantizedEndStep: 28},
-      {pitch: 60, quantizedStartStep: 28, quantizedEndStep: 32},  
+      { pitch: 36, quantizedStartStep: 0, quantizedEndStep: 1, isDrum: true },
+      { pitch: 38, quantizedStartStep: 0, quantizedEndStep: 1, isDrum: true },
+      { pitch: 42, quantizedStartStep: 0, quantizedEndStep: 1, isDrum: true },
+      { pitch: 46, quantizedStartStep: 0, quantizedEndStep: 1, isDrum: true },
+      { pitch: 42, quantizedStartStep: 2, quantizedEndStep: 3, isDrum: true },
+      { pitch: 42, quantizedStartStep: 3, quantizedEndStep: 4, isDrum: true },
+      { pitch: 42, quantizedStartStep: 4, quantizedEndStep: 5, isDrum: true },
+      { pitch: 50, quantizedStartStep: 4, quantizedEndStep: 5, isDrum: true },
+      { pitch: 36, quantizedStartStep: 6, quantizedEndStep: 7, isDrum: true },
+      { pitch: 38, quantizedStartStep: 6, quantizedEndStep: 7, isDrum: true },
+      { pitch: 42, quantizedStartStep: 6, quantizedEndStep: 7, isDrum: true },
+      { pitch: 45, quantizedStartStep: 6, quantizedEndStep: 7, isDrum: true },
+      { pitch: 36, quantizedStartStep: 8, quantizedEndStep: 9, isDrum: true },
+      { pitch: 42, quantizedStartStep: 8, quantizedEndStep: 9, isDrum: true },
+      { pitch: 46, quantizedStartStep: 8, quantizedEndStep: 9, isDrum: true },
+      { pitch: 42, quantizedStartStep: 10, quantizedEndStep: 11, isDrum: true },
+      { pitch: 48, quantizedStartStep: 10, quantizedEndStep: 11, isDrum: true },
+      { pitch: 50, quantizedStartStep: 10, quantizedEndStep: 11, isDrum: true },
     ],
+    quantizationInfo: {stepsPerQuarter: 4},
+    tempos: [{time: 0, qpm: 120}],
+    totalQuantizedSteps: 11
   }
 }
 melodiesInt.TWINKLE_TWINKLE_2T = transposeMelody(-12)(melodiesInt.TWINKLE_TWINKLE_2)

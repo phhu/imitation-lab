@@ -14,7 +14,8 @@ export default ({
   meme,
   scoreid,
   title,
-  hasSelect=true, 
+  hasSelect=true,
+  hasCollapse = true,
   margin="10px", 
   padding="5px",
 }) => {
@@ -75,7 +76,7 @@ export default ({
         value={melody.key}
         options={Object.values(store.getState().melodies)}
         values={(o,i)=>o.key}
-        displayValues={(o,i)=>o.title}
+        displayValues={(o,i)=>o.title || o.key}
         change={(value)=>{
           // if (interpolationTarget){
           //   console.log("interpolating",interpolationTarget)

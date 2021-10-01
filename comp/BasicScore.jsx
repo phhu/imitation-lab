@@ -7,6 +7,7 @@ export default ({
   melody,
   title,
   scoreid,
+  highlight = false,
   margin="10px", 
   padding="5px",
 }) => {
@@ -36,11 +37,11 @@ export default ({
   const stop = () => {
     midiPlayer.stop()
   }
-
   return (
     <div style={{
       margin,
       padding,
+      backgroundColor: (highlight ? "#88f":"inherit")
     }}>
       {title && (<span>{title} </span>)}
       <button onClick={play}>Play</button>

@@ -13,9 +13,10 @@ import { createSlice } from '@reduxjs/toolkit'
 const fp = require('lodash/fp')
 import {cloneDeep} from 'lodash'
 import {melodies} from './melodies'
-import {removeNonJson,roundToDPs} from './utilsMelody'
+import {removeNonJson,roundToDPs,transposeMelody} from './utilsMelody'
 import {varyMelody} from './vary'
 import {interpolateMelodies} from './interpolate'
+import {nextMelody} from './next'
 
 export const initialState = { 
   midiOutput: 0,
@@ -32,8 +33,8 @@ export const initialState = {
     useClick: false,
   },
   bars: 2,
-  src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small',
-  // src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2',
+  //src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small',
+  src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2',
   keys: {
     first: 43,
     count: 38,
@@ -44,21 +45,36 @@ export const initialState = {
       src: cloneDeep(melodies.LIBERTANGO_2),
       transpose: 0,
       variationCount: 0,
+      isCollapsed: false,
     },
     // initial: {
     //   src: cloneDeep(melodies.TWINKLE_TWINKLE_2T),
     //   transpose: 0,
     //   variationCount: 0,
     // },
-    working: {
-      src: cloneDeep(melodies.TWINKLE_TWINKLE_2T),
+    b: {
+      src: cloneDeep(melodies.MELODY1),
       transpose: 0,
       variationCount: 0,
+      isCollapsed: false,
+    },
+    c: {
+      src: cloneDeep(melodies.LIBERTANGO_2),
+      transpose: 0,
+      variationCount: 0,
+      isCollapsed: false,
+    },
+    working: {
+      src: cloneDeep(transposeMelody(-12)(melodies.BASIC_2)),
+      transpose: 0,
+      variationCount: 0,
+      isCollapsed: false,
     },
     recording: {
       src: cloneDeep(melodies.BLANK),
       transpose: 0,
       variationCount: 0,
+      isCollapsed: false,
     },
   },
   melodies: cloneDeep(melodies),
@@ -137,6 +153,27 @@ const slice = createSlice({
     })
     .addCase(interpolateMelodies.rejected, (state, action) => {
       console.error("interpolateMelodies rejected",action)
+      state.interpolate.isInterpolating = false
+    })
+    .addCase(nextMelody.pending, (state, {meta,payload,type}) => {
+      console.log("got nextMelody.pending")
+    })
+    .addCase(nextMelody.fulfilled, (state, {meta,payload,type}) => {
+      console.log("got nextMelody.fulfilled")
+      const {nextMelody, newCurrent} = payload
+      const {key,title} = state.memes['working']
+      const m = state.memes['working']
+      m.src={title, key, ...nextMelody}
+      m.transpose=0
+      m.variationCount=0
+      m.matchesRecording=null  //null=unknown
+      m.isVarying = false
+      if (newCurrent || newCurrent==0){
+        state.interpolate.current = newCurrent
+      }
+    })
+    .addCase(nextMelody.rejected, (state, action) => {
+      console.error("nextMelody rejected",action)
     })
   },
 })
