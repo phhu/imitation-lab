@@ -10,11 +10,13 @@ const {isQuantizedSequence} = core.sequences
 import {varyMelody} from '../vary'
 import {interpolateMelodies} from '../interpolate'
 
-
 export default ({
-  meme,scoreid,title,
-  hasSelect=true, margin="10px", padding="5px",
-  interpolationTarget, 
+  meme,
+  scoreid,
+  title,
+  hasSelect=true, 
+  margin="10px", 
+  padding="5px",
 }) => {
   const {
     transpose=0,
@@ -96,12 +98,12 @@ export default ({
         }}
       />
       )} 
-      <div id={scoreDivId}></div>
       <button onClick={play}>Play</button>
       <button onClick={stop}>Stop</button>
       <button onClick={vary} id={varyButtonId} style={{
-        backgroundColor: isVarying ? "green": "inherit"
+        backgroundColor: isVarying ? "green": undefined
       }}>Vary{variationCount?` (${variationCount})`:''}</button>
+      <div id={scoreDivId}></div>
     </div>
   )
 }

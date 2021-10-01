@@ -45,7 +45,12 @@ export const initialState = {
       transpose: 0,
       variationCount: 0,
     },
-    initial: {
+    // initial: {
+    //   src: cloneDeep(melodies.TWINKLE_TWINKLE_2T),
+    //   transpose: 0,
+    //   variationCount: 0,
+    // },
+    working: {
       src: cloneDeep(melodies.TWINKLE_TWINKLE_2T),
       transpose: 0,
       variationCount: 0,
@@ -57,7 +62,11 @@ export const initialState = {
     },
   },
   melodies: cloneDeep(melodies),
-  interpolations: [],
+  interpolate: {
+    melodies: [],
+    isInterpolating: false,
+    current: 0,
+  },
   history: [],
 
 }
@@ -117,10 +126,14 @@ const slice = createSlice({
       console.error("varyMelody rejected",action)
     })
     .addCase(interpolateMelodies.pending, (state, {meta,payload,type}) => {
-      console.log("got interpolateMelodies.pending")
+      //console.log("got interpolateMelodies.pending")
+      state.interpolate.isInterpolating = true
     })
     .addCase(interpolateMelodies.fulfilled, (state, {meta,payload,type}) => {
-      console.log("got interpolateMelodies.fulfilled")
+      //console.log("got interpolateMelodies.fulfilled")
+      const i = state.interpolate
+      i.melodies = payload
+      i.isInterpolating = false
     })
     .addCase(interpolateMelodies.rejected, (state, action) => {
       console.error("interpolateMelodies rejected",action)

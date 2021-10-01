@@ -8,9 +8,7 @@ export default ({
   value=0,
 }={}) => {
 
-  //const [value, setValue] = useState(initial)
   const onChange = e => {
-    //setValue(e.target.value)
     change(e.target.value)
   }
 

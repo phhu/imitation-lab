@@ -8,7 +8,6 @@ export default function ValueInput({
   title = "",
   step = 1,
 }={}){
-  //const [value, setValue] = useState(initial)
   //const onChange = (value)=>{console.log("changed")}
   const onChange = e => {
     //console.log("changing")

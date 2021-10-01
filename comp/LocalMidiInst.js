@@ -7,11 +7,14 @@ import Checkbox from './Checkbox'   // http://react.tips/checkboxes-in-react-16/
 //const {cancelNote} = require('../utils')
 var webaudiofont = require('webaudiofont');
 
-const tone = _tone_0000_JCLive_sf2_file;
+const tone = _tone_0000_JCLive_sf2_file
+const closedHat = _drum_42_0_SBLive_sf2
+const pedalHat = _drum_44_0_SBLive_sf2
 const AudioContextFunc = window.AudioContext || window.webkitAudioContext;
 const audioContext = new AudioContextFunc();
 const wafPlayer = new WebAudioFontPlayer(); //see https://github.com/surikov/webaudiofont/wiki
 wafPlayer.loader.decodeAfterLoading(audioContext, '_tone_0000_JCLive_sf2_file');
+wafPlayer.loader.decodeAfterLoading(audioContext, '_drum_35_0_SBLive_sf2');
 
 const cancelNote = pitch=>(note,i,arr)=>{
   if(note.pitch === pitch){
@@ -54,7 +57,7 @@ export default function LocalMidiInst(props){
           var envelope = wafPlayer.queueWaveTable(
             audioContext, 
             audioContext.destination,   //target
-            tone,             // preset
+            tone,    // pedalHat            // preset
             0,                // when 
             e.note.number,    //pitch
             9999,           // duration

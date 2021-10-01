@@ -10,16 +10,19 @@ import Selector from './comp/Selector'
 import Checkbox from './comp/Checkbox'
 import ValueInput from './comp/ValueInput'
 import LocalMidiInst from './comp/LocalMidiInst'
+import {InterpolationViewer} from './comp/InterpolationViewer'
 
 import {Provider, useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from './reduxStore'
 import {makeNote} from './utilsMelody'
+import {interpolateMelodies} from './interpolate'
 
 function App() {
   const store=useStore()
   const tempo = useSelector(s=>s.tempo)
   const midiOutput = useSelector(s=>s.midiOutput)
   const {playClick} = useSelector(s=>s.player)
+  const {isInterpolating} = useSelector(s=>s.interpolate)
   const dispatch = useDispatch()
   console.log("rendering app")
   const btnRecord = useRef()
@@ -30,7 +33,7 @@ function App() {
     const state= store.getState()
     midiPlayer.isPlaying() && midiPlayer.stop()
     recorder.isRecording() && recorder.stop()
-    midiPlayer.start(state.memes.initial.src)
+    midiPlayer.start(state.memes.working.src)
     .then(()=>new Promise((resolve,reject)=>{
       btnRecord.current.click()
       setTimeout(()=>{
@@ -64,7 +67,8 @@ function App() {
       if (e.key===" "){playRec()}
     }}>
     <Score scoreid="1" meme="goal" title="GOAL" />
-    <Score scoreid="2" meme="initial" title="WORKING" />
+    {/* <Score scoreid="2" meme="initial" title="INITIAL" /> */}
+    <Score scoreid="3" meme="working" title="WORKING" />
     <Recorder {...{btnRecord,btnStop}} />
     <Keyboard />
    
@@ -98,7 +102,7 @@ function App() {
         const state= store.getState()
         midiPlayer.stop()
         midiPlayer.setTempo(state.tempo)
-        midiPlayer.start(state.memes.initial.src)
+        midiPlayer.start(state.memes.working.src)
           .then(()=>{
             console.log("playing 3")
             midiPlayer.start(state.memes.recording.src)
@@ -123,6 +127,12 @@ function App() {
         midiPlayer.playNoteDown(note)
         setTimeout(()=>midiPlayer.playNoteUp(note) ,500)
       }}>play note</button> */}
+      <button 
+        onClick={()=>{
+          dispatch(interpolateMelodies({source: "working", target:"goal"}))
+        }}
+        className = {isInterpolating ? "interpolating": ""}
+      >Interpolate</button>
       <button onClick={
         ()=>console.log(store.getState())
       }>State</button>
@@ -137,6 +147,7 @@ function App() {
         })
       }}>Reset</button>
     </div>
+    <InterpolationViewer />
   
   </div>
 }

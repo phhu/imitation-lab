@@ -14,26 +14,24 @@ import {removeNonJson, forceQuantized} from './utilsMelody'
 export const interpolateMelodies = createAsyncThunk(
   'meme/interpolate',
   async ({
-    //sourceMelody,
-    //goalMelody,
-    melody,
-    meme,interpolationTarget,
+    source,
+    target,
     stepsPerQuarter=8,
-    count = 8,
-    temperature = 0.75,
+    count = 10,
+    temperature = 0.5,
   }, {dispatch,getState}) => {
     const {memes} = getState()
-    const inputSequences = [memes[meme],memes[interpolationTarget]]
+    const inputSequences = [memes[source],memes[target]]
       .map(m=>m.src)
       .map(forceQuantized({stepsPerQuarter}))
       .map(removeNonJson)
-    console.log("inputSequences",inputSequences)
+    //console.log("inputSequences",inputSequences)
     const newMelodies = await model.interpolate(
       inputSequences,
       count,
       temperature
     )
-    console.log("new melodies",newMelodies)
+    //console.log("new melodies",newMelodies)
     return newMelodies.map(removeNonJson)
   },{}
 )

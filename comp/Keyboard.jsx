@@ -15,7 +15,7 @@ function Keyboard(props) {
   const width= useSelector(s=>s.keys.width)
   const lastNote = firstNote + keyCount //MidiNumbers.fromNote('c7');
 
-  console.log("Rendering Keyboard: firstlast",firstNote,lastNote)
+  //console.log("Rendering Keyboard: firstlast",firstNote,lastNote)
   const keyboardShortcuts = KeyboardShortcuts.create({
     firstNote,
     lastNote,

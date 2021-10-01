@@ -5,3 +5,12 @@ p {font-family:"Times new roman"}
   padding: 5px;
   background-color: #eee;
 }
+
+.interpolating{
+  background-color: #77b;
+}
+
+.inline{
+  xfloat: left;
+  white-space:nowrap;
+}
