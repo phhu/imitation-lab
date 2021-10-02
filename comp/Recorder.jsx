@@ -45,42 +45,45 @@ export default function Recorder(props) {
 
     recorder.enablePlayClick(useClick)
     recorder.setTempo(store.getState().tempo)
-    recorder.start()
-    //console.log("recording start")
-    dispatch(actions.isRecording(true))
-  }
-  
-  const tidyAndSetRec = fp.pipe(
-    rec => (rec===null ? rec :trim(rec,
-      rec.notes[0] && rec.notes[0].startTime,    //startTime
-      rec.notes[0] && rec.notes[rec.notes.length-1].endTime,   //endTime
-    )),
-    //rec => (console.log("rec PreQuant",rec),rec),
-    //rec => quantizeNoteSequence(rec, 8),    // stepsPerBeat
-    //rec => ({...rec,tempos:[{qpm: 120, time: 0}]}),
-    //rec => (console.log("rec PostQuant",rec),rec),
-    removeNonJson,
-    //rec=>dispatch(actions.recording(rec)), 
-    rec=>dispatch(matchRecording(rec)), 
-  )
+    
+    if (recorder.isRecording()){
+      stop()
+    } else {
+      dispatch(actions.isRecording(true))
+      recorder.start()
+    }
 
+  }
   const stop = ()=>{
     //console.log("Record: stop")
     dispatch(actions.isRecording(false))
     tidyAndSetRec(recorder.stop()) 
   }
 
+  const tidyAndSetRec = fp.pipe(
+    rec => (rec===null ? rec :trim(rec,
+      rec.notes[0] && rec.notes[0].startTime,    //startTime
+      rec.notes[0] && rec.notes[rec.notes.length-1].endTime,   //endTime
+    )),
+    //rec => quantizeNoteSequence(rec, 8),    // stepsPerBeat
+    //rec => ({...rec,tempos:[{qpm: 120, time: 0}]}),
+    //rec => (console.log("rec PostQuant",rec),rec),
+    removeNonJson,
+    rec=>dispatch(matchRecording(rec)), 
+  ) 
+
   return (
     <div style={{
-      "margin":"10px",
+      "margin":"8px",
       "padding":"5px",
       "backgroundColor": "#eee",
     }}>
       RECORDER &nbsp;&nbsp;
-      <button id="rec" ref={props.btnRecord} onClick={record} style={{
-        backgroundColor: isRecording ? "red" : "#fdd"
-      }}>REC</button>
-      <button id="stop"  ref={props.btnStop}  onClick={stop}>■</button>
+      <button id="btnRec" ref={props.btnRecord} onClick={record} style={{
+        width: "4.5em", padding:"0px", backgroundColor: isRecording ? "red" : "#fdd"
+      }}>{isRecording?"⏹STOP":"⏺ REC"}</button>
+       <code>{noteJustPlayed?'♪':'\u00A0'}</code> 
+      <button id="btnRecStop"  ref={props.btnStop}  onClick={stop}>■</button>
       
       <Declutter>
         <Checkbox 
@@ -91,7 +94,7 @@ export default function Recorder(props) {
       </Declutter>
       {/* <input type="checkbox" id="useClick"></input>
       <label htmlFor="useClick">Use click</label> */}
-      &nbsp; <code>{noteJustPlayed?'♪':'\u00A0'}</code>
+      &nbsp;
       <Score 
         scoreid="Rec" 
         meme="recording" 

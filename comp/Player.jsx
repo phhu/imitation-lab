@@ -7,7 +7,6 @@ import Checkbox from './Checkbox'
 
 import {uniq} from 'lodash'
 
-
 export const Player = (props) => {
 
   const dispatch = useDispatch()

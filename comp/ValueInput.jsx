@@ -29,11 +29,12 @@ export default function ValueInput({
     change(parseFloat(value)+diff)
   }
 
-  return <span>
-      <span>{label}</span>
+  return <span >
+      <label className="valueInput">{label}
       <input size={size} title={title} type="text"  {...{value,onChange}}></input>
       <button title="Decrease (Shift +10 | Ctrl +2 | Alt +12)" onClick={makeOnClick(-parseFloat(step))}>-</button>
       <button title="Increase (Shift -10 | Ctrl -2 | Alt -12)"onClick={makeOnClick(+parseFloat(step))}>+</button>
+      </label>
     </span>
 }
 

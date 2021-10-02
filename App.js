@@ -79,7 +79,7 @@ function App() {
   //   dispatch(interpolateMelodies({
   //     sources: ["a","c","b","d"]    
   //   }))
-  // }
+  // } 
   const keyActions = {
     " ": ()=>{playRec() },
     "ArrowRight":  next,
@@ -92,15 +92,15 @@ function App() {
     }
   },[interpolatedMelodies])  //🎯
   // https://stackoverflow.com/questions/43503964/onkeydown-event-not-working-on-divs-in-react
-  return <div id="app" tabIndex={-1} onKeyUp={(e) => {
+  return <div id="app" tabIndex={-1} className={"app"} onKeyDown={(e) => {
       //console.log("key",e.key)
       if (keyActions[e.key]){
         keyActions[e.key]()
         e.preventDefault()
         return false 
-       }
+       }  
     }}>
-    
+     
     <div className="title">
       <span>IMITATION LAB</span>
       <span style={{float:"right"}}>
@@ -129,8 +129,6 @@ function App() {
           title="Toggle simplified UI"
           onClick={()=>dispatch(actions.declutter())}
         >{declutter ? "More..." : "...Less"}</button>
-
-
       </span>
     </div>
 

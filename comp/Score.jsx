@@ -5,9 +5,10 @@ import {removeNonJson, forceQuantized} from '../utilsMelody'
 import {BLANK} from '../melodies'
 import Selector from './Selector'
 import {Declutter} from './Declutter'
+import {startPlayer, stopPlayer} from '../transport'
 
 const {transposeMelody} = require('../utilsMelody')
-const {isQuantizedSequence} = core.sequences
+
 import {varyMelody} from '../vary'
 
 export default ({
@@ -16,31 +17,28 @@ export default ({
   title,
   hasSelect=true,
   hasCollapse = true,
-  margin="10px", 
+  margin="8px", 
   padding="5px",
   divClassName = undefined,
   hasToWorking = true,
   hasSave = false
 }) => {
-  const {
+  const { 
     transpose=0,
     src=BLANK,
     variationCount=0,
     matchesRecording=false,
     isVarying=false,
   } = useSelector(s=>(s?.memes?.[meme])) || {}
-  // const src = useSelector(s=>s?.memes[meme]?.src) || melodies.BLANK
-  // const variationCount = useSelector(s=>s?.memes[meme]?.variationCount || 0)
-  // const matchesRecording = useSelector(s=>s?.memes[meme]?.matchesRecording || false)
   const store = useStore()
   const melodies = useSelector(s=>s.melodies)
   const dispatch = useDispatch()
   const declutter = useSelector(s=>s.declutter)
-  //console.log("score",meme, transpose)
-  const scoreDivId = `score${scoreid}`
-  const melody = transposeMelody(parseInt(transpose) || 0)(src)
+  const [isPlaying, setIsPlaying] = useState(false)  
 
-  //console.log("drawing Score",props.melody,melody,isVarying)
+  const scoreDivId = `score${scoreid}`
+  const melody = transposeMelody(parseInt(transpose) || 0)(src) || BLANK
+
   useEffect(() => {
     try {
       // WaterfallSVGVisualizer is bad...
@@ -57,15 +55,22 @@ export default ({
 
   const play = () => {
     //console.log('playing',scoreDivId,melody)
-    midiPlayer.stop()
-    midiPlayer.start(
-      melody,
-      isQuantizedSequence(melody) ? store.getState().tempo : undefined
-    )
+    if (isPlaying){
+      stop()
+    } else {
+      setIsPlaying(true)
+      startPlayer(
+        {melody, tempo:store.getState().tempo}
+      ).then(()=>{
+        setIsPlaying(false)
+      })
+    }
   }
   const stop = () => {
-    midiPlayer.stop()
+    setIsPlaying(false)
+    stopPlayer()
   }
+
   const varyButtonId = "btn_" + scoreDivId
   const vary = () => dispatch(varyMelody({melody,meme}))
 
@@ -106,8 +111,15 @@ export default ({
         />
         )} 
       </Declutter>
-      <button title="Play this melody" onClick={play}>▶</button>
-      <button title="Stop playing this melody" onClick={stop}>■</button>
+      <button 
+        title="Play this melody" 
+        onClick={play}
+        className="btnPlayScore"
+        style={{ 
+          backgroundColor: isPlaying ? "green" : "inherit",
+        }}
+      >{isPlaying ? "■":"▶" }</button>
+      <button className="btnStopScore" title="Stop playing this melody" onClick={stop}>■</button>
       <Declutter>
         <button 
           title="Produce a variation of this melody using Google Magenta"
@@ -117,7 +129,7 @@ export default ({
 
         { hasToWorking &&
           <button 
-            title="Set TARGET to this melody"
+            title="Set this melody as TARGET"
             onClick={()=>dispatch(actions.memeToWorking(meme))}
           >🎯</button>
         }

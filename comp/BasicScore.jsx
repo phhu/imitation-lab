@@ -4,6 +4,9 @@ const {isQuantizedSequence} = core.sequences
 import {forceQuantized} from '../utilsMelody'
 import {actions} from '../reduxStore'
 import {BLANK} from '../melodies'
+import {startPlayer, stopPlayer} from '../transport'
+import {Declutter} from './Declutter'
+
 export default ({
   melody=BLANK,
   title,
@@ -18,6 +21,7 @@ export default ({
   const store = useStore()
   const dispatch = useDispatch()
   const declutter = useSelector(s=>s.declutter)
+  const [isPlaying, setIsPlaying] = useState(false)  
   useEffect(() => {
     try {
       // WaterfallSVGVisualizer is bad...
@@ -32,15 +36,23 @@ export default ({
   },[melody,declutter])
 
   const play = () => {
-    midiPlayer.stop()
-    midiPlayer.start(
-      melody,
-      isQuantizedSequence(melody) ? store.getState().tempo : undefined
-    )
+    //console.log('playing',scoreDivId,melody)
+    if (isPlaying){
+      stop()
+    } else {
+      setIsPlaying(true)
+      startPlayer(
+        {melody, tempo:store.getState().tempo}
+      ).then(()=>{
+        setIsPlaying(false)
+      })
+    }
   }
   const stop = () => {
-    midiPlayer.stop()
+    setIsPlaying(false)
+    stopPlayer()
   }
+
   return (
     <div  style={{
       margin,
@@ -50,18 +62,29 @@ export default ({
       <table>
         <tbody><tr>
           <td>
-            {title && (<span style={{fontWeight:"900"}}>{title} </span>)}
+            <span style={{textAlign:"right",float:"left",width:"1.3em",fontWeight:"900"}}>
+              {title ?? ''} 
+            </span>
           </td>
           <td>
-            <button title="Play this melody" onClick={play}>▶</button>
-            <button title="Stop playing this melody" onClick={stop}>■</button>
-            <button title="Set TARGET to this melody"
+
+            <button 
+              title="Play this melody" 
+              onClick={play}
+              className="btnPlayScore"
+              style={{ 
+                backgroundColor: isPlaying ? "green" : "inherit",
+              }}
+            >{isPlaying ? "■":"▶" }</button>
+            <button className="btnStopScore" title="Stop playing this melody" onClick={stop}>■</button>           
+                
+            <button title="Set this melody as TARGET"
               onClick={()=>dispatch(actions.melodyToWorking({
                 melody,
                 newCurrent: index,
               }))}
             >🎯</button>
-            {  true &&
+            {true &&
               <button 
                 title="Save melody (will appear in drop down lists)"
                 onClick={()=>dispatch(actions.saveMelody({

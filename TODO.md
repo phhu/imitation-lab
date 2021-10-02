@@ -8,7 +8,7 @@
 
 [ ] recording timing (blank melody?)     (mm.player drum?)
 [ ] bell on state change (poss use drum on mm.player)
-[ ] Comparison visuals (p5?)
+[~] Comparison visuals (p5?)
 [ ] history (linear) - link to next function (and add previous func)
 [ ] minimal interface (sound / keyboard only)
 [ ] choose set of melodies to work with

@@ -27,9 +27,9 @@ window.model = new music_vae.MusicVAE(initialState.src);
 window.WebMidi = WebMidi
 
 ReactDOM.render(
-  <div>
+  <div id="app" className="app">
     <div className="title">IMITATION LAB</div>
-    <hr />
+    <hr/>
     <div className="box">
       <div>Loading... Please be patient... 
       (Initializing Google Magenta can take a while)</div>
