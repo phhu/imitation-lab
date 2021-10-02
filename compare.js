@@ -17,9 +17,15 @@ const notesAsInt = notes => notes.map(n => ({
   quantizedEndStep: parseInt(n.quantizedEndStep),
 }))
 
-export const sequencesIdentical = (baseSeq,compSeq) => 
-   isEqual(notesAsInt(baseSeq.notes),notesAsInt(compSeq.notes))
-   //&& isEqual(baseSeq.quantizationInfo,compSeq.quantizationInfo) 
+export const sequencesIdentical = (baseSeq,compSeq) => {
+  try {
+    return isEqual(notesAsInt(baseSeq.notes),notesAsInt(compSeq.notes))
+  } catch(e){
+    //console.error("sequencesIdentical error",error)
+    return false 
+  }
+
+}   //&& isEqual(baseSeq.quantizationInfo,compSeq.quantizationInfo) 
    //&& isEqual(parseInt(baseSeq.totalQuantizedSteps),parseInt(compSeq.totalQuantizedSteps))
 
 export const matchRecording = (recording, sendRecording=true) => (dispatch, getState) => {

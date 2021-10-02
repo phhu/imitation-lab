@@ -3,11 +3,12 @@ import {useDispatch, useSelector, useStore} from 'react-redux'
 const {isQuantizedSequence} = core.sequences
 import {forceQuantized} from '../utilsMelody'
 import {actions} from '../reduxStore'
-
+import {BLANK} from '../melodies'
 export default ({
-  melody,
+  melody=BLANK,
   title,
   scoreid,
+  index=undefined,
   highlight = false,
   margin="10px", 
   padding="5px",
@@ -16,6 +17,7 @@ export default ({
   const scoreDivId = `score${scoreid}`
   const store = useStore()
   const dispatch = useDispatch()
+  const declutter = useSelector(s=>s.declutter)
   useEffect(() => {
     try {
       // WaterfallSVGVisualizer is bad...
@@ -27,7 +29,7 @@ export default ({
       console.error("no score to draw",e)
       //console.error("Error in StaffSVGVisualizer:",e)
     }
-  },[melody])
+  },[melody,declutter])
 
   const play = () => {
     midiPlayer.stop()
@@ -43,22 +45,30 @@ export default ({
     <div  style={{
       margin,
       padding,
-      backgroundColor: (highlight ? "#88f":"inherit")
+      backgroundColor: (highlight ? "#aaf":"inherit")
     }}>
       <table>
         <tbody><tr>
           <td>
-            {title && (<span>{title} </span>)}
+            {title && (<span style={{fontWeight:"900"}}>{title} </span>)}
           </td>
           <td>
-            <button onClick={play}>▶</button>
-            <button onClick={stop}>■</button>
-            <button onClick={()=>dispatch(actions.melodyToWorking(melody))}>🎯</button>
+            <button title="Play this melody" onClick={play}>▶</button>
+            <button title="Stop playing this melody" onClick={stop}>■</button>
+            <button title="Set TARGET to this melody"
+              onClick={()=>dispatch(actions.melodyToWorking({
+                melody,
+                newCurrent: index,
+              }))}
+            >🎯</button>
             {  true &&
-              <button onClick={()=>dispatch(actions.saveMelody({
-                melody, 
-                name:window.prompt("Save melody name:","saved melody")
-              }))}>💾</button>
+              <button 
+                title="Save melody (will appear in drop down lists)"
+                onClick={()=>dispatch(actions.saveMelody({
+                  melody, 
+                  name:window.prompt("Save melody name:","saved melody")
+                }))}
+              >💾</button>
             }
           </td>
           <td>
@@ -71,3 +81,30 @@ export default ({
   )
 }
 
+
+/*
+<button title="Play this melody" onClick={play}>▶</button>
+<button title="Stop playing this melody" onClick={stop}>■</button>
+<Declutter>
+  <button 
+    title="Produce a variation of this melody using Google Magenta"
+    onClick={vary} id={varyButtonId} style={{
+    backgroundColor: isVarying ? "green": undefined
+  }}>Vary{variationCount?` (${variationCount})`:''}</button>
+
+  { hasToWorking &&
+    <button 
+      title="Set TARGET to this melody"
+      onClick={()=>dispatch(actions.memeToWorking(meme))}
+    >🎯</button>
+  }
+  {  hasSave &&
+    <button 
+      title="Save melody (will appear in drop down lists)"
+      onClick={()=>dispatch(actions.saveMelody({
+        meme, 
+        name:window.prompt("Save melody name:","saved melody")
+
+
+
+*/

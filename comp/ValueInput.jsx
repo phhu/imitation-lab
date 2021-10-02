@@ -5,7 +5,9 @@ export default function ValueInput({
   change = (value)=>{console.log("changed to",value)},
   value = 0,
   validate = x=>parseInt(x),
-  title = "",
+  label= "",
+  title,
+  size=2,
   step = 1,
 }={}){
   //const onChange = (value)=>{console.log("changed")}
@@ -28,10 +30,10 @@ export default function ValueInput({
   }
 
   return <span>
-      <span>{title} </span>
-      <input size="5" type="text"  {...{value,onChange}}></input>
-      <button onClick={makeOnClick(-parseFloat(step))}>-</button>
-      <button onClick={makeOnClick(+parseFloat(step))}>+</button>
+      <span>{label}</span>
+      <input size={size} title={title} type="text"  {...{value,onChange}}></input>
+      <button title="Decrease (Shift +10 | Ctrl +2 | Alt +12)" onClick={makeOnClick(-parseFloat(step))}>-</button>
+      <button title="Increase (Shift -10 | Ctrl -2 | Alt -12)"onClick={makeOnClick(+parseFloat(step))}>+</button>
     </span>
 }
 

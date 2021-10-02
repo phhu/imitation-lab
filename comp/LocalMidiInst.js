@@ -80,14 +80,16 @@ export default function LocalMidiInst(props){
   },[])
   return <Declutter>
     <div className="box">
-      INTERNAL INSTRUMENT | 
+      <span title="An internal instrument listening on MIDI through.">INTERNAL PIANO</span> | 
       <ValueInput 
-        title="Volume" 
+        label="Volume"
+        title="Internal Piano volume. 0.1 quietest, 1 loudest" 
         value={volume} 
         step="0.1"
         change={ x=>dispatch(actions.volume(x)) } 
       /> | 
       <Checkbox  
+        title="Enable to get sound from KEYBOARD, via 'MIDI through' under PLAYER" 
         label="on"
         checked={isOn}
         onChange={ e=>dispatch(actions.localInstOn(e.target.checked))  }

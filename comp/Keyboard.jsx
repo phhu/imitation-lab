@@ -34,16 +34,20 @@ function Keyboard(props) {
     <div className="box">
       <Declutter>
         KEYBOARD
-        | Shift <ValueInput value={firstNote} change={(value)=>{
-          //console.log("changed value",value,parseInt(value)>40,parseInt(value))
-          const x = parseInt(value)
-          //if (x>40){
-            dispatch(actions.keysFirst(x))
-            const note = makeNote(parseInt(x))
-            midiPlayer.playNoteDown(note)
-            setTimeout(()=>midiPlayer.playNoteUp(note) ,100 )
-          //}
-        }}/>
+        | <ValueInput 
+          label="First note" 
+          value={firstNote} 
+          change={(value)=>{
+            //console.log("changed value",value,parseInt(value)>40,parseInt(value))
+            const x = parseInt(value)
+            //if (x>40){
+              dispatch(actions.keysFirst(x))
+              const note = makeNote(parseInt(x))
+              midiPlayer.playNoteDown(note)
+              setTimeout(()=>midiPlayer.playNoteUp(note) ,100 )
+            //}
+          }}
+          />
         | <span>Caps Lock: +8ve</span>
       </Declutter>
       <Piano

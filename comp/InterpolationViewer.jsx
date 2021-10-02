@@ -1,8 +1,9 @@
-import React from "react"
+import React, {useState} from "react"
 import {useDispatch, useSelector, useStore} from 'react-redux'
 import BasicScore from './BasicScore'
 import {chunk} from 'lodash'
 import {sequencesIdentical} from '../compare'
+import {doInterpolation} from '../interpolate'
 const {isQuantizedSequence} = core.sequences
 /* import Checkbox from './Checkbox'
   <Checkbox 
@@ -17,6 +18,9 @@ export const InterpolationViewer = ({
   //options
 }={}) => {
   const store = useStore()
+  const dispatch = useDispatch()
+  const isInterpolating= useSelector(s=>s.interpolate.isInterpolating)  
+  const [activeScore, setActiveScore] = useState(0)
   const i = useSelector(s=>s.interpolate)
   const size = Math.round(Math.sqrt(i.melodies.length))
   const m2 = chunk(i.melodies,size)
@@ -42,31 +46,61 @@ export const InterpolationViewer = ({
   
   return (
   <div className="box">
-    INTERPOLATIONS
+    INTERPOLATIONS &nbsp;
+    <button 
+      title="(Re-)run Google Magenta interpolation to generate new melodies from SOURCES"
+      onClick={()=>doInterpolation(dispatch)}
+      className = {isInterpolating ? "interpolating": ""}
+    >Interpolate</button>
     <table><tbody>
     {m2.map((mr,row)=>(
       <tr key={"row"+row}>
-      {mr.map((m,col)=>(
+      {mr.map((m,col)=>{
+        const currentlyViewed = (activeScore==(size*row+col))
+        const currentTarget = (i.current==(size*row+col))
+        return (
         <td key={"col"+col}>
-          <button style={{
-            backgroundColor: (i.current==(size*row+col) ? "blue":"inherit")  
-          }}
-            onClick={()=>play(m)}
+          <button 
+            className="interpolationButton"
+            title={"View melody "+ (size*row+col) + 
+              (currentlyViewed ? ' (Currently viewed)' :'') +
+              (currentTarget ? ' (Current target)' :'') 
+            } 
+            style={{
+              backgroundColor: (currentTarget ? "blue":"inherit") 
+              ,fontWeight: (currentlyViewed  ? "900":"normal") 
+            }}
+            onClick={()=>{
+              setActiveScore(size*row+col)
+              // play(m)
+            }}
           >{getLabel(row,col)}</button>
         </td>
-      ))}
+      )})}
       </tr>
     ))}
     </tbody></table>
-    {i.melodies.map((m,idx)=>(<BasicScore 
+    <BasicScore 
+        scoreid={"activeScore"} 
+        melody={i.melodies[activeScore]} 
+        title={activeScore}
+        highlight={i.current==activeScore}
+        index={activeScore}
+        key="activeScore"
+        padding="0px" 
+        margin="0px"
+      />
+
+    {/* {i.melodies.map((m,idx)=>(<BasicScore 
         scoreid={"int"+idx} 
         melody={m} 
         title={idx}
         highlight={i.current==idx}
+        index={idx}
         key={idx}
         padding="0px" 
         margin="0px"
-      />))}
+      />))} */}
     {/* <pre>{JSON.stringify(i,null,2)}</pre>  */}
   </div>
 )};

@@ -21,6 +21,8 @@ export const extraRight = {
   sharp: ''
 }
 
+export const limit = (min, max) => x => Math.min(Math.max(min,x),max)
+
 export const removeNonJson = x => JSON.parse(JSON.stringify(x))
 
 export const roundToDPs = dps => x => Math.round((x + Number.EPSILON) * 10**dps) / 10**dps

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import {useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from '../reduxStore'
 import {removeNonJson, forceQuantized} from '../utilsMelody'
-//import {melodies} from '../melodies'
+import {BLANK} from '../melodies'
 import Selector from './Selector'
 import {Declutter} from './Declutter'
 
@@ -20,16 +20,15 @@ export default ({
   padding="5px",
   divClassName = undefined,
   hasToWorking = true,
-  hasSave = false,
-
+  hasSave = false
 }) => {
   const {
     transpose=0,
-    src=melodies.BLANK,
+    src=BLANK,
     variationCount=0,
     matchesRecording=false,
     isVarying=false,
-  } = useSelector(s=>s?.memes?.[meme] || melodies.BLANK)
+  } = useSelector(s=>(s?.memes?.[meme])) || {}
   // const src = useSelector(s=>s?.memes[meme]?.src) || melodies.BLANK
   // const variationCount = useSelector(s=>s?.memes[meme]?.variationCount || 0)
   // const matchesRecording = useSelector(s=>s?.memes[meme]?.matchesRecording || false)
@@ -107,21 +106,29 @@ export default ({
         />
         )} 
       </Declutter>
-      <button onClick={play}>▶</button>
-      <button onClick={stop}>■</button>
+      <button title="Play this melody" onClick={play}>▶</button>
+      <button title="Stop playing this melody" onClick={stop}>■</button>
       <Declutter>
-        <button onClick={vary} id={varyButtonId} style={{
+        <button 
+          title="Produce a variation of this melody using Google Magenta"
+          onClick={vary} id={varyButtonId} style={{
           backgroundColor: isVarying ? "green": undefined
         }}>Vary{variationCount?` (${variationCount})`:''}</button>
 
         { hasToWorking &&
-          <button onClick={()=>dispatch(actions.memeToWorking(meme))}>🎯</button>
+          <button 
+            title="Set TARGET to this melody"
+            onClick={()=>dispatch(actions.memeToWorking(meme))}
+          >🎯</button>
         }
         {  hasSave &&
-          <button onClick={()=>dispatch(actions.saveMelody({
-            meme, 
-            name:window.prompt("Save melody name:","saved melody")
-          }))}>💾</button>
+          <button 
+            title="Save melody (will appear in drop down lists)"
+            onClick={()=>dispatch(actions.saveMelody({
+              meme, 
+              name:window.prompt("Save melody name:","saved melody")
+            }))}
+          >💾</button>
         }
       </Declutter>
       <div id={scoreDivId}></div>

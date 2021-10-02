@@ -27,11 +27,15 @@ window.model = new music_vae.MusicVAE(initialState.src);
 window.WebMidi = WebMidi
 
 ReactDOM.render(
-  <div className="box">
-    <div>Loading... Please be patient... 
-  (Initializing Google Magenta can take a while)</div>
-    <div>Please use Chrome Browser.</div>
-    <div>Magenta src: {initialState.src}</div>
+  <div>
+    <div className="title">IMITATION LAB</div>
+    <hr />
+    <div className="box">
+      <div>Loading... Please be patient... 
+      (Initializing Google Magenta can take a while)</div>
+      <div>Please use Chrome Browser.</div>
+      <div>Magenta src: {initialState.src}</div>
+    </div>
   </div>, 
   document.getElementById('root')
 )
@@ -49,7 +53,7 @@ Promise.all([
     })
   })
 ]).then(results => {
-  midiPlayer.outputs = midiPlayer.availableOutputs.slice(0,2)
+  midiPlayer.outputs = midiPlayer.availableOutputs.slice(0,1)   //.slice(0,2)
 
   window.midiThruIn = WebMidi.inputs[0]
   //window.midiThruOut = WebMidi.outputs[0]

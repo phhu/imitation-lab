@@ -6,6 +6,12 @@ p {font-family:"Times new roman"}
   background-color: #f0f0f0;
 }
 
+.title{
+  margin: 10px; 
+  padding: 0px;
+  zbackground-color: #f0f0f0;
+}
+
 .interpolating{
   background-color: #77b;
 }
@@ -21,4 +27,13 @@ p {font-family:"Times new roman"}
 
 .hidden {
   display:none;
+}
+.interpolationButton {
+  background-color:green;
+  padding: 0;
+  border: 1px;
+  background: green;
+}
+button {
+  margin:1px
 }

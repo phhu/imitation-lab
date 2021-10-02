@@ -38,4 +38,11 @@ export const interpolateMelodies = createAsyncThunk(
   },{}
 )
 
+export const doInterpolation = (dispatch)=>{
+  console.log("interpolating")
+  dispatch(interpolateMelodies({
+    sources: ["a","c","b","d"]    
+  }))
+}
+
 //const {dispatch,getState} = thunkAPI

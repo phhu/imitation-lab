@@ -6,35 +6,31 @@ import Keyboard from './comp/Keyboard'
 import Score from './comp/Score'
 //import ScoreAsync from './comp/ScoreAsync'
 import Recorder from './comp/Recorder'
-import Selector from './comp/Selector'
-import Checkbox from './comp/Checkbox'
+import {Player} from './comp/Player'
+//import Selector from './comp/Selector'
+//import Checkbox from './comp/Checkbox'
 import ValueInput from './comp/ValueInput'
 import LocalMidiInst from './comp/LocalMidiInst'
 import {InterpolationViewer} from './comp/InterpolationViewer'
 import {Declutter} from './comp/Declutter'
 import {Provider, useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from './reduxStore'
-import {makeNote} from './utilsMelody'
-import {interpolateMelodies} from './interpolate'
+//import {makeNote} from './utilsMelody'
+import {doInterpolation} from './interpolate'
 import {nextMelody} from './next'
 const {isQuantizedSequence} = core.sequences
  
 function App() {
   const store=useStore()
   const tempo = useSelector(s=>s.tempo)
-  const midiOutput = useSelector(s=>s.midiOutput)
-  const {playClick} = useSelector(s=>s.player)
+
   const declutter = !!(useSelector(s=>s.declutter))
-  const {
-    isInterpolating,
-    melodies:interpolatedMelodies
-  } = useSelector(s=>s.interpolate)
+  const interpolatedMelodies = useSelector(s=>s.interpolate.melodies)
   const dispatch = useDispatch()
   console.log("rendering app")
   const btnRecord = useRef()
   const btnStop = useRef()
   
-  midiPlayer.playClick = playClick
   const playRec = (e) =>{
     const state= store.getState()
     midiPlayer.isPlaying() && midiPlayer.stop()
@@ -78,20 +74,21 @@ function App() {
   },[])
 
 
-  const doInterpolation = ()=>{
-    console.log("interpolating")
-    dispatch(interpolateMelodies({
-      sources: ["a","c","b","d"]    
-    }))
-  }
+  // const doInterpolation = ()=>{
+  //   console.log("interpolating")
+  //   dispatch(interpolateMelodies({
+  //     sources: ["a","c","b","d"]    
+  //   }))
+  // }
   const keyActions = {
     " ": ()=>{playRec() },
     "ArrowRight":  next,
     "Escape":  ()=>{console.log("stop")},
   }
   useEffect(()=>{
+    //console.log("interpolatedMelodies",interpolatedMelodies.length===0,interpolatedMelodies)
     if(interpolatedMelodies.length===0){
-      doInterpolation()
+      doInterpolation(dispatch)
     }
   },[interpolatedMelodies])  //🎯
   // https://stackoverflow.com/questions/43503964/onkeydown-event-not-working-on-divs-in-react
@@ -104,6 +101,39 @@ function App() {
        }
     }}>
     
+    <div className="title">
+      <span>IMITATION LAB</span>
+      <span style={{float:"right"}}>
+        <Declutter>
+        <button 
+          title="Print app state to browser console"
+          onClick={
+            ()=>console.log(store.getState())
+          }
+        >State</button>
+        &nbsp;
+        <button 
+          title="Reset application to defaults, reset MIDI, and reload"
+          onClick={()=>{
+            console.log("resetting, including midi reset")
+            localStorage.removeItem("state")
+            WebMidi.outputs.forEach(o=>{
+              o.stopNote("all")
+              o.sendReset()
+            })
+            window.location.reload(false)
+          }}
+        >Reset</button> &nbsp;&nbsp;
+        </Declutter> 
+        <button 
+          title="Toggle simplified UI"
+          onClick={()=>dispatch(actions.declutter())}
+        >{declutter ? "More..." : "...Less"}</button>
+
+
+      </span>
+    </div>
+
     <Score scoreid="working" meme="working" title=" TARGET" hasSave={true} hasToWorking={false} />
     <Recorder {...{btnRecord,btnStop}} />
     
@@ -131,69 +161,23 @@ function App() {
       }}>Timed Rec</button>
 
       <button onClick={next}>Next</button>
-      <button onClick={()=>dispatch(actions.declutter())}>Toggle clutter</button>
+      <ValueInput 
+          size={1}
+          label="Tempo" 
+          title="Tempo for playback and recording [beats per minute]"
+          value={tempo} 
+          change={ x=>dispatch(actions.tempo(x)) } 
+        />
 
     </div>
 
     <Keyboard />
-    <LocalMidiInst />
      
     <Declutter>
-      <div className="box">
-        PLAYER &nbsp;&nbsp;
-        Midi out <Selector 
-          options={midiPlayer.availableOutputs}
-          value={midiOutput}
-          change={(value)=>{
-            midiPlayer.outputs = [midiPlayer.availableOutputs[value]]
-            dispatch(actions.midiOutput(value))
-            console.log("output changed to",value)
-          }}
-        /> &nbsp;&nbsp;
-        <ValueInput 
-          title="Tempo" 
-          value={tempo} 
-          change={ x=>dispatch(actions.tempo(x)) } 
-        />
-        <Checkbox 
-          checked={playClick} 
-          label="Click on play"
-          onChange={e=>dispatch(actions.playClick(e.target.checked))}
-        /> 
-      </div>
+      <Player />
+      <LocalMidiInst />
+      <InterpolationViewer />
 
-
-
-      <div className="box">
-        DEBUG &nbsp;&nbsp;
-        {/* <button onClick={()=>{
-          //console.log("playing note")
-          const note = makeNote(51)    // {pitch:50,velocity:50}  
-          midiPlayer.playNoteDown(note)
-          setTimeout(()=>midiPlayer.playNoteUp(note) ,500)
-        }}>play note</button> */}
-
-        <button 
-          onClick={doInterpolation}
-          className = {isInterpolating ? "interpolating": ""}
-        >Interpolate</button>
-        
-        <button onClick={
-          ()=>console.log(store.getState())
-        }>State</button>
-        
-        <button onClick={()=>{
-          console.log("resetting, including midi reset")
-          localStorage.removeItem("state")
-          window.location.reload(false)
-
-          WebMidi.outputs.forEach(o=>{
-            o.stopNote("all")
-            o.sendReset()
-          })
-        }}>Reset</button>
-      
-      </div>
       <div className="box">
         SOURCES
         <Score scoreid="a" meme="a" title="A" padding="0px" margin="0px"/>
@@ -201,7 +185,10 @@ function App() {
         <Score scoreid="c" meme="c" title="C" padding="0px" margin="0px"/>
         <Score scoreid="d" meme="d" title="D" padding="0px" margin="0px"/>
       </div>
-      <InterpolationViewer />
+
+      {/* <div className="box">
+        DEBUG &nbsp;&nbsp;
+      </div> */}
     </Declutter>
   </div>
 }

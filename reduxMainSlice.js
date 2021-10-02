@@ -13,10 +13,11 @@ import { createSlice } from '@reduxjs/toolkit'
 const fp = require('lodash/fp')
 import {cloneDeep} from 'lodash'
 import {melodies} from './melodies'
-import {removeNonJson,roundToDPs,transposeMelody} from './utilsMelody'
+import {removeNonJson,roundToDPs,limit} from './utilsMelody'
 import {varyMelody} from './vary'
 import {interpolateMelodies} from './interpolate'
 import {nextMelody} from './next'
+import {sequencesIdentical} from './compare'
 
 export const initialState = { 
   midiOutput: 0,
@@ -34,8 +35,11 @@ export const initialState = {
     useClick: false,
   },
   bars: 2,
-  src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small',
+  //src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small',
   //src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2',
+  src: location?.hash==="#basic" ?
+  'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small' :
+  'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2',
   keys: {
     first: 43,
     count: 38,
@@ -95,7 +99,6 @@ export const initialState = {
 
 }
 
-const limit = (min, max) => x => Math.min(Math.max(min,x),max)
 const slice = createSlice({
   name: 'main',
   initialState,
@@ -113,13 +116,13 @@ const slice = createSlice({
     },
     "keysWidth": (state,{payload})=>{state.keys.width=payload},
     "declutter": (state,{payload})=>{
-      console.log("declutter",payload)
+      //console.log("declutter",payload)
       state.declutter=!(state.declutter)
     },
     "saveMelody": (state,{payload})=>{
       console.log("saveMelody",payload)
       const { meme,name="saved"  } = payload
-      const melody = meme? state?.memes?.[meme]?.src : payload.melody
+      const melody = meme ? (state?.memes?.[meme]?.src) : removeNonJson(payload.melody)
       melody.title = name
       melody.key = name
       state.melodies[name] = melody     
@@ -128,17 +131,27 @@ const slice = createSlice({
       //console.log("memeToWorking",payload)
       if(state?.memes[payload]){
         state.memes.working = state.memes[payload]
+        const newCurrent = state?.interpolate?.melodies?.findIndex(m=>
+          sequencesIdentical(m,state.memes[payload].src)
+        )
+        if(newCurrent >-1 && newCurrent != undefined){
+          state.interpolate.current = newCurrent
+        }
       }
     },
     "melodyToWorking": (state,{payload})=>{
-      //console.log("melodyToWorking",payload)
-      if(payload?.notes){
+      console.log("melodyToWorking",payload)
+      const {melody, newCurrent} = payload
+      if(melody?.notes){
         const m = state.memes.working
-        m.src = payload
+        m.src = melody
         m.transpose=0
         m.variationCount+=1
         m.matchesRecording=null  //null=unknown
         m.isVarying = false
+      }
+      if(newCurrent !== undefined){
+        state.interpolate.current = limit(0,state.interpolate.melodies.length)(parseInt(newCurrent))
       }
     },
     "memeSrc": (state,{payload})=>{

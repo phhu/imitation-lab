@@ -8,14 +8,14 @@ import React from "react";
   />    
 */
 
-const Checkbox = ({ label, checked, onChange }) => (
+const Checkbox = ({ label, checked, onChange, ...args }) => (
   <span className="form-check">
     <label>
       <input
         type="checkbox"
         className="form-check-input"
         name={label}
-        {...{checked, onChange}}
+        {...{checked, onChange, ...args}}
       />
       {label}
     </label>
