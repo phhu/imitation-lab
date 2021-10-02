@@ -17,13 +17,17 @@ import {actions} from './reduxStore'
 import {makeNote} from './utilsMelody'
 import {interpolateMelodies} from './interpolate'
 import {nextMelody} from './next'
+const {isQuantizedSequence} = core.sequences
 
 function App() {
   const store=useStore()
   const tempo = useSelector(s=>s.tempo)
   const midiOutput = useSelector(s=>s.midiOutput)
   const {playClick} = useSelector(s=>s.player)
-  const {isInterpolating} = useSelector(s=>s.interpolate)
+  const {
+    isInterpolating,
+    melodies:interpolatedMelodies
+  } = useSelector(s=>s.interpolate)
   const dispatch = useDispatch()
   console.log("rendering app")
   const btnRecord = useRef()
@@ -34,7 +38,10 @@ function App() {
     const state= store.getState()
     midiPlayer.isPlaying() && midiPlayer.stop()
     recorder.isRecording() && recorder.stop()
-    midiPlayer.start(state.memes.working.src)
+    midiPlayer.start(
+      state.memes.working.src,
+      isQuantizedSequence(state.memes.working.src) ? store.getState().tempo : undefined
+    )
     .then(()=>new Promise((resolve,reject)=>{
       btnRecord.current.click()
       setTimeout(()=>{
@@ -43,35 +50,55 @@ function App() {
       },4000)
     }))
     .then(()=>{
-      //setTimeout(()=>{
+      setTimeout(()=>{
+        midiPlayer.isPlaying() && midiPlayer.stop()
+        recorder.isRecording() && recorder.stop()
         midiPlayer.start(store.getState().memes.recording.src)
       
-      //},0)
+      },50)
     })
   }
-  const addPedalListener = (inputs) => {
-    inputs.forEach(input => {
-      input.addListener("controlchange","all",(e)=>{
-        if (e.controller.name==="sustenutopedal" && e.value===127){
-          playRec()
-        }
+  useEffect(()=>{
+    console.log("adding sostenuto pedal listener")
+    const addPedalListener = (inputs) => {
+      inputs.forEach(input => {
+        input.addListener("controlchange","all",(e)=>{
+          if (e.controller.name==="sustenutopedal" && e.value===127){
+            playRec()
+          }
+        })
+        // input.addListener("noteon","all",(e)=>{
+          
+        // })
       })
-      input.addListener("noteon","all",(e)=>{
-        
-      })
-    })
+    }
+    addPedalListener(WebMidi.inputs)
+  },[])
+
+
+  const doInterpolation = ()=>{
+    console.log("interpolating")
+    dispatch(interpolateMelodies({
+      sources: ["a","c","b","d"]    
+    }))
   }
-  addPedalListener(WebMidi.inputs)
+  useEffect(()=>{
+    if(interpolatedMelodies.length===0){
+      doInterpolation()
+    }
+  },[interpolatedMelodies])
+
   // https://stackoverflow.com/questions/43503964/onkeydown-event-not-working-on-divs-in-react
   return <div id="app" tabIndex={-1} onKeyUp={(e) => {
       //console.log("key",e)
-      if (e.key===" "){playRec()}
+      if (e.key===" "){
+        playRec();
+        e.preventDefault();
+        return false;
+       }
     }}>
-    <Score scoreid="1" meme="goal" title="A" />
-    {/* <Score scoreid="2" meme="initial" title="INITIAL" /> */}
-    <Score scoreid="2" meme="b" title="B" />
-    <Score scoreid="3" meme="c" title="C" />
-    <Score scoreid="99" meme="working" title="WORKING" />
+
+    <Score scoreid="working" meme="working" title="WORKING" />
     <Recorder {...{btnRecord,btnStop}} />
     <Keyboard />
    
@@ -141,11 +168,7 @@ function App() {
       }}>play note</button> */}
 
       <button 
-        onClick={()=>{
-          dispatch(interpolateMelodies({
-            sources: ["working","goal","b","c"]
-          }))
-        }}
+        onClick={doInterpolation}
         className = {isInterpolating ? "interpolating": ""}
       >Interpolate</button>
       
@@ -164,6 +187,13 @@ function App() {
         })
       }}>Reset</button>
     
+    </div>
+    <div className="box">
+      SOURCES
+      <Score scoreid="a" meme="a" title="A" padding="0px" margin="0px"/>
+      <Score scoreid="b" meme="b" title="B" padding="0px" margin="0px"/>
+      <Score scoreid="c" meme="c" title="C" padding="0px" margin="0px"/>
+      <Score scoreid="d" meme="d" title="D" padding="0px" margin="0px"/>
     </div>
     <InterpolationViewer />
   

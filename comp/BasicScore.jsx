@@ -25,7 +25,7 @@ export default ({
       console.error("no score to draw",e)
       //console.error("Error in StaffSVGVisualizer:",e)
     }
-  })
+  },[melody])
 
   const play = () => {
     midiPlayer.stop()

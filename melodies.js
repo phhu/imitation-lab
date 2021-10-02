@@ -14,9 +14,9 @@ let lastStart = 0
 const nd = spec => {
   spec.start ??= lastStart + spec.dur
   lastStart = spec.start
-  return ({...spec,
-    quantizedEndStep:spec.start+spec.dur,
-    quantizedStartStep:spec.start,
+  return ({//...spec,
+    quantizedEndStep:parseInt(spec.start+spec.dur),
+    quantizedStartStep:parseInt(spec.start),
     pitch: spec.pitch || toMidi(spec.note)
   })
 }
@@ -224,6 +224,7 @@ const melodiesInt = {
       {pitch: 60, quantizedStartStep: 7, quantizedEndStep: 8},
       {pitch: 60, quantizedStartStep: 8, quantizedEndStep: 10},
       {pitch: 55, quantizedStartStep: 10, quantizedEndStep: 12},
+      {pitch: 60, quantizedStartStep: 14, quantizedEndStep: 16},
 
       {pitch: 60, quantizedStartStep: s+0, quantizedEndStep: s+2},
       {pitch: 60, quantizedStartStep: s+2, quantizedEndStep: s+4},
@@ -240,6 +241,7 @@ const melodiesInt = {
       {pitch: 60, quantizedStartStep: s+s+7, quantizedEndStep: s+s+8},
       {pitch: 60, quantizedStartStep: s+s+8, quantizedEndStep: s+s+10},
       {pitch: 55, quantizedStartStep: s+s+10, quantizedEndStep: s+s+12},
+      {pitch: 60, quantizedStartStep: s+s+14, quantizedEndStep: s+s+16},
       
       {pitch: 60, quantizedStartStep: 3*s+0, quantizedEndStep: 3*s+2},
       {pitch: 60, quantizedStartStep: 3*s+2, quantizedEndStep: 3*s+4},

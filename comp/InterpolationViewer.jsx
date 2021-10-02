@@ -2,6 +2,7 @@ import React from "react"
 import {useDispatch, useSelector, useStore} from 'react-redux'
 import BasicScore from './BasicScore'
 import {chunk} from 'lodash'
+import {sequencesIdentical} from '../compare'
 const {isQuantizedSequence} = core.sequences
 /* import Checkbox from './Checkbox'
   <Checkbox 
@@ -27,8 +28,18 @@ export const InterpolationViewer = ({
       isQuantizedSequence(melody) ? store.getState().tempo : undefined
     )
   }
+  const {memes} = store.getState()
+  const testMatch = (row,col,meme) => {
+    // console.log ("testMatch",m2[row][col],memes[meme]?.src,sequencesIdentical(m2[row][col],memes[meme]?.src))
+    return sequencesIdentical(m2[row][col],memes[meme]?.src)
+  }
+  const getLabel = (row,col) => 
+   testMatch(row,col,'a') ? "A" :     // (row===0 && col===0)
+    (row===0 && col===size-1) ? "B" :
+    (row===size-1 && col===0) ? "C" :
+    (row===size-1 && col===size-1) ? "D" :
+    (size*row+col)
   
-
   return (
   <div className="box">
     INTERPOLATIONS
@@ -41,7 +52,7 @@ export const InterpolationViewer = ({
             backgroundColor: (i.current==(size*row+col) ? "blue":"inherit")  
           }}
             onClick={()=>play(m)}
-          >{(size*row+col)}</button>
+          >{getLabel(row,col)}</button>
         </td>
       ))}
       </tr>

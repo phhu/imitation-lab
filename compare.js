@@ -1,7 +1,7 @@
 import {actions} from './reduxStore'
-import {mapValues} from 'lodash'
+import {mapValues, isEqual} from 'lodash'
 
-const sequencesMatch = (baseSeq,compSeq) => { 
+export const sequencesMatch = (baseSeq,compSeq) => { 
   if (baseSeq === null || compSeq ===null){return false;}
   if (baseSeq.notes.length !== compSeq.notes.length){return false;}
   
@@ -11,7 +11,18 @@ const sequencesMatch = (baseSeq,compSeq) => {
   return true;
 };
 
-const matchRecording = (recording, sendRecording=true) => (dispatch, getState) => {
+const notesAsInt = notes => notes.map(n => ({
+  ...n,
+  quantizedStartStep: parseInt(n.quantizedStartStep),
+  quantizedEndStep: parseInt(n.quantizedEndStep),
+}))
+
+export const sequencesIdentical = (baseSeq,compSeq) => 
+   isEqual(notesAsInt(baseSeq.notes),notesAsInt(compSeq.notes)) &&
+   isEqual(baseSeq.quantizationInfo,compSeq.quantizationInfo) &&
+   isEqual(parseInt(baseSeq.totalQuantizedSteps),parseInt(compSeq.totalQuantizedSteps))
+
+export const matchRecording = (recording, sendRecording=true) => (dispatch, getState) => {
   const {memes} = getState()
   const matches = mapValues(
     memes,
@@ -23,8 +34,3 @@ const matchRecording = (recording, sendRecording=true) => (dispatch, getState) =
     matches
   }))
 }
-
-module.exports = {
-  sequencesMatch,
-  matchRecording
-};

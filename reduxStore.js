@@ -1,5 +1,6 @@
 import {createReducer, createAction, configureStore} from '@reduxjs/toolkit'
 import {reducer,actions,initialState} from './reduxMainSlice'
+import {assign} from 'lodash/fp'
 
 export const loadState = () => {
   try {
@@ -28,7 +29,7 @@ export const store = configureStore({
   reducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware() ,//.concat(logger),
   devTools: process.env.NODE_ENV !== 'production',
-  preloadedState: loadState() || initialState,
+  preloadedState: assign (initialState,loadState() ||  {}),
   //enhancers: [reduxBatch],
 })
 

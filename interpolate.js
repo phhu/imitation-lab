@@ -1,5 +1,5 @@
 import { createAsyncThunk} from '@reduxjs/toolkit'
-import {removeNonJson, forceQuantized} from './utilsMelody'
+import {removeNonJson, forceQuantized,trimToBars} from './utilsMelody'
 const {trim} = core.sequences
 //import {melodies} from './melodies'
 // https://magenta.github.io/magenta-js/music/classes/_music_vae_model_.musicvae.html#interpolate
@@ -33,7 +33,7 @@ export const interpolateMelodies = createAsyncThunk(
     )
     //console.log("new melodies",newMelodies)
     return newMelodies
-      .map(x=>trim(x,0,4*4*2))    // 4 beats, two bars - remove dangling beats
+      .map(trimToBars(2))    // 4 beats, two bars - remove dangling beats
       .map(removeNonJson)
   },{}
 )

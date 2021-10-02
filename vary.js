@@ -1,5 +1,5 @@
 import { createAsyncThunk} from '@reduxjs/toolkit'
-import {removeNonJson, forceQuantized} from './utilsMelody'
+import {removeNonJson, forceQuantized,trimToBars} from './utilsMelody'
 
 //see https://redux-toolkit.js.org/api/createAsyncThunk
 export const varyMelody = createAsyncThunk(
@@ -8,7 +8,7 @@ export const varyMelody = createAsyncThunk(
     melody,
     meme,   // will be in args
     stepsPerQuarter=8,
-    count = 20,
+    count = 1,
     temperature = 0.75,
   }, thunkAPI) => {
     const {dispatch,getState} = thunkAPI
@@ -18,7 +18,7 @@ export const varyMelody = createAsyncThunk(
       count,
       temperature
     )
-    return removeNonJson(newSamples[0])
+    return removeNonJson(trimToBars(2)(newSamples[0]))
     // return {
     //   meme,
     //   melody: {

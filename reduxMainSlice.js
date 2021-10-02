@@ -33,16 +33,16 @@ export const initialState = {
     useClick: false,
   },
   bars: 2,
-  //src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small',
-  src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2',
+  src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small',
+  //src: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2',
   keys: {
     first: 43,
     count: 38,
     width: 900,
   },
   memes: { 
-    goal: {
-      src: cloneDeep(melodies.LIBERTANGO_2),
+    a: {
+      src: cloneDeep(melodies.FRERE_2),
       transpose: 0,
       variationCount: 0,
       isCollapsed: false,
@@ -53,19 +53,26 @@ export const initialState = {
     //   variationCount: 0,
     // },
     b: {
-      src: cloneDeep(melodies.MELODY1),
+      src: cloneDeep(melodies.TWINKLE_TWINKLE_2T),
       transpose: 0,
       variationCount: 0,
       isCollapsed: false,
     },
     c: {
+      src: cloneDeep(melodies.MELODY1),
+      transpose: 0,
+      variationCount: 0,
+      isCollapsed: false,
+    },
+    d: {
       src: cloneDeep(melodies.LIBERTANGO_2),
       transpose: 0,
       variationCount: 0,
       isCollapsed: false,
     },
     working: {
-      src: cloneDeep(transposeMelody(-12)(melodies.BASIC_2)),
+      //src: cloneDeep(transposeMelody(-12)(melodies.BASIC_2)),
+      src: cloneDeep(melodies.FRERE_2),
       transpose: 0,
       variationCount: 0,
       isCollapsed: false,
@@ -149,6 +156,7 @@ const slice = createSlice({
       //console.log("got interpolateMelodies.fulfilled")
       const i = state.interpolate
       i.melodies = payload
+      i.current = 0
       i.isInterpolating = false
     })
     .addCase(interpolateMelodies.rejected, (state, action) => {
@@ -156,10 +164,10 @@ const slice = createSlice({
       state.interpolate.isInterpolating = false
     })
     .addCase(nextMelody.pending, (state, {meta,payload,type}) => {
-      console.log("got nextMelody.pending")
+      //console.log("got nextMelody.pending")
     })
     .addCase(nextMelody.fulfilled, (state, {meta,payload,type}) => {
-      console.log("got nextMelody.fulfilled")
+      //console.log("got nextMelody.fulfilled")
       const {nextMelody, newCurrent} = payload
       const {key,title} = state.memes['working']
       const m = state.memes['working']

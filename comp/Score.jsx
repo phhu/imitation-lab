@@ -25,7 +25,7 @@ export default ({
     variationCount=0,
     matchesRecording=false,
     isVarying=false,
-  } = useSelector(s=>s?.memes[meme])
+  } = useSelector(s=>s?.memes?.[meme] || melodies.BLANK)
   // const src = useSelector(s=>s?.memes[meme]?.src) || melodies.BLANK
   // const variationCount = useSelector(s=>s?.memes[meme]?.variationCount || 0)
   // const matchesRecording = useSelector(s=>s?.memes[meme]?.matchesRecording || false)
@@ -48,7 +48,7 @@ export default ({
       console.error("no score to draw",e)
       //console.error("Error in StaffSVGVisualizer:",e)
     }
-  })
+  },[src,transpose])
 
   const play = () => {
     //console.log('playing',scoreDivId,melody)
