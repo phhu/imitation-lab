@@ -3,7 +3,7 @@ p {font-family:"Times new roman"}
 .box{
   margin: 10px; 
   padding: 5px;
-  background-color: #eee;
+  background-color: #f0f0f0;
 }
 
 .interpolating{
@@ -11,6 +11,14 @@ p {font-family:"Times new roman"}
 }
 
 .inline{
-  xfloat: left;
-  white-space:nowrap;
+  display:inline;
+  xwhite-space:nowrap;
+}
+
+.inlineBlock {
+  display:inline-block;
+}
+
+.hidden {
+  display:none;
 }

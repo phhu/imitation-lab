@@ -5,6 +5,7 @@ import {actions} from '../reduxStore'
 import ValueInput from './ValueInput'
 import Checkbox from './Checkbox'   // http://react.tips/checkboxes-in-react-16/
 //const {cancelNote} = require('../utils')
+import {Declutter} from './Declutter'
 var webaudiofont = require('webaudiofont');
 
 const tone = _tone_0000_JCLive_sf2_file
@@ -77,20 +78,22 @@ export default function LocalMidiInst(props){
       })
     //})
   },[])
-  return <div className="box">
-    INTERNAL INSTRUMENT | 
-    <ValueInput 
-      title="Volume" 
-      value={volume} 
-      step="0.1"
-      change={ x=>dispatch(actions.volume(x)) } 
-    /> | 
-    <Checkbox  
-      label="on"
-      checked={isOn}
-      onChange={ e=>dispatch(actions.localInstOn(e.target.checked))  }
-    />
-  </div>
+  return <Declutter>
+    <div className="box">
+      INTERNAL INSTRUMENT | 
+      <ValueInput 
+        title="Volume" 
+        value={volume} 
+        step="0.1"
+        change={ x=>dispatch(actions.volume(x)) } 
+      /> | 
+      <Checkbox  
+        label="on"
+        checked={isOn}
+        onChange={ e=>dispatch(actions.localInstOn(e.target.checked))  }
+      />
+    </div>
+  </Declutter>
 }
 
 export {WebMidi} 

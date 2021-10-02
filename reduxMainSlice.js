@@ -21,6 +21,7 @@ import {nextMelody} from './next'
 export const initialState = { 
   midiOutput: 0,
   tempo: 120,
+  declutter: true,
   player: {
     playClick: false
   },
@@ -111,6 +112,35 @@ const slice = createSlice({
       state.keys.first=limit(12,70)(parseInt(payload))
     },
     "keysWidth": (state,{payload})=>{state.keys.width=payload},
+    "declutter": (state,{payload})=>{
+      console.log("declutter",payload)
+      state.declutter=!(state.declutter)
+    },
+    "saveMelody": (state,{payload})=>{
+      console.log("saveMelody",payload)
+      const { meme,name="saved"  } = payload
+      const melody = meme? state?.memes?.[meme]?.src : payload.melody
+      melody.title = name
+      melody.key = name
+      state.melodies[name] = melody     
+    },
+    "memeToWorking": (state,{payload})=>{
+      //console.log("memeToWorking",payload)
+      if(state?.memes[payload]){
+        state.memes.working = state.memes[payload]
+      }
+    },
+    "melodyToWorking": (state,{payload})=>{
+      //console.log("melodyToWorking",payload)
+      if(payload?.notes){
+        const m = state.memes.working
+        m.src = payload
+        m.transpose=0
+        m.variationCount+=1
+        m.matchesRecording=null  //null=unknown
+        m.isVarying = false
+      }
+    },
     "memeSrc": (state,{payload})=>{
       const m = state.memes[payload.meme]
       m.src=payload.melody

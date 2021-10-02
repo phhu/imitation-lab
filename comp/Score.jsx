@@ -4,11 +4,11 @@ import {actions} from '../reduxStore'
 import {removeNonJson, forceQuantized} from '../utilsMelody'
 //import {melodies} from '../melodies'
 import Selector from './Selector'
+import {Declutter} from './Declutter'
 
 const {transposeMelody} = require('../utilsMelody')
 const {isQuantizedSequence} = core.sequences
 import {varyMelody} from '../vary'
-import {interpolateMelodies} from '../interpolate'
 
 export default ({
   meme,
@@ -18,6 +18,10 @@ export default ({
   hasCollapse = true,
   margin="10px", 
   padding="5px",
+  divClassName = undefined,
+  hasToWorking = true,
+  hasSave = false,
+
 }) => {
   const {
     transpose=0,
@@ -30,8 +34,9 @@ export default ({
   // const variationCount = useSelector(s=>s?.memes[meme]?.variationCount || 0)
   // const matchesRecording = useSelector(s=>s?.memes[meme]?.matchesRecording || false)
   const store = useStore()
+  const melodies = useSelector(s=>s.melodies)
   const dispatch = useDispatch()
-  
+  const declutter = useSelector(s=>s.declutter)
   //console.log("score",meme, transpose)
   const scoreDivId = `score${scoreid}`
   const melody = transposeMelody(parseInt(transpose) || 0)(src)
@@ -40,7 +45,8 @@ export default ({
   useEffect(() => {
     try {
       // WaterfallSVGVisualizer is bad...
-      const staff = new core.StaffSVGVisualizer(       
+      // Visualizer is ok - https://magenta.github.io/magenta-js/music/classes/_core_visualizer_.visualizer.html
+      const staff = new core.StaffSVGVisualizer (   // StaffSVGVisualizer       
         forceQuantized({stepsPerQuarter:4})(melody),    
         document.getElementById(scoreDivId)
       )
@@ -48,7 +54,7 @@ export default ({
       console.error("no score to draw",e)
       //console.error("Error in StaffSVGVisualizer:",e)
     }
-  },[src,transpose])
+  },[src,transpose,declutter])
 
   const play = () => {
     //console.log('playing',scoreDivId,melody)
@@ -65,45 +71,59 @@ export default ({
   const vary = () => dispatch(varyMelody({melody,meme}))
 
   return (
-    <div style={{
+    <div className={divClassName} style={{
       margin,
       padding,
       "backgroundColor": matchesRecording ? "#afa" : "#eee",
     }}>
       {title && (<span>{title} </span>)}
-      {hasSelect && (
-      <Selector
-        value={melody.key}
-        options={Object.values(store.getState().melodies)}
-        values={(o,i)=>o.key}
-        displayValues={(o,i)=>o.title || o.key}
-        change={(value)=>{
-          // if (interpolationTarget){
-          //   console.log("interpolating",interpolationTarget)
-          //   dispatch(interpolateMelodies({
-          //     // sourceMelody,
-          //     // goalMelody,
-          //     melody: store.getState().melodies[value],
-          //     meme,
-          //     interpolationTarget,              
-          //   }))
-          // } else {
-           // console.log("not interpolating",interpolationTarget)
-            dispatch(actions.memeSrc({
-              meme,
-              melody: store.getState().melodies[value],
-              transpose: 0, 
-              resetVarationCount: true,
-            }))
-          //}
-        }}
-      />
-      )} 
-      <button onClick={play}>Play</button>
-      <button onClick={stop}>Stop</button>
-      <button onClick={vary} id={varyButtonId} style={{
-        backgroundColor: isVarying ? "green": undefined
-      }}>Vary{variationCount?` (${variationCount})`:''}</button>
+      <Declutter>
+        {hasSelect && (
+        <Selector
+          value={melody.key}
+          options={Object.values(melodies)}
+          values={(o,i)=>o.key}
+          displayValues={(o,i)=>o.title || o.key}
+          change={(value)=>{
+            // if (interpolationTarget){
+            //   console.log("interpolating",interpolationTarget)
+            //   dispatch(interpolateMelodies({
+            //     // sourceMelody,
+            //     // goalMelody,
+            //     melody: store.getState().melodies[value],
+            //     meme,
+            //     interpolationTarget,              
+            //   }))
+            // } else {
+            // console.log("not interpolating",interpolationTarget)
+              dispatch(actions.memeSrc({
+                meme,
+                melody: store.getState().melodies[value],
+                transpose: 0, 
+                resetVarationCount: true,
+              }))
+            //}
+          }}
+        />
+        )} 
+      </Declutter>
+      <button onClick={play}>▶</button>
+      <button onClick={stop}>■</button>
+      <Declutter>
+        <button onClick={vary} id={varyButtonId} style={{
+          backgroundColor: isVarying ? "green": undefined
+        }}>Vary{variationCount?` (${variationCount})`:''}</button>
+
+        { hasToWorking &&
+          <button onClick={()=>dispatch(actions.memeToWorking(meme))}>🎯</button>
+        }
+        {  hasSave &&
+          <button onClick={()=>dispatch(actions.saveMelody({
+            meme, 
+            name:window.prompt("Save melody name:","saved melody")
+          }))}>💾</button>
+        }
+      </Declutter>
       <div id={scoreDivId}></div>
     </div>
   )

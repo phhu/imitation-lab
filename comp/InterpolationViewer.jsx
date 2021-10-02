@@ -30,14 +30,14 @@ export const InterpolationViewer = ({
   }
   const {memes} = store.getState()
   const testMatch = (row,col,meme) => {
-    // console.log ("testMatch",m2[row][col],memes[meme]?.src,sequencesIdentical(m2[row][col],memes[meme]?.src))
+    //console.log ("testMatch",row,col,m2[row][col],memes[meme]?.src,sequencesIdentical(m2[row][col],memes[meme]?.src))
     return sequencesIdentical(m2[row][col],memes[meme]?.src)
   }
   const getLabel = (row,col) => 
    testMatch(row,col,'a') ? "A" :     // (row===0 && col===0)
-    (row===0 && col===size-1) ? "B" :
-    (row===size-1 && col===0) ? "C" :
-    (row===size-1 && col===size-1) ? "D" :
+   testMatch(row,col,'b') ? "B" :
+   testMatch(row,col,'c') ? "C" :
+   testMatch(row,col,'d') ? "D" :
     (size*row+col)
   
   return (

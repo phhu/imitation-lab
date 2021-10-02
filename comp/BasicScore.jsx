@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import {useDispatch, useSelector, useStore} from 'react-redux'
 const {isQuantizedSequence} = core.sequences
 import {forceQuantized} from '../utilsMelody'
+import {actions} from '../reduxStore'
 
 export default ({
   melody,
@@ -14,6 +15,7 @@ export default ({
 
   const scoreDivId = `score${scoreid}`
   const store = useStore()
+  const dispatch = useDispatch()
   useEffect(() => {
     try {
       // WaterfallSVGVisualizer is bad...
@@ -38,15 +40,33 @@ export default ({
     midiPlayer.stop()
   }
   return (
-    <div style={{
+    <div  style={{
       margin,
       padding,
       backgroundColor: (highlight ? "#88f":"inherit")
     }}>
-      {title && (<span>{title} </span>)}
-      <button onClick={play}>Play</button>
-      <button onClick={stop}>Stop</button>
-      <div className="inline" id={scoreDivId}></div>
+      <table>
+        <tbody><tr>
+          <td>
+            {title && (<span>{title} </span>)}
+          </td>
+          <td>
+            <button onClick={play}>▶</button>
+            <button onClick={stop}>■</button>
+            <button onClick={()=>dispatch(actions.melodyToWorking(melody))}>🎯</button>
+            {  true &&
+              <button onClick={()=>dispatch(actions.saveMelody({
+                melody, 
+                name:window.prompt("Save melody name:","saved melody")
+              }))}>💾</button>
+            }
+          </td>
+          <td>
+          <div className="inlineBlock"  id={scoreDivId}></div>
+          </td>
+        </tr></tbody>
+      </table>
+
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano'
 import 'react-piano/dist/styles.css'
 import ValueInput from './ValueInput'
 import {extraLeft, extraRight, makeNote} from '../utilsMelody'
+import {Declutter} from './Declutter'
 
 function Keyboard(props) {
   //const store = useStore()
@@ -31,18 +32,20 @@ function Keyboard(props) {
 
   return (
     <div className="box">
-      KEYBOARD
-      | Shift <ValueInput value={firstNote} change={(value)=>{
-        //console.log("changed value",value,parseInt(value)>40,parseInt(value))
-        const x = parseInt(value)
-        //if (x>40){
-          dispatch(actions.keysFirst(x))
-          const note = makeNote(parseInt(x))
-          midiPlayer.playNoteDown(note)
-          setTimeout(()=>midiPlayer.playNoteUp(note) ,100 )
-        //}
-      }}/>
-      | <span>Caps Lock: +8ve</span>
+      <Declutter>
+        KEYBOARD
+        | Shift <ValueInput value={firstNote} change={(value)=>{
+          //console.log("changed value",value,parseInt(value)>40,parseInt(value))
+          const x = parseInt(value)
+          //if (x>40){
+            dispatch(actions.keysFirst(x))
+            const note = makeNote(parseInt(x))
+            midiPlayer.playNoteDown(note)
+            setTimeout(()=>midiPlayer.playNoteUp(note) ,100 )
+          //}
+        }}/>
+        | <span>Caps Lock: +8ve</span>
+      </Declutter>
       <Piano
         noteRange={{ first: firstNote, last: lastNote }}
         playNote={(midiNumber) => {

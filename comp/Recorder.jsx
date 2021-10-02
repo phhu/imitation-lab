@@ -4,6 +4,7 @@ import {actions} from '../reduxStore'
 import {forceQuantized,removeNonJson} from '../utilsMelody'
 import {matchRecording} from '../compare'
 import Checkbox from './Checkbox'
+import {Declutter} from './Declutter'
 
 import Score from './Score'
 const {trim, quantizeNoteSequence} = core.sequences
@@ -77,23 +78,28 @@ export default function Recorder(props) {
     }}>
       RECORDER &nbsp;&nbsp;
       <button id="rec" ref={props.btnRecord} onClick={record} style={{
-        backgroundColor: isRecording ? "red" : "inherit"
+        backgroundColor: isRecording ? "red" : "#fdd"
       }}>REC</button>
-      <button id="stop"  ref={props.btnStop}  onClick={stop}>Stop</button>
-      <Checkbox 
-        checked={useClick} 
-        label="Use click"
-        onChange={e=>dispatch(actions.useClick(e.target.checked))}
-      />    
+      <button id="stop"  ref={props.btnStop}  onClick={stop}>■</button>
+      
+      <Declutter>
+        <Checkbox 
+          checked={useClick} 
+          label="Use click"
+          onChange={e=>dispatch(actions.useClick(e.target.checked))}
+        />    
+      </Declutter>
       {/* <input type="checkbox" id="useClick"></input>
       <label htmlFor="useClick">Use click</label> */}
-      &nbsp; <span>{noteJustPlayed?'♪':''}</span>
+      &nbsp; <code>{noteJustPlayed?'♪':'\u00A0'}</code>
       <Score 
         scoreid="Rec" 
         meme="recording" 
         hasSelect={false} 
         padding="0px" 
         margin="0px"
+        divClassName="inline"
+        hasSave={true}
       />
     </div>
   )

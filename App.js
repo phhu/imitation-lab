@@ -11,19 +11,20 @@ import Checkbox from './comp/Checkbox'
 import ValueInput from './comp/ValueInput'
 import LocalMidiInst from './comp/LocalMidiInst'
 import {InterpolationViewer} from './comp/InterpolationViewer'
-
+import {Declutter} from './comp/Declutter'
 import {Provider, useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from './reduxStore'
 import {makeNote} from './utilsMelody'
 import {interpolateMelodies} from './interpolate'
 import {nextMelody} from './next'
 const {isQuantizedSequence} = core.sequences
-
+ 
 function App() {
   const store=useStore()
   const tempo = useSelector(s=>s.tempo)
   const midiOutput = useSelector(s=>s.midiOutput)
   const {playClick} = useSelector(s=>s.player)
+  const declutter = !!(useSelector(s=>s.declutter))
   const {
     isInterpolating,
     melodies:interpolatedMelodies
@@ -58,6 +59,8 @@ function App() {
       },50)
     })
   }
+  const next = ()=>{ dispatch(nextMelody()) }
+
   useEffect(()=>{
     console.log("adding sostenuto pedal listener")
     const addPedalListener = (inputs) => {
@@ -68,7 +71,6 @@ function App() {
           }
         })
         // input.addListener("noteon","all",(e)=>{
-          
         // })
       })
     }
@@ -82,53 +84,31 @@ function App() {
       sources: ["a","c","b","d"]    
     }))
   }
+  const keyActions = {
+    " ": ()=>{playRec() },
+    "ArrowRight":  next,
+    "Escape":  ()=>{console.log("stop")},
+  }
   useEffect(()=>{
     if(interpolatedMelodies.length===0){
       doInterpolation()
     }
-  },[interpolatedMelodies])
-
+  },[interpolatedMelodies])  //🎯
   // https://stackoverflow.com/questions/43503964/onkeydown-event-not-working-on-divs-in-react
   return <div id="app" tabIndex={-1} onKeyUp={(e) => {
-      //console.log("key",e)
-      if (e.key===" "){
-        playRec();
-        e.preventDefault();
-        return false;
+      //console.log("key",e.key)
+      if (keyActions[e.key]){
+        keyActions[e.key]()
+        e.preventDefault()
+        return false 
        }
     }}>
-
-    <Score scoreid="working" meme="working" title="WORKING" />
+    
+    <Score scoreid="working" meme="working" title=" TARGET" hasSave={true} hasToWorking={false} />
     <Recorder {...{btnRecord,btnStop}} />
-    <Keyboard />
-   
-    <LocalMidiInst />
-    {/* <button onClick={()=>Tone.start()}>Start</button> */}
-
+    
     <div className="box">
-      CONTROLS &nbsp;&nbsp;
-      Midi out <Selector 
-        options={midiPlayer.availableOutputs}
-        value={midiOutput}
-        change={(value)=>{
-          midiPlayer.outputs = [midiPlayer.availableOutputs[value]]
-          dispatch(actions.midiOutput(value))
-          console.log("output changed to",value)
-        }}
-      /> &nbsp;&nbsp;
-      <ValueInput 
-        title="Tempo" 
-        value={tempo} 
-        change={ x=>dispatch(actions.tempo(x)) } 
-      />
-      <Checkbox 
-        checked={playClick} 
-        label="Click on play"
-        onChange={e=>dispatch(actions.playClick(e.target.checked))}
-      /> 
-
-      <br />
-      
+      {/* <Declutter>CONTROLS &nbsp;&nbsp;</Declutter> */}
       <button onClick={()=>{
         console.log("playing seq")
         const state= store.getState()
@@ -150,53 +130,79 @@ function App() {
         setTimeout(()=>btnStop.current.click(),4000)
       }}>Timed Rec</button>
 
-      <button onClick={()=>{
-        dispatch(nextMelody())
-      }}>Next</button>
-
-
+      <button onClick={next}>Next</button>
+      <button onClick={()=>dispatch(actions.declutter())}>Toggle clutter</button>
 
     </div>
 
-    <div className="box">
-      DEBUG &nbsp;&nbsp;
-      {/* <button onClick={()=>{
-        //console.log("playing note")
-        const note = makeNote(51)    // {pitch:50,velocity:50}  
-        midiPlayer.playNoteDown(note)
-        setTimeout(()=>midiPlayer.playNoteUp(note) ,500)
-      }}>play note</button> */}
+    <Keyboard />
+    <LocalMidiInst />
+     
+    <Declutter>
+      <div className="box">
+        PLAYER &nbsp;&nbsp;
+        Midi out <Selector 
+          options={midiPlayer.availableOutputs}
+          value={midiOutput}
+          change={(value)=>{
+            midiPlayer.outputs = [midiPlayer.availableOutputs[value]]
+            dispatch(actions.midiOutput(value))
+            console.log("output changed to",value)
+          }}
+        /> &nbsp;&nbsp;
+        <ValueInput 
+          title="Tempo" 
+          value={tempo} 
+          change={ x=>dispatch(actions.tempo(x)) } 
+        />
+        <Checkbox 
+          checked={playClick} 
+          label="Click on play"
+          onChange={e=>dispatch(actions.playClick(e.target.checked))}
+        /> 
+      </div>
 
-      <button 
-        onClick={doInterpolation}
-        className = {isInterpolating ? "interpolating": ""}
-      >Interpolate</button>
+
+
+      <div className="box">
+        DEBUG &nbsp;&nbsp;
+        {/* <button onClick={()=>{
+          //console.log("playing note")
+          const note = makeNote(51)    // {pitch:50,velocity:50}  
+          midiPlayer.playNoteDown(note)
+          setTimeout(()=>midiPlayer.playNoteUp(note) ,500)
+        }}>play note</button> */}
+
+        <button 
+          onClick={doInterpolation}
+          className = {isInterpolating ? "interpolating": ""}
+        >Interpolate</button>
+        
+        <button onClick={
+          ()=>console.log(store.getState())
+        }>State</button>
+        
+        <button onClick={()=>{
+          console.log("resetting, including midi reset")
+          localStorage.removeItem("state")
+          window.location.reload(false)
+
+          WebMidi.outputs.forEach(o=>{
+            o.stopNote("all")
+            o.sendReset()
+          })
+        }}>Reset</button>
       
-      <button onClick={
-        ()=>console.log(store.getState())
-      }>State</button>
-      
-      <button onClick={()=>{
-        console.log("resetting, including midi reset")
-        localStorage.removeItem("state")
-        window.location.reload(false)
-
-        WebMidi.outputs.forEach(o=>{
-          o.stopNote("all")
-          o.sendReset()
-        })
-      }}>Reset</button>
-    
-    </div>
-    <div className="box">
-      SOURCES
-      <Score scoreid="a" meme="a" title="A" padding="0px" margin="0px"/>
-      <Score scoreid="b" meme="b" title="B" padding="0px" margin="0px"/>
-      <Score scoreid="c" meme="c" title="C" padding="0px" margin="0px"/>
-      <Score scoreid="d" meme="d" title="D" padding="0px" margin="0px"/>
-    </div>
-    <InterpolationViewer />
-  
+      </div>
+      <div className="box">
+        SOURCES
+        <Score scoreid="a" meme="a" title="A" padding="0px" margin="0px"/>
+        <Score scoreid="b" meme="b" title="B" padding="0px" margin="0px"/>
+        <Score scoreid="c" meme="c" title="C" padding="0px" margin="0px"/>
+        <Score scoreid="d" meme="d" title="D" padding="0px" margin="0px"/>
+      </div>
+      <InterpolationViewer />
+    </Declutter>
   </div>
 }
 

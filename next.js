@@ -21,7 +21,7 @@ export const nextMelody = createAsyncThunk(
       newCurrent = next(newCurrent)
       nextMelody = i.melodies[newCurrent] || BLANK
     }
-    console.log("next melody",newCurrent,nextMelody)
+    //console.log("next melody",newCurrent,nextMelody)
     return {
       nextMelody: nextMelody ?? BLANK, 
       newCurrent

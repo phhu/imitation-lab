@@ -18,9 +18,9 @@ const notesAsInt = notes => notes.map(n => ({
 }))
 
 export const sequencesIdentical = (baseSeq,compSeq) => 
-   isEqual(notesAsInt(baseSeq.notes),notesAsInt(compSeq.notes)) &&
-   isEqual(baseSeq.quantizationInfo,compSeq.quantizationInfo) &&
-   isEqual(parseInt(baseSeq.totalQuantizedSteps),parseInt(compSeq.totalQuantizedSteps))
+   isEqual(notesAsInt(baseSeq.notes),notesAsInt(compSeq.notes))
+   //&& isEqual(baseSeq.quantizationInfo,compSeq.quantizationInfo) 
+   //&& isEqual(parseInt(baseSeq.totalQuantizedSteps),parseInt(compSeq.totalQuantizedSteps))
 
 export const matchRecording = (recording, sendRecording=true) => (dispatch, getState) => {
   const {memes} = getState()
