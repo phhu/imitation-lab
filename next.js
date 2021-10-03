@@ -4,27 +4,32 @@ import { sequencesMatch,sequencesIdentical} from './compare'
 import { BLANK } from './melodies'
 
 
-const next = cur => cur+1
+
 
 export const nextMelody = createAsyncThunk(
   'meme/next',
   async ({
-    skipDuplicates=true
+    skipDuplicates=true,
+    direction,
   }={}, {dispatch,getState}) => {
     const {memes, interpolate:i} = getState()
-    // sequencesMatch check in here
-    // plus need some idea of direction
+    const size = i.melodies.length
+    const width = Math.ceil(Math.sqrt(size))
     const currentMelody = i.melodies[i.current]
+    direction = direction || i.direction || [0,1]
+    const next = (cur,[xdir,ydir]) => cur+xdir+(width*ydir)
     let nextMelody = currentMelody 
     let newCurrent = i.current
-    while ( sequencesIdentical(currentMelody,nextMelody)){
-      newCurrent = next(newCurrent)
-      nextMelody = i.melodies[newCurrent] || BLANK
+    // don't allow same melody twice
+    while ( sequencesIdentical(currentMelody,nextMelody)){   // true first time
+      newCurrent = (2*size + next(newCurrent,direction)) % size
+      nextMelody = i.melodies[newCurrent] ?? BLANK
     }
     //console.log("next melody",newCurrent,nextMelody)
     return {
       nextMelody: nextMelody ?? BLANK, 
-      newCurrent
+      newCurrent,
+      direction
     }
   },{}
 )

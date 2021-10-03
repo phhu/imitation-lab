@@ -61,6 +61,7 @@ export default ({
     }}>
       <table>
         <tbody><tr>
+          <Declutter>
           <td>
             <span style={{textAlign:"right",float:"left",width:"1.3em",fontWeight:"900"}}>
               {title ?? ''} 
@@ -94,6 +95,7 @@ export default ({
               >💾</button>
             }
           </td>
+          </Declutter>
           <td>
           <div className="inlineBlock"  id={scoreDivId}></div>
           </td>

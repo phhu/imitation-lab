@@ -11,7 +11,7 @@ const state = store.getState()
 
 import { createSlice } from '@reduxjs/toolkit'
 const fp = require('lodash/fp')
-import {cloneDeep} from 'lodash'
+import {cloneDeep,zipWith} from 'lodash'
 import {melodies} from './melodies'
 import {removeNonJson,roundToDPs,limit} from './utilsMelody'
 import {varyMelody} from './vary'
@@ -93,8 +93,11 @@ export const initialState = {
   melodies: cloneDeep(melodies),
   interpolate: {
     melodies: [],
+    matches: [],
+    currentMatches: [],
     isInterpolating: false,
     current: 0,
+    direction: [1,0],
   },
   history: [],
 
@@ -106,6 +109,7 @@ const slice = createSlice({
   reducers: {
     "tempo": (state,{payload})=>{state.tempo=payload},
     "isRecording": (state,{payload})=>{state.recorder.isRecording=!!payload},
+    "isInterpolating": (state,{payload})=>{state.interpolate.isInterpolating=!!payload},
     "isPlaying": (state,{payload})=>{
       state.memes[payload.meme].isPlaying=!!(payload?.value)
     },
@@ -170,13 +174,21 @@ const slice = createSlice({
     },  
     "recording": (state,{payload}) => {
       //console.log("setting recording",payload)
-      const {recording, matches=[]} = payload
+      const {recording, matches={},interpolationMatches} = payload
       if (recording){
         state.memes.recording.src=removeNonJson(recording)
       }
       Object.entries(matches).forEach(
         ([key,val]) => {state.memes[key].matchesRecording = val} 
       )
+      if(interpolationMatches && interpolationMatches?.length>0){
+        state.interpolate.currentMatches = interpolationMatches
+        state.interpolate.matches = zipWith(
+          state.interpolate.matches,
+          interpolationMatches,
+          (a,b)=>a||b
+        )
+      }
     }
   },
   extraReducers: (builder) => {builder
@@ -217,7 +229,7 @@ const slice = createSlice({
     })
     .addCase(nextMelody.fulfilled, (state, {meta,payload,type}) => {
       //console.log("got nextMelody.fulfilled")
-      const {nextMelody, newCurrent} = payload
+      const {nextMelody, newCurrent,direction} = payload
       const {key,title} = state.memes['target']
       const m = state.memes['target']
       m.src={title, key, ...nextMelody}
@@ -227,6 +239,9 @@ const slice = createSlice({
       m.isVarying = false
       if (newCurrent || newCurrent==0){
         state.interpolate.current = newCurrent
+      }
+      if (direction){
+        state.interpolate.direction = direction
       }
     })
     .addCase(nextMelody.rejected, (state, action) => {

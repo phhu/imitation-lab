@@ -1,5 +1,6 @@
 import { createAsyncThunk} from '@reduxjs/toolkit'
 import {removeNonJson, forceQuantized,trimToBars} from './utilsMelody'
+import {actions} from './reduxStore'
 const {trim} = core.sequences
 //import {melodies} from './melodies'
 // https://magenta.github.io/magenta-js/music/classes/_music_vae_model_.musicvae.html#interpolate
@@ -40,6 +41,7 @@ export const interpolateMelodies = createAsyncThunk(
 
 export const doInterpolation = (dispatch)=>{
   console.log("interpolating")
+  dispatch(actions.isInterpolating(true))
   dispatch(interpolateMelodies({
     sources: ["a","c","b","d"]    
   }))

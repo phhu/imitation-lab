@@ -84,6 +84,7 @@ export default function Recorder({
       sendRecording:true,
       playSound:true,
       playSoundOnFail:true,
+      checkInterpolations:true,
     })(rec)), 
   ) 
 
@@ -97,11 +98,12 @@ export default function Recorder({
       <button 
         id="btnRec" 
         ref={btnRecord} 
+        title="Record / stop recording. After stopping, TARGET will show in green if the recording matches it"
         onClick={record} 
         style={{
           width: "4.5em", 
           padding:"0px", 
-          backgroundColor: isRecording ? "red" : "#fdd"
+          backgroundColor: isRecording ? "red" : "inherit"
         }
       }>{isRecording?"⏹STOP":"⏺ REC"}</button>
       

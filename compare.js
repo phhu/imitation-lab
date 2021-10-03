@@ -1,5 +1,5 @@
 import {actions} from './reduxStore'
-import {mapValues, isEqual} from 'lodash'
+import {mapValues, isEqual,map} from 'lodash'
 import {playDrumNow} from './transport'
 
 export const sequencesMatch = (baseSeq,compSeq) => { 
@@ -33,19 +33,27 @@ export const matchRecording = ({
   sendRecording=true, 
   playSound = false,
   playSoundOnFail = false,
+  checkInterpolations = false,
 }={}) => (recording) => (dispatch, getState) => {
-  const {memes} = getState()
+  const {memes,interpolate:i} = getState()
   const matches = mapValues(
     memes,
     (meme,key)=>((key==="recording") ? null :    // don't match recording against self
       sequencesMatch(meme.src,recording)
     ),
   )
+  const interpolationMatches = (!checkInterpolations && i?.melodies.length) ? 
+    undefined : map(
+      i.melodies,
+      (melody)=> sequencesMatch(melody,recording)
+    )
+
   if(playSound && matches.target){playDrumNow(50)}
   if(playSoundOnFail && !(matches.target)){playDrumNow(45)}
 
   dispatch(actions.recording({
     recording: sendRecording && recording,
-    matches
+    matches,
+    interpolationMatches
   }))
 }

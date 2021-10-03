@@ -69,7 +69,7 @@ export default function LocalMidiInst(props){
       })
 
       const midiNoteOff = pitch => midiNotes.forEach(cancelNote(pitch))
-      midiThruIn.addListener("noteoff",1,(e)=>{
+      midiThruIn.addListener("noteoff","all",(e)=>{
         const {volume, on} = store.getState().localMidiInst
         if (on){
         //console.log("*localMidiInst note off",e)

@@ -32,6 +32,7 @@ function App() {
 
   const [runningPlayReview, setRunningPlayReview] = useState(false)
   const [runningPlayRec, setRunningPlayRec] = useState(false)
+  const [runningTimedRec, setRunningTimedRec] = useState(false)
 
   const btnRecord = useRef()
   const btnStopRecording = useRef()
@@ -79,11 +80,7 @@ function App() {
   }
   
   const playRec = (e) =>{
-    //const state= store.getState()
-    // midiPlayer.isPlaying() && midiPlayer.stop()
-    // recorder.isRecording() && recorder.stop()
-    //{startPlayer, stopPlayer
-    console.log("meme time",memeTimeMs({meme:"target"}))
+    //console.log("meme time",memeTimeMs({meme:"target"}))
     setRunningPlayRec(true)
     startPlayer({meme:"target"})
     .then(()=>new Promise((resolve,reject)=>{
@@ -108,46 +105,75 @@ function App() {
   }
 
   const timedRec = ()=>{
+    setRunningTimedRec(true)
     //window.btnRecord = btnRecord.current
     btnRecord.current.click()
     setTimeout(
-      ()=>btnStopRecording.current.click(),
-      memeTimeMs({meme:"target"})+750
+      ()=>{
+        setRunningTimedRec(false)
+        btnStopRecording.current.click()
+      },
+      memeTimeMs({meme:"target"})+1000
     )
   }
-  const testBtn = ()=>{
-    console.log("testBtn",
-      //btnTargetPlay.current.click() 
-      startPlayer({meme:"target"})
-      .then(()=>console.log("fin target start rec"))
-      .then(()=>startPlayer({meme:"recording"})  )
-      .then(()=>console.log("fin rec"))
-      .catch(err=>err && console.error("testBtn error",err))
-    )
+  // const testBtn = ()=>{
+  //   console.log("testBtn",
+  //     //btnTargetPlay.current.click() 
+  //     startPlayer({meme:"target"})
+  //     .then(()=>console.log("fin target start rec"))
+  //     .then(()=>startPlayer({meme:"recording"})  )
+  //     .then(()=>console.log("fin rec"))
+  //     .catch(err=>err && console.error("testBtn error",err))
+  //   )
+  // }
+  const next = ({direction=undefined}={}) => ()=>{ 
+    dispatch(nextMelody({direction})) 
+    setTimeout(()=>{
+      playRec()
+
+      //btnTargetPlay.current.click()
+    }, 200) 
   }
-  const next = ()=>{ dispatch(nextMelody()) }
 
   const keyActions = {
     " ": ()=>{playRec() },
     "Alt": ()=>{playReview() },
-    "ArrowRight": next,
-    "Escape":  ()=>{console.log("stop")},
+    "AltGraph": ()=>{timedRec() },
+    "ArrowRight": next({direction:[1,0]}),
+    "ArrowLeft": next({direction:[-1,0]}),
+    "ArrowUp": next({direction:[0,-1]}),
+    "ArrowDown": next({direction:[0,1]}),
+    "Escape":  ()=>{
+      stopPlayer()
+      btnStopRecording.current.click()
+      btnTargetStop.current.click()
+      btnRecStop.current.click()
+      setRunningPlayReview(false)
+      setRunningPlayRec(false)
+      setRunningTimedRec(false)
+    },
+    "Enter": next({}),
   }
   const onKeyDown = (e) => {
     //console.log("key",e.key)
     if (keyActions[e.key]){
-      keyActions[e.key]()
+       keyActions[e.key]()
       e.preventDefault()
       return false 
      }  
   }
-  const reset = ()=>{
-    console.log("resetting, including midi reset")
-    localStorage.removeItem("state")
+  // see https://www.midi.org/forum/1345-help-sysex-yamaha-cp33
+  const midiReset = () => {
     WebMidi.outputs.forEach(o=>{
       o.stopNote("all")
       o.sendReset()
     })
+  }
+
+  const reset = ()=>{
+    console.log("resetting, including midi reset")
+    localStorage.removeItem("state")
+    midiReset()
     window.location.reload(false)
   }
 
@@ -162,11 +188,15 @@ function App() {
             title="Print app state to browser console"
             onClick={()=>console.log(store.getState())}
           >State</button>
-          &nbsp;
           <button 
             title="Reset application to defaults, reset MIDI, and reload"
             onClick={reset}
-          >Reset</button> &nbsp;&nbsp;
+          >Reset</button>
+          <button 
+            title="Reset MIDI"
+            onClick={midiReset}
+          >MIDI Reset</button> 
+          &nbsp;&nbsp;
         </Declutter> 
         <button 
           title="Toggle simplified UI"
@@ -193,37 +223,54 @@ function App() {
     
     <div className="box">
       {/* <Declutter>CONTROLS &nbsp;&nbsp;</Declutter> */}
-      <button style={{backgroundColor: (runningPlayReview? "green":"inherit")}} 
-        onClick={playReview}>Review Play</button>
-      <button style={{backgroundColor: (runningPlayRec? "blue":"inherit")}} 
-        onClick={playRec}>Play Rec</button>
-      <button onClick={timedRec}>Timed Rec</button>
-      <button onClick={next}>Next</button>
-      <button onClick={testBtn}>Test</button>
+      <button 
+        onClick={playReview}
+        style={{backgroundColor: (runningPlayReview? "green":"inherit")}}
+        title="Play recording, then target for comparison [Alt]"
+      >Review Play</button>
+      <button 
+        onClick={playRec}
+        style={{backgroundColor: (runningPlayRec? "blue":"inherit")}} 
+        title="Play target, then record. [Spacebar] (or sostenuto pedal)"
+      >Play Rec</button>
+      <button 
+        onClick={timedRec}
+        style={{backgroundColor: (runningTimedRec ? "red":"inherit")}}
+        title="Record for the length of TARGET, stopping automatically [AltGr]"
+      >Timed Rec</button>
+      <button 
+        onClick={next()}
+        title="Go to next melody [enter]. Use arrow keys instead to choose direction of purple square on grid below"
+      >Next</button>
       {/* 
+      <button onClick={testBtn}>Test</button>
       <button onClick={()=>{ btnTargetStop.current.click() }}>Targ Stop</button>
       <button onClick={()=>{ btnRecPlay.current.click() }}>Rec Play</button>
       <button onClick={()=>{ btnRecStop.current.click() }}>Rec Stop</button>
       <button onClick={()=>{ btnRecord.current.click() }}>REC</button>
       <button onClick={()=>{ btnStopRecording.current.click() }}>REC STOP</button> 
       */}
-
-      <ValueInput 
-        size={1}
-        label="Tempo" 
-        title="Tempo for playback and recording [beats per minute]"
-        value={tempo} 
-        change={ x=>dispatch(actions.tempo(x)) } 
-      />
-
+      <Declutter>
+        <ValueInput 
+          size={1}
+          label="Tempo" 
+          title="Tempo for playback and recording [beats per minute]"
+          value={tempo} 
+          change={ x=>dispatch(actions.tempo(x)) } 
+        />
+      </Declutter>  
     </div>
 
     <Keyboard />
-     
+    
     <Declutter>
       <Player />
-      <LocalMidiInst />
-      <InterpolationViewer />
+      <LocalMidiInst />    
+    </Declutter>
+    
+    <InterpolationViewer />
+    
+    <Declutter>
       <div className="box">
         SOURCES
         <Score scoreid="a" meme="a" title="A" padding="0px" margin="0px"/>

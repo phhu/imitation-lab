@@ -4,6 +4,7 @@ import BasicScore from './BasicScore'
 import {chunk} from 'lodash'
 import {sequencesIdentical} from '../compare'
 import {doInterpolation} from '../interpolate'
+import {Declutter} from './Declutter'
 const {isQuantizedSequence} = core.sequences
 /* import Checkbox from './Checkbox'
   <Checkbox 
@@ -46,28 +47,37 @@ export const InterpolationViewer = ({
   
   return (
   <div className="box">
-    INTERPOLATION &nbsp;
-    <button 
-      title="(Re-)run Google Magenta interpolation to generate new melodies from SOURCES"
-      onClick={()=>doInterpolation(dispatch)}
-      className = {isInterpolating ? "interpolating": ""}
-    >Interpolate</button>
+    <Declutter>
+      INTERPOLATION &nbsp;
+      <button 
+        title="(Re-)run Google Magenta interpolation to generate new melodies from SOURCES"
+        onClick={()=>doInterpolation(dispatch)}
+        className = {isInterpolating ? "interpolating": ""}
+      >Interpolate</button>
+    </Declutter>
     <table><tbody>
     {m2.map((mr,row)=>(
       <tr key={"row"+row}>
       {mr.map((m,col)=>{
         const currentlyViewed = (activeScore==(size*row+col))
         const currentTarget = (i.current==(size*row+col))
+        const hasBeenMatched = (i?.matches?.[size*row+col])
+        const currentlyMatched = (i?.currentMatches?.[size*row+col])
         return (
         <td key={"col"+col}>
           <button 
             className="interpolationButton"
             title={"View melody "+ (size*row+col) + 
               (currentlyViewed ? ' (Currently viewed)' :'') +
-              (currentTarget ? ' (Current target)' :'') 
+              (currentTarget ? ' (Current target)' :'') +
+              (hasBeenMatched ? ' (has been matched)' :'')
             } 
             style={{
-              backgroundColor: (currentTarget ? "blue":"inherit") 
+              backgroundColor: (
+                currentTarget ? "blue":
+                currentlyMatched ? "green" :
+                hasBeenMatched ? "darkgreen":
+                "inherit") 
               ,fontWeight: (currentlyViewed  ? "900":"normal") 
             }}
             onClick={()=>{
@@ -80,17 +90,18 @@ export const InterpolationViewer = ({
       </tr>
     ))}
     </tbody></table>
-    <BasicScore 
-        scoreid={"activeScore"} 
-        melody={i.melodies[activeScore]} 
-        title={activeScore}
-        highlight={i.current==activeScore}
-        index={activeScore}
-        key="activeScore"
-        padding="0px" 
-        margin="0px"
-      />
+    {/* for socre highlight: i.current==activeScore */}
 
+      <BasicScore 
+          scoreid={"activeScore"} 
+          melody={i.melodies[activeScore]} 
+          title={activeScore}
+          highlight={false}
+          index={activeScore}
+          key="activeScore"
+          padding="0px" 
+          margin="0px"
+        />
     {/* {i.melodies.map((m,idx)=>(<BasicScore 
         scoreid={"int"+idx} 
         melody={m} 
