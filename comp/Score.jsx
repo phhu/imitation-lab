@@ -21,21 +21,25 @@ export default ({
   padding="5px",
   divClassName = undefined,
   hasToWorking = true,
-  hasSave = false
+  hasSave = false,
+  btnPlay,
+  btnStop,
 }) => {
   const { 
     transpose=0,
-    src=BLANK,
+    src,
     variationCount=0,
     matchesRecording=false,
     isVarying=false,
+    isPlaying=false,
   } = useSelector(s=>(s?.memes?.[meme])) || {}
   const store = useStore()
   const melodies = useSelector(s=>s.melodies)
   const dispatch = useDispatch()
   const declutter = useSelector(s=>s.declutter)
-  const [isPlaying, setIsPlaying] = useState(false)  
-
+  
+  //const [isPlaying, setIsPlaying] = useState(false)  
+  const setIsPlaying = value => dispatch(actions.isPlaying({meme,value}))
   const scoreDivId = `score${scoreid}`
   const melody = transposeMelody(parseInt(transpose) || 0)(src) || BLANK
 
@@ -59,7 +63,7 @@ export default ({
       stop()
     } else {
       setIsPlaying(true)
-      startPlayer(
+      return startPlayer(
         {melody, tempo:store.getState().tempo}
       ).then(()=>{
         setIsPlaying(false)
@@ -115,11 +119,17 @@ export default ({
         title="Play this melody" 
         onClick={play}
         className="btnPlayScore"
+        ref={btnPlay}
         style={{ 
           backgroundColor: isPlaying ? "green" : "inherit",
         }}
       >{isPlaying ? "■":"▶" }</button>
-      <button className="btnStopScore" title="Stop playing this melody" onClick={stop}>■</button>
+      <button 
+        className="btnStopScore" 
+        ref={btnStop}
+        title="Stop playing this melody" 
+        onClick={stop}
+      >■</button>
       <Declutter>
         <button 
           title="Produce a variation of this melody using Google Magenta"

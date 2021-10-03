@@ -51,3 +51,5 @@ button {
 }
 .btnPlayScore {width:2em}
 #btnRecStop, .btnStopScore {display:none}
+
+span#title {font-weight:bold}

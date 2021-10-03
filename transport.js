@@ -12,15 +12,19 @@ const regulariseMelody = ({velocity}) => melody => ({
 //const p = ()=>window.player
 const p = ()=>midiPlayer
 
+export const playDrumNow = (pitch=50) => {
+  player.start({totalTime:0,notes:[{pitch,isDrum:true}]})
+}
 
 export const startPlayer = ({
   melody,
-  //meme,
+  meme,
   tempo=store?.getState()?.tempo || 120,
   velocity=75,
   //regulariseVelocity=true,
 }) => {
-  console.log("startPlayer", melody)
+  if(meme){melody =store.getState().memes?.[meme]?.src}
+  //console.log("startPlayer", melody)
   stopPlayer()
   return p().start(
     regulariseMelody({velocity})(melody),

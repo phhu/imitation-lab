@@ -46,7 +46,7 @@ export const InterpolationViewer = ({
   
   return (
   <div className="box">
-    INTERPOLATIONS &nbsp;
+    INTERPOLATION &nbsp;
     <button 
       title="(Re-)run Google Magenta interpolation to generate new melodies from SOURCES"
       onClick={()=>doInterpolation(dispatch)}

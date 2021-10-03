@@ -30,10 +30,10 @@ export default function ValueInput({
   }
 
   return <span >
-      <label className="valueInput">{label}
+      <label className="valueInput">{label}&nbsp;
       <input size={size} title={title} type="text"  {...{value,onChange}}></input>
       <button title="Decrease (Shift +10 | Ctrl +2 | Alt +12)" onClick={makeOnClick(-parseFloat(step))}>-</button>
-      <button title="Increase (Shift -10 | Ctrl -2 | Alt -12)"onClick={makeOnClick(+parseFloat(step))}>+</button>
+      <button title="Increase (Shift -10 | Ctrl -2 | Alt -12)" onClick={makeOnClick(+parseFloat(step))}>+</button>
       </label>
     </span>
 }

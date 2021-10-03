@@ -35,3 +35,6 @@ export const trimToBars = bars => x=>trim(
 
 export const forceQuantized = ({stepsPerQuarter=4}) => melody =>
   isQuantizedSequence(melody) ? melody : quantizeNoteSequence(melody,stepsPerQuarter)
+
+export const delay = (ms) =>
+  ()=>(new Promise((res)=>setTimeout(()=>{res(true)},ms)  ))  

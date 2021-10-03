@@ -19,7 +19,12 @@ Promise.all([
   recorder.initialize()
 ])
 
-export default function Recorder(props) {
+export default function Recorder({
+   btnRecord,
+   btnStopRecording, 
+   btnRecPlay,
+   btnRecStop, 
+}={}) {
   //let [isRecording, setIsRecording] = useState(false)
   //let [noteBeenPlayed, setNoteBeenPlayed] = useState(0)
   // useClick should be in global state...
@@ -30,6 +35,9 @@ export default function Recorder(props) {
   } = useSelector(s=>s.recorder)
   const store = useStore()
   const dispatch = useDispatch()
+  useEffect(()=>{    // state might be saved while recording, so make sure is false
+    dispatch(actions.isRecording(false))
+  },[])
 
   recorder.callbackObject = {
     noteOn: function(a,b,c){
@@ -37,7 +45,10 @@ export default function Recorder(props) {
       //setNoteBeenPlayed(1)
       setTimeout(()=>dispatch(actions.noteJustPlayed(false)),100)  //setNoteBeenPlayed(0)
     },
-    //run:function(a,b,c){console.log("rec note run",tidyAndSetRec(a))},
+    run: (rec) =>{
+      //console.log("rec note run",rec)
+      dispatch(matchRecording({sendRecording:false,playSound:false})(rec))
+    },
   }
   const record = ()=>{
     //console.log("Record: start")
@@ -69,7 +80,11 @@ export default function Recorder(props) {
     //rec => ({...rec,tempos:[{qpm: 120, time: 0}]}),
     //rec => (console.log("rec PostQuant",rec),rec),
     removeNonJson,
-    rec=>dispatch(matchRecording(rec)), 
+    rec=>dispatch(matchRecording({
+      sendRecording:true,
+      playSound:true,
+      playSoundOnFail:true,
+    })(rec)), 
   ) 
 
   return (
@@ -79,11 +94,24 @@ export default function Recorder(props) {
       "backgroundColor": "#eee",
     }}>
       RECORDER &nbsp;&nbsp;
-      <button id="btnRec" ref={props.btnRecord} onClick={record} style={{
-        width: "4.5em", padding:"0px", backgroundColor: isRecording ? "red" : "#fdd"
-      }}>{isRecording?"⏹STOP":"⏺ REC"}</button>
-       <code>{noteJustPlayed?'♪':'\u00A0'}</code> 
-      <button id="btnRecStop"  ref={props.btnStop}  onClick={stop}>■</button>
+      <button 
+        id="btnRec" 
+        ref={btnRecord} 
+        onClick={record} 
+        style={{
+          width: "4.5em", 
+          padding:"0px", 
+          backgroundColor: isRecording ? "red" : "#fdd"
+        }
+      }>{isRecording?"⏹STOP":"⏺ REC"}</button>
+      
+      <code>{noteJustPlayed?'♪':'\u00A0'}</code> 
+      
+      <button 
+        id="btnRecStop"
+        ref={btnStopRecording}
+        onClick={stop}
+      >■</button>
       
       <Declutter>
         <Checkbox 
@@ -92,9 +120,7 @@ export default function Recorder(props) {
           onChange={e=>dispatch(actions.useClick(e.target.checked))}
         />    
       </Declutter>
-      {/* <input type="checkbox" id="useClick"></input>
-      <label htmlFor="useClick">Use click</label> */}
-      &nbsp;
+
       <Score 
         scoreid="Rec" 
         meme="recording" 
@@ -103,6 +129,8 @@ export default function Recorder(props) {
         margin="0px"
         divClassName="inline"
         hasSave={true}
+        btnPlay={btnRecPlay}
+        btnStop={btnRecStop}
       />
     </div>
   )

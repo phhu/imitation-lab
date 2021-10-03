@@ -14,6 +14,11 @@ export const loadState = () => {
   }
 };
 
+// console.log("merged state",merge (initialState,(loadState() ||  {})))
+// console.log("merged state2",merge (initialState,loadState()))
+// console.log("merged state3",merge (loadState(),initialState))
+// console.log("merged state4",merge ((loadState() ||  {}),initialState))
+
 export const saveState = (state) => {
   try {
     const serializesState = JSON.stringify(state);
@@ -29,7 +34,7 @@ export const store = configureStore({
   reducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware() ,//.concat(logger),
   devTools: process.env.NODE_ENV !== 'production',
-  preloadedState: assign (initialState,loadState() ||  {}),
+  preloadedState: assign (initialState,loadState()),
   //enhancers: [reduxBatch],
 })
 

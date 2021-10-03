@@ -36,6 +36,7 @@ function Keyboard(props) {
         KEYBOARD
         | <ValueInput 
           label="First note" 
+          title="Midi number of keyboard first note. Default = 43; Middle C = 60; +/- 12 per octave" 
           value={firstNote} 
           change={(value)=>{
             //console.log("changed value",value,parseInt(value)>40,parseInt(value))

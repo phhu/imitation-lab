@@ -21,7 +21,7 @@ import {sequencesIdentical} from './compare'
 
 export const initialState = { 
   midiOutput: 0,
-  tempo: 120,
+  tempo: 100,
   declutter: true,
   player: {
     playClick: false
@@ -75,7 +75,7 @@ export const initialState = {
       variationCount: 0,
       isCollapsed: false,
     },
-    working: {
+    target: {
       //src: cloneDeep(transposeMelody(-12)(melodies.BASIC_2)),
       src: cloneDeep(melodies.FRERE_2),
       transpose: 0,
@@ -83,6 +83,7 @@ export const initialState = {
       isCollapsed: false,
     },
     recording: {
+
       src: cloneDeep(melodies.BLANK),
       transpose: 0,
       variationCount: 0,
@@ -105,6 +106,9 @@ const slice = createSlice({
   reducers: {
     "tempo": (state,{payload})=>{state.tempo=payload},
     "isRecording": (state,{payload})=>{state.recorder.isRecording=!!payload},
+    "isPlaying": (state,{payload})=>{
+      state.memes[payload.meme].isPlaying=!!(payload?.value)
+    },
     "useClick": (state,{payload})=>{state.recorder.useClick=!!payload},
     "playClick": (state,{payload})=>{state.player.playClick=!!payload},
     "noteJustPlayed": (state,{payload})=>{state.recorder.noteJustPlayed=!!payload},
@@ -120,7 +124,7 @@ const slice = createSlice({
       state.declutter=!(state.declutter)
     },
     "saveMelody": (state,{payload})=>{
-      console.log("saveMelody",payload)
+      //console.log("saveMelody",payload)
       const { meme,name="saved"  } = payload
       const melody = meme ? (state?.memes?.[meme]?.src) : removeNonJson(payload.melody)
       melody.title = name
@@ -130,7 +134,7 @@ const slice = createSlice({
     "memeToWorking": (state,{payload})=>{
       //console.log("memeToWorking",payload)
       if(state?.memes[payload]){
-        state.memes.working = state.memes[payload]
+        state.memes.target = state.memes[payload]
         const newCurrent = state?.interpolate?.melodies?.findIndex(m=>
           sequencesIdentical(m,state.memes[payload].src)
         )
@@ -140,10 +144,10 @@ const slice = createSlice({
       }
     },
     "melodyToWorking": (state,{payload})=>{
-      console.log("melodyToWorking",payload)
+      //console.log("melodyToWorking",payload)
       const {melody, newCurrent} = payload
       if(melody?.notes){
-        const m = state.memes.working
+        const m = state.memes.target
         m.src = melody
         m.transpose=0
         m.variationCount+=1
@@ -155,6 +159,7 @@ const slice = createSlice({
       }
     },
     "memeSrc": (state,{payload})=>{
+      //console.log("memeSrc",payload)
       const m = state.memes[payload.meme]
       m.src=payload.melody
       m.transpose=payload.transpose
@@ -164,6 +169,7 @@ const slice = createSlice({
       m.matchesRecording=null  //null=unknown
     },  
     "recording": (state,{payload}) => {
+      //console.log("setting recording",payload)
       const {recording, matches=[]} = payload
       if (recording){
         state.memes.recording.src=removeNonJson(recording)
@@ -212,8 +218,8 @@ const slice = createSlice({
     .addCase(nextMelody.fulfilled, (state, {meta,payload,type}) => {
       //console.log("got nextMelody.fulfilled")
       const {nextMelody, newCurrent} = payload
-      const {key,title} = state.memes['working']
-      const m = state.memes['working']
+      const {key,title} = state.memes['target']
+      const m = state.memes['target']
       m.src={title, key, ...nextMelody}
       m.transpose=0
       m.variationCount=0
