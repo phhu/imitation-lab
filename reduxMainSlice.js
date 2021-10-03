@@ -103,6 +103,8 @@ export const initialState = {
       melodies:["JOYFUL_NOISE","DARK_HORSE","MOMENTS_IN_LOVE","WHY_IM_HOT"]},
       {name: "Dark Horse3", 
       melodies:["JOYFUL_NOISE","DARK_HORSE","MOMENTS_IN_LOVE_2","WHY_IM_HOT_2"]},
+      {name: "Dark Horse vs Mozart", 
+      melodies:["DARK_HORSE","MOZART1","MOMENTS_IN_LOVE_2","MOZART4"]},
       {name: "Mozart Sonata in C 1", 
       melodies:["MOZART1","MOZART2","MOZART3","MOZART4"]},
       {name: "Mozart Sonata in C 2", 

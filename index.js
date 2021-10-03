@@ -46,6 +46,7 @@ ReactDOM.render(
         </a> for regular model (slower load)
       </div>
     </div>
+    <div className="box">Note that this application may not functional fully without a suitable MIDI driver.</div>
     <div className="box">Please use Chrome Browser.</div>
   </div>, 
   document.getElementById('root')

@@ -259,7 +259,10 @@ function App() {
         <MelodySets/>
         <button 
           title="Toggle simplified UI"
-          onClick={()=>dispatch(actions.declutter())}
+          onClick={()=>{
+            try{Tone.start()} catch(e){console.error("Tone.start() error",e)}
+            dispatch(actions.declutter())
+          }}
         >{declutter ? "More..." : "...Less"}</button>
       </span>
     </div>

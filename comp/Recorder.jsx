@@ -109,7 +109,7 @@ export default function Recorder({
           padding:"0px", 
           backgroundColor: isRecording ? "red" : "inherit"
         }
-      }>{isRecording?"⏹STOP":"⏺ REC"}</button>
+      }>{isRecording?"STOP":"REC"}</button>
       
       <code>{noteJustPlayed?'♪':'\u00A0'}</code> 
       
