@@ -160,8 +160,10 @@ export default ({
         }}>Vary{variationCount?` (${variationCount})`:''}</button>
       </Declutter>
       {children}
-      {scoreType === 1 && <div className="inlineBlock"  id={scoreDivId}></div>}
-      {scoreType === 2 && <canvas className="inlineBlock"  id={scoreDivId+"_canvas"}></canvas>}
+      <div>
+      {scoreType === 1 && <div id={scoreDivId}></div>}
+      {scoreType === 2 && <canvas id={scoreDivId+"_canvas"}></canvas>}
+      </div>
     </div>
   )
 }
