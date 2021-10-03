@@ -54,10 +54,28 @@ function App() {
     console.log("adding sostenuto pedal listener")
     const addPedalListener = (inputs) => {
       inputs.forEach(input => {
+        let pedalDownTime = 0    // don't use react state - no need to rerender
         input.addListener("controlchange","all",(e)=>{
-          if (e.controller.name==="sustenutopedal" && e.value===127){
-            playRec()
+          if (e.controller.name==="sustenutopedal"){
+            if(e.value===127){
+              pedalDownTime = Date.now()
+            } else {
+              const diff = Date.now() - pedalDownTime
+              if (diff>0 &&diff < 300){
+                console.log("pedal: playRec",diff)
+                playRec()
+              } else if (diff>=300 && diff<1500){
+                console.log("pedal: next",diff)
+                next({})() 
+              } else if (diff>=1500 && diff<3000){
+                console.log("pedal: playReveiw",diff)
+                playReview()
+              } else {
+                console.log("pedal: not recognised",diff)
+              }
+            }
           }
+
         })
         // input.addListener("noteon","all",(e)=>{
         // })
@@ -82,21 +100,35 @@ function App() {
     return 1000 * 60 * 8 / tempo    // guess we have 8 beats
   }
   
+  const isRecording = () => store.getState().recorder.isRecording
+  const thinkingTimeMs = 1500
+
   const playRec = (e) =>{
     //console.log("meme time",memeTimeMs({meme:"target"}))
+    stopAll({doPlayRec:false})  
     setRunningPlayRec(true)
     startPlayer({meme:"target"})
     .then(()=>new Promise((resolve,reject)=>{
-      btnRecord.current.click()
-      setTimeout(()=>{
-        btnStopRecording.current.click()
-        resolve(true)
-      },memeTimeMs({meme:"target"})+750)
+      if(!isRecording()){
+        btnRecord.current.click()
+        setTimeout(()=>{
+          if(isRecording()){
+            btnStopRecording.current.click()
+            resolve(true)
+          } else {
+            reject("was not recording when tried to stop recording")
+          }
+        },memeTimeMs({meme:"target"})+thinkingTimeMs)
+      } else {
+        reject("was recording when tried to start recording")
+      }
     }))
+    .catch(err=>(err && console.error("playRec error",err)))
     .finally(()=>setRunningPlayRec(false))
   }
 
   const playReview = ()=>{
+    //stopAll({doPlayReview:false}) 
     setRunningPlayReview(true)
     startPlayer({meme:"recording"})
     //.then(()=>console.log("fin target start rec"))
@@ -108,15 +140,19 @@ function App() {
   }
 
   const timedRec = ()=>{
+    stopAll({doTimedRec:false}) 
     setRunningTimedRec(true)
-    //window.btnRecord = btnRecord.current
     btnRecord.current.click()
     setTimeout(
       ()=>{
         setRunningTimedRec(false)
-        btnStopRecording.current.click()
+        if(isRecording()){
+          btnStopRecording.current.click()
+        } else {
+          console.error("timedRec: was not recording when tried to stop")
+        }
       },
-      memeTimeMs({meme:"target"})+1000
+      memeTimeMs({meme:"target"})+thinkingTimeMs 
     )
   }
   // const testBtn = ()=>{
@@ -130,6 +166,8 @@ function App() {
   //   )
   // }
   const next = ({direction=undefined}={}) => ()=>{ 
+    // stopAll({doTimedRec:false}) 
+    // stopPlayer()
     const state = store.getState()
     if (!(state.requireMatchForNext) || 
     state?.memes?.target.matchesRecording){
@@ -146,6 +184,19 @@ function App() {
     }
   }
 
+  const stopAll = ({
+    doPlayRec=true,
+    doTimedRec=true,
+    doPlayReview=true,
+  }={})=>{
+    stopPlayer()
+    doPlayRec && btnStopRecording.current.click()
+    btnTargetStop.current.click()
+    btnRecStop.current.click()
+    doPlayReview && setRunningPlayReview(false)
+    doPlayRec && setRunningPlayRec(false)
+    doTimedRec && setRunningTimedRec(false)
+  }
   const keyActions = {
     " ": ()=>{playRec() },
     "Alt": ()=>{playReview() },
@@ -154,15 +205,7 @@ function App() {
     "ArrowLeft": next({direction:[-1,0]}),
     "ArrowUp": next({direction:[0,-1]}),
     "ArrowDown": next({direction:[0,1]}),
-    "Escape":  ()=>{
-      stopPlayer()
-      btnStopRecording.current.click()
-      btnTargetStop.current.click()
-      btnRecStop.current.click()
-      setRunningPlayReview(false)
-      setRunningPlayRec(false)
-      setRunningTimedRec(false)
-    },
+    "Escape": stopAll,
     "Enter": next({}),
   }
   const onKeyDown = (e) => {
@@ -199,16 +242,16 @@ function App() {
             title="Print app state to browser console"
             onClick={()=>console.log(store.getState())}
           >State</button>
-          <button 
+        </Declutter> 
+        <button 
             title="Reset application to defaults, reset MIDI, and reload"
             onClick={reset}
-          >Reset</button>
-          {/* <button 
+        >Reset</button>
+        <button 
             title="Reset MIDI"
             onClick={midiReset}
           >MIDI Reset</button> 
-          &nbsp;&nbsp; */}
-        </Declutter> 
+          &nbsp;&nbsp;
         <MelodySets/>
         <button 
           title="Toggle simplified UI"

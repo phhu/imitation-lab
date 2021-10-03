@@ -28,14 +28,25 @@ window.WebMidi = WebMidi
 
 ReactDOM.render(
   <div id="app" className="app">
-    <div className="title">IMITATION LAB</div>
+    <div  className="title"><span id="title">IMITATION LAB</span></div>
     <hr/>
+    <div className="box">Loading... Please be patient... </div>
     <div className="box">
-      <div>Loading... Please be patient... 
-      (Initializing Google Magenta can take a while)</div>
-      <div>Please use Chrome Browser.</div>
+      
+      <div>(Initializing Google Magenta can take a while)</div>
       <div>Magenta src: {initialState.src}</div>
+      <div>Use 
+        <a href={location.href.replace(/^(.*?)(\#.*)?$/,"$1")+"#basic"}
+        >{location.href.replace(/^(.*?)(\#.*)?$/,"$1")+"#basic"}
+        </a> for smaller model (faster load)
+      </div>
+      <div>Use 
+        <a href={location.href.replace(/^(.*?)(\#.*)?$/,"$1")+""}
+        >{location.href.replace(/^(.*?)(\#.*)?$/,"$1")+""}
+        </a> for regular model (slower load)
+      </div>
     </div>
+    <div className="box">Please use Chrome Browser.</div>
   </div>, 
   document.getElementById('root')
 )
@@ -53,7 +64,8 @@ Promise.all([
     })
   })
 ]).then(results => {
-  midiPlayer.outputs = midiPlayer.availableOutputs.slice(0,1)   //.slice(0,2)
+  midiPlayer.outputChannel = 1
+  midiPlayer.outputs = midiPlayer.availableOutputs.slice(0,2)   //.slice(0,2)
 
   window.midiThruIn = WebMidi.inputs[0]
   //window.midiThruOut = WebMidi.outputs[0]

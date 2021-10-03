@@ -45,9 +45,13 @@ export default function Recorder({
       //setNoteBeenPlayed(1)
       setTimeout(()=>dispatch(actions.noteJustPlayed(false)),100)  //setNoteBeenPlayed(0)
     },
-    run: (rec) =>{
-      //console.log("rec note run",rec)
-      dispatch(matchRecording({sendRecording:false,playSound:false})(rec))
+    run: (rec,...args) =>{
+      //console.log("rec note run",rec,args)
+      dispatch(matchRecording({
+        sendRecording:false,
+        playSound:false,
+        checkInterpolations: false,
+      })(rec))
     },
   }
   const record = ()=>{

@@ -3,6 +3,7 @@ import {useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from '../reduxStore'
 import Selector from './Selector'
 import {interpolateMelodies} from '../interpolate'
+import {doInterpolation} from '../interpolate'
 
 export const MelodySets = ({}={}) => {
 
@@ -38,5 +39,5 @@ export const updateMelodySet = ({
   newSetName = ""
 }={}) => (dispatch, getState) => {
   dispatch(actions.changeMelodySet(newSetName))
-  dispatch(interpolateMelodies({}))
+  doInterpolation(dispatch)
 }

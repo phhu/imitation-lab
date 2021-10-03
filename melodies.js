@@ -11,12 +11,14 @@ const toMidi = (note) => everyNote.indexOf(note);
 const s = 16
 
 let lastStart = 0
+let lastDur = 0
 const nd = spec => {
-  spec.start ??= lastStart + spec.dur
+  spec.start ??= lastStart + lastDur
   lastStart = spec.start
+  lastDur = spec.dur
   return ({//...spec,
-    quantizedEndStep:parseInt(spec.start+spec.dur),
     quantizedStartStep:parseInt(spec.start),
+    quantizedEndStep:parseInt(spec.start+spec.dur),
     pitch: spec.pitch || toMidi(spec.note)
   })
 }
@@ -27,7 +29,7 @@ const melodiesInt = {
     totalQuantizedSteps: 16,
     quantizationInfo:{stepsPerQuarter: 4},
     notes: [
-    ]
+    ] 
   },
   BLANK: { 
     title: "Blank",
@@ -276,7 +278,331 @@ const melodiesInt = {
     quantizationInfo: {stepsPerQuarter: 4},
     tempos: [{time: 0, qpm: 120}],
     totalQuantizedSteps: 11
-  }
+  },
+  // see https://www.youtube.com/watch?v=0ytoUuO-qvg
+  JOYFUL_NOISE: { 
+    title: "Joyful Noise",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'C6', dur:4, start: 0 }),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'B5', dur:4}),
+      nd({note: 'B5', dur:4}),
+      nd({note: 'B5', dur:4}),
+      nd({note: 'A5', dur:4}),
+    ]
+  },
+  DARK_HORSE: { 
+    title: "Dark Horse",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'C6', dur:4, start: 0 }),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'B5', dur:4}),
+      nd({note: 'B5', dur:4}),
+      nd({note: 'A5', dur:4}),
+      nd({note: 'E5', dur:4}),
+    ]
+  },
+  BACH_ADAGIO: { 
+    title: "Bach Adagio",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'C6', dur:4, start: 0 }),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'B5', dur:4}),
+      nd({note: 'B5', dur:4}),
+    ]
+  },
+  GO_DOWN_MOSES: { 
+    title: "Go Down Moses",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'C6', dur:4, start: 0 }),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'B5', dur:4}),
+      nd({note: 'B5', dur:4}),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'A5', dur:8}),
+    ]
+  },
+  GODZILLA: { 
+    title: "Godzilla Theme",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'C6', dur:2, start: 0 }),
+      nd({note: 'B5', dur:2}),
+      nd({note: 'A5', dur:4}),
+
+      nd({note: 'C6', dur:2}),
+      nd({note: 'B5', dur:2}),
+      nd({note: 'A5', dur:4}),
+ 
+      nd({note: 'C6', dur:2}),
+      nd({note: 'B5', dur:2}),
+      nd({note: 'A5', dur:2}),      
+      nd({note: 'G5', dur:2}),
+
+      nd({note: 'A5', dur:2}),
+      nd({note: 'B5', dur:2}),
+      nd({note: 'C6', dur:4}),
+    ]
+  },
+  MOMENTS_IN_LOVE_2: { 
+    title: "Moments in Love (2bar)",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'A5', dur:2, start: 0 }),
+      nd({note: 'A5', dur:2}),
+      nd({note: 'A5', dur:2}),
+      nd({note: 'A5', dur:2}),
+
+      nd({note: 'E6', dur:2}),
+      nd({note: 'E6', dur:2}),
+      nd({note: 'E6', dur:2}),
+      nd({note: 'D6', dur:2}),
+ 
+      nd({note: 'E6', dur:2}),
+      nd({note: 'E6', dur:2}),
+      nd({note: 'E6', dur:2}),
+      nd({note: 'E6', dur:2}),
+
+      nd({note: 'E6', dur:2}),
+      nd({note: 'E6', dur:2}),
+      nd({note: 'E6', dur:2}),
+      nd({note: 'E6', dur:2}),
+    ]
+  },
+  MOMENTS_IN_LOVE: { 
+    title: "Moments in Love (4bar)",
+    totalQuantizedSteps: 64,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'A5', dur:4, start: 0 }),
+      nd({note: 'A5', dur:4}),
+      nd({note: 'A5', dur:4}),
+      nd({note: 'A5', dur:4}),
+
+      nd({note: 'E6', dur:4}),
+      nd({note: 'E6', dur:4}),
+      nd({note: 'E6', dur:4}),
+      nd({note: 'D6', dur:4}),
+ 
+      nd({note: 'E6', dur:4}),
+      nd({note: 'E6', dur:4}),
+      nd({note: 'E6', dur:4}),
+      nd({note: 'E6', dur:4}),
+
+      nd({note: 'E6', dur:4}),
+      nd({note: 'E6', dur:4}),
+      nd({note: 'E6', dur:4}),
+      nd({note: 'E6', dur:4}),
+    ]
+  },
+  WHY_IM_HOT_2: { 
+    title: "This is why I'm hot (2bar)",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'A5', dur:2, start: 0 }),
+      nd({note: 'A5', dur:2}),
+      nd({note: 'A5', dur:2}),
+      nd({note: 'E6', dur:2}),
+
+      nd({note: 'E6', dur:2}),
+      nd({note: 'E6', dur:2}),
+      nd({note: 'C6', dur:2}),
+      nd({note: 'C6', dur:2}),
+ 
+      nd({note: 'C6', dur:2}),
+      nd({note: 'F6', dur:2}),
+      nd({note: 'F6', dur:2}),
+      nd({note: 'F6', dur:2}),
+
+      nd({note: 'F6', dur:2}),
+      nd({note: 'F6', dur:2}),
+      nd({note: 'F6', dur:2}),
+      nd({note: 'F6', dur:2}),
+    ]
+  },
+  WHY_IM_HOT: { 
+    title: "This is why I'm hot",
+    totalQuantizedSteps: 64,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'A5', dur:4, start: 0 }),
+      nd({note: 'A5', dur:4}),
+      nd({note: 'A5', dur:4}),
+      nd({note: 'E6', dur:4}),
+
+      nd({note: 'E6', dur:4}),
+      nd({note: 'E6', dur:4}),
+      nd({note: 'C6', dur:4}),
+      nd({note: 'C6', dur:4}),
+ 
+      nd({note: 'C6', dur:4}),
+      nd({note: 'F6', dur:4}),
+      nd({note: 'F6', dur:4}),
+      nd({note: 'F6', dur:4}),
+
+      nd({note: 'F6', dur:4}),
+      nd({note: 'F6', dur:4}),
+      nd({note: 'F6', dur:4}),
+      nd({note: 'F6', dur:4}),
+    ]
+  },
+  MOZART1: { 
+    title: "Sonata In C #1",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'C6', dur:8, start: 0 }),
+      nd({note: 'E6', dur:4}),
+      nd({note: 'G6', dur:4}),
+
+      nd({note: 'B5', dur:6}),
+      nd({note: 'C6', dur:1}),
+      nd({note: 'D6', dur:1}),
+      nd({note: 'C6', dur:4}),
+    ]
+  },
+  MOZART2: { 
+    title: "Sonata In C #2",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'A6', dur:8, start: 0 }),
+      nd({note: 'G6', dur:4}),
+      nd({note: 'C7', dur:4}),
+
+      nd({note: 'G6', dur:4}),
+      nd({note: 'F6', dur:1}),
+      nd({note: 'G6', dur:1}),
+      nd({note: 'E6', dur:1}),
+      nd({note: 'F6', dur:1}),
+      nd({note: 'E6', dur:4}),
+    ]
+  },
+  MOZART3: { 
+    title: "Sonata In C #3",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'B5', dur:2, start: 0 }),
+      nd({note: 'G6', dur:2}),
+      nd({note: 'E6', dur:2}),
+      nd({note: 'C6', dur:2}),
+
+      nd({note: 'D6', dur:2}),
+      nd({note: 'G6', dur:2}),
+      nd({note: 'E6', dur:2}),
+      nd({note: 'C6', dur:2}),
+
+      nd({note: 'D6', dur:4}),
+      nd({note: 'G6', dur:4}),
+      nd({note: 'G5', dur:4}),
+    ]
+  },
+  MOZART4: { 
+    title: "Sonata In C #4",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'G5', dur:4, start: 0 }),
+      nd({note: 'A5', dur:2}),
+      nd({note: 'B5', dur:2}),
+      nd({note: 'C6', dur:2}),
+      nd({note: 'D6', dur:2}),
+      nd({note: 'E6', dur:2}),
+      nd({note: 'F6', dur:2}),
+
+      nd({note: 'G6', dur:2}),
+      nd({note: 'F6', dur:2}),
+      nd({note: 'E6', dur:2}),
+      nd({note: 'D6', dur:2}),
+      nd({note: 'C6', dur:2}),
+      nd({note: 'B5', dur:2}),
+      nd({note: 'A5', dur:2}),
+      nd({note: 'G5', dur:2}),
+      nd({note: 'F5', dur:2}),
+    ]
+  },
+  MOZART5: { 
+    title: "Sonata In C #5",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'D7', dur:2, start: 0 }),
+      nd({note: 'B6', dur:2}),
+      nd({note: 'G6', dur:6}),
+      nd({note: 'A6', dur:1}),
+      nd({note: 'B6', dur:1}),
+      nd({note: 'A6', dur:2}),
+      nd({note: 'G6', dur:2}),
+
+      nd({note: 'G6', dur:1}),
+      nd({note: 'G#6',dur:1}),
+      nd({note: 'G6', dur:1}),
+      nd({note: 'F#6',dur:1}),
+      nd({note: 'F#6', dur:4}),
+    ]
+  },
+  MOZART6: { 
+    title: "Sonata In C #6",
+    totalQuantizedSteps: 32,
+    quantizationInfo:{stepsPerQuarter: 4},
+    notes: [
+      nd({note: 'A5', dur:2, start: 0 }),
+      nd({note: 'B5', dur:1}),
+      nd({note: 'C6', dur:1}),
+      nd({note: 'D6', dur:1}),
+      nd({note: 'E6', dur:1}),
+      nd({note: 'F6', dur:1}),
+      nd({note: 'G6', dur:1}),
+
+      nd({note: 'A6', dur:1}),      
+      nd({note: 'G6', dur:1}),      
+      nd({note: 'F6', dur:1}),
+      nd({note: 'E6', dur:1}),
+      nd({note: 'D6', dur:1}),
+      nd({note: 'C6', dur:1}),
+      nd({note: 'B5', dur:1}),
+      nd({note: 'A5', dur:1}),
+
+      nd({note: 'G5', dur:2}),
+      nd({note: 'A5', dur:1}),
+      nd({note: 'B5', dur:1}),
+      nd({note: 'C6', dur:1}),
+      nd({note: 'D6', dur:1}),
+      nd({note: 'E6', dur:1}),
+      nd({note: 'F6', dur:1}),
+
+      nd({note: 'G6', dur:1}),
+      nd({note: 'F6', dur:1}),
+      nd({note: 'E6', dur:1}),
+      nd({note: 'D6', dur:1}),
+      nd({note: 'C6', dur:1}),
+      nd({note: 'B5', dur:1}),
+      nd({note: 'A5', dur:1}),
+      nd({note: 'G5', dur:1}),
+      nd({note: 'F5', dur:1}),
+    ]
+  },
 }
 melodiesInt.TWINKLE_TWINKLE_2T = transposeMelody(-12)(melodiesInt.TWINKLE_TWINKLE_2)
 melodiesInt.TWINKLE_TWINKLE_2T.title="Twinkle Twinkle 2T"

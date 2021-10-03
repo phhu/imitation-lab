@@ -65,7 +65,7 @@ export const initialState = {
       isCollapsed: false,
     },
     c: {
-      src: cloneDeep(melodies.MELODY1),
+      src: cloneDeep(melodies.LICK),
       transpose: 0,
       variationCount: 0,
       isCollapsed: false,
@@ -96,6 +96,18 @@ export const initialState = {
     sets: [
       {name: "test", melodies:["FRERE_2","LICK","UNDER_PRESSURE","TWINKLE_TWINKLE_2T"   ]},
       {name: "test2", melodies:["LIBERTANGO_2","BASIC_2","UNDER_PRESSURE","TWINKLE_TWINKLE_2T"   ]},
+      {name: "Dark Horse", 
+      melodies:["JOYFUL_NOISE","DARK_HORSE","GO_DOWN_MOSES","GODZILLA"]},
+      {name: "Dark Horse2", 
+      melodies:["JOYFUL_NOISE","DARK_HORSE","MOMENTS_IN_LOVE","WHY_IM_HOT"]},
+      {name: "Dark Horse3", 
+      melodies:["JOYFUL_NOISE","DARK_HORSE","MOMENTS_IN_LOVE_2","WHY_IM_HOT_2"]},
+      {name: "Mozart Sonata in C 1", 
+      melodies:["MOZART1","MOZART2","MOZART3","MOZART4"]},
+      {name: "Mozart Sonata in C 2", 
+      melodies:["MOZART1","MOZART2","MOZART3","MOZART5"]},
+      {name: "Mozart Sonata in C 3", 
+      melodies:["MOZART1","MOZART2","MOZART3","MOZART6"]},
     ],
   },
   interpolate: {

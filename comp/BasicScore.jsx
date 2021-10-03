@@ -61,11 +61,11 @@ export default ({
     }}>
       <table>
         <tbody><tr>
-          <Declutter>
+
           <td>
-            <span style={{textAlign:"right",float:"left",width:"1.3em",fontWeight:"900"}}>
-              {title ?? ''} 
-            </span>
+              <span style={{textAlign:"right",float:"left",width:"1.3em",fontWeight:"900"}}>
+                {title ?? ''} 
+              </span>
           </td>
           <td>
 
@@ -77,14 +77,16 @@ export default ({
                 backgroundColor: isPlaying ? "green" : "inherit",
               }}
             >{isPlaying ? "■":"▶" }</button>
+          <Declutter>            
             <button className="btnStopScore" title="Stop playing this melody" onClick={stop}>■</button>           
-                
+          </Declutter>      
             <button title="Set this melody as TARGET"
               onClick={()=>dispatch(actions.melodyToWorking({
                 melody,
                 newCurrent: index,
               }))}
             >🎯</button>
+          <Declutter>
             {true &&
               <button 
                 title="Save melody (will appear in drop down lists)"
@@ -94,8 +96,8 @@ export default ({
                 }))}
               >💾</button>
             }
+          </Declutter>  
           </td>
-          </Declutter>
           <td>
           <div className="inlineBlock"  id={scoreDivId}></div>
           </td>

@@ -3,13 +3,18 @@ import {mapValues, isEqual,map} from 'lodash'
 import {playDrumNow} from './transport'
 
 export const sequencesMatch = (baseSeq,compSeq) => { 
-  if (baseSeq === null || compSeq ===null){return false;}
-  if (baseSeq.notes.length !== compSeq.notes.length){return false;}
-  
-  for (let i=0 ; i<baseSeq.notes.length; i++){
-    if(baseSeq.notes[i].pitch !== compSeq.notes[i].pitch){return false;}
+  try {
+    if (baseSeq === null || compSeq ===null){return false;}
+    if (baseSeq.notes.length !== compSeq.notes.length){return false;}
+    
+    for (let i=0 ; i<baseSeq.notes.length; i++){
+      if(baseSeq.notes[i].pitch !== compSeq.notes[i].pitch){return false;}
+    }
+    return true;
+  } catch(e){
+    console.warn("sequencesMatch failed: defaulting to false", baseSeq,compSeq, e)
+    return false;
   }
-  return true;
 };
 
 const notesAsInt = notes => notes.map(n => ({
