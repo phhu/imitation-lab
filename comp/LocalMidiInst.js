@@ -27,7 +27,7 @@ const cancelNote = pitch=>(note,i,arr)=>{
 export default function LocalMidiInst(props){
 
   const midiNotes = []
-
+  window.midiNotes = midiNotes
   const store = useStore()
   const dispatch = useDispatch()
   const volume = useSelector(s=>s.localMidiInst.volume ?? 0.5)
@@ -69,6 +69,7 @@ export default function LocalMidiInst(props){
       })
 
       const midiNoteOff = pitch => midiNotes.forEach(cancelNote(pitch))
+
       midiThruIn.addListener("noteoff","all",(e)=>{
         const {volume, on} = store.getState().localMidiInst
         if (on){

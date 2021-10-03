@@ -7,12 +7,13 @@ import Score from './comp/Score'
 //import ScoreAsync from './comp/ScoreAsync'
 import Recorder from './comp/Recorder'
 import {Player} from './comp/Player'
-//import Selector from './comp/Selector'
+
 //import Checkbox from './comp/Checkbox'
 import ValueInput from './comp/ValueInput'
 import LocalMidiInst from './comp/LocalMidiInst'
 import {InterpolationViewer} from './comp/InterpolationViewer'
 import {Declutter} from './comp/Declutter'
+import {MelodySets} from './comp/MelodySets'
 import {Provider, useDispatch, useSelector, useStore} from 'react-redux'
 import {actions} from './reduxStore'
 import {delay} from './utilsMelody'
@@ -20,6 +21,7 @@ import {doInterpolation} from './interpolate'
 import {nextMelody} from './next'
 import {startPlayer, stopPlayer} from './transport'
 const {isQuantizedSequence} = core.sequences
+import {playDrumNow} from './transport'
  
 function App() {
   const store=useStore()
@@ -63,6 +65,7 @@ function App() {
     }
     addPedalListener(WebMidi.inputs)
   },[])  
+  //useEffect(()=>{document.getElementById('app').focus()})
 
   const memeTimeMs = ({meme}) => {
     const state= store.getState()
@@ -127,12 +130,20 @@ function App() {
   //   )
   // }
   const next = ({direction=undefined}={}) => ()=>{ 
-    dispatch(nextMelody({direction})) 
-    setTimeout(()=>{
-      playRec()
+    const state = store.getState()
+    if (!(state.requireMatchForNext) || 
+    state?.memes?.target.matchesRecording){
+      playDrumNow(63)   // 63 = mid tom, 62 =high, 64 =low, 65=snare
+      dispatch(nextMelody({direction})) 
+      setTimeout(()=>{
+        console.log("play next")
+        playRec()
 
-      //btnTargetPlay.current.click()
-    }, 200) 
+        //btnTargetPlay.current.click()
+      }, 200)
+    } else {
+      playDrumNow(65)
+    }
   }
 
   const keyActions = {
@@ -178,7 +189,7 @@ function App() {
   }
 
   // https://stackoverflow.com/questions/43503964/onkeydown-event-not-working-on-divs-in-react
-  return <div id="app" tabIndex={-1} className={"app"} onKeyDown={onKeyDown }>
+  return <div id="app" tabIndex={1} className={"app"} onKeyDown={onKeyDown }>
      
     <div className="title">
       <span id="title">IMITATION LAB</span>
@@ -250,6 +261,9 @@ function App() {
       <button onClick={()=>{ btnRecord.current.click() }}>REC</button>
       <button onClick={()=>{ btnStopRecording.current.click() }}>REC STOP</button> 
       */}
+
+      <MelodySets/>
+
       <Declutter>
         <ValueInput 
           size={1}

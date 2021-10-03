@@ -48,8 +48,8 @@ export const matchRecording = ({
       (melody)=> sequencesMatch(melody,recording)
     )
 
-  if(playSound && matches.target){playDrumNow(50)}
-  if(playSoundOnFail && !(matches.target)){playDrumNow(45)}
+  if(playSound && matches.target){playDrumNow(62)}
+  if(playSoundOnFail && !(matches.target)){playDrumNow(64)}
 
   dispatch(actions.recording({
     recording: sendRecording && recording,

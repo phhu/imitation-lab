@@ -23,6 +23,7 @@ export const initialState = {
   midiOutput: 0,
   tempo: 100,
   declutter: true,
+  requireMatchForNext: false,
   player: {
     playClick: false
   },
@@ -83,7 +84,6 @@ export const initialState = {
       isCollapsed: false,
     },
     recording: {
-
       src: cloneDeep(melodies.BLANK),
       transpose: 0,
       variationCount: 0,
@@ -91,6 +91,13 @@ export const initialState = {
     },
   },
   melodies: cloneDeep(melodies),
+  melodySets: {
+    current:"test",
+    sets: [
+      {name: "test", melodies:["FRERE_2","LICK","UNDER_PRESSURE","TWINKLE_TWINKLE_2T"   ]},
+      {name: "test2", melodies:["LIBERTANGO_2","BASIC_2","UNDER_PRESSURE","TWINKLE_TWINKLE_2T"   ]},
+    ],
+  },
   interpolate: {
     melodies: [],
     matches: [],
@@ -189,6 +196,27 @@ const slice = createSlice({
           (a,b)=>a||b
         )
       }
+    },
+    "changeMelodySet": (state,{payload}) => {
+      if (state?.melodySets?.sets?.some(
+        ms=>ms.name===payload
+      )){
+        state.melodySets.current = payload
+
+        const newSetIndex = state?.melodySets?.sets.findIndex(
+          s=>s.name===payload
+        )
+        const {melodies}= state?.melodySets?.sets[newSetIndex]
+        const keys =['a','b','c','d']
+        //console.log("changeMelodySet",payload,{newSetIndex,melodies})
+        keys.forEach((key,i)=>{
+          if (state.melodies[melodies[i]]){     // check melody exists
+            state.memes[key].src = state.melodies[melodies[i]]
+          }
+        })
+      }
+      
+
     }
   },
   extraReducers: (builder) => {builder
@@ -219,6 +247,17 @@ const slice = createSlice({
       i.melodies = payload
       i.current = 0
       i.isInterpolating = false
+      i.matches= []
+      i.currentMatches= []
+
+      if(i.melodies?.[0]?.notes){
+        const {target} = state.memes
+        target.src = i.melodies?.[0]
+        target.transpose=0
+        target.variationCount+=1
+        target.matchesRecording=null  //null=unknown
+        target.isVarying = false
+      }
     })
     .addCase(interpolateMelodies.rejected, (state, action) => {
       console.error("interpolateMelodies rejected",action)

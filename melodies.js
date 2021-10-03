@@ -73,7 +73,7 @@ const melodiesInt = {
       nd({pitch: 48,  dur:4}),
     ]
   },
-  MELODY1: { 
+  LICK: { 
     title:"Lick",
     totalQuantizedSteps: 32,
     quantizationInfo:{stepsPerQuarter: 4},

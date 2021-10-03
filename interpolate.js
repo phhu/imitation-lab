@@ -16,7 +16,7 @@ const {trim} = core.sequences
 export const interpolateMelodies = createAsyncThunk(
   'meme/interpolate',
   async ({
-    sources,
+    sources=["a","c","b","d"],
     stepsPerQuarter=8,
     count = 8,
     temperature = 1,
