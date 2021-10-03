@@ -92,7 +92,7 @@ export const initialState = {
     },
   },
   melodies: cloneDeep(melodies),
-  melodySets: {
+  melodySets: { 
     current:"test",
     sets: [
       {name: "test", melodies:["FRERE_2","LICK","UNDER_PRESSURE","TWINKLE_TWINKLE_2T"   ]},
@@ -109,6 +109,10 @@ export const initialState = {
       melodies:["MOZART1","MOZART2","MOZART3","MOZART5"]},
       {name: "Mozart Sonata in C 3", 
       melodies:["MOZART1","MOZART2","MOZART3","MOZART6"]},
+      {name: "Experiment 1", 
+      melodies:["TWINKLE_TWINKLE_2T","MOZART1","UNDER_PRESSURE","MOMENTS_IN_LOVE_2"]},
+      {name: "Experiment 2", 
+      melodies:["LICK","MOZART3","GODZILLA","LIBERTANGO_2"]},
     ],
   },
   interpolate: {
