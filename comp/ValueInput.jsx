@@ -23,17 +23,17 @@ export default function ValueInput({
   
   const makeOnClick = diff => e => {
     //shiftKey ctrlKey altKey metaKey
-    if (e.shiftKey) {diff *=10}
+    if (e.shiftKey) {diff *=12}
     if (e.ctrlKey) {diff *=2}
-    if (e.altKey) {diff *=12}
+    //if (e.altKey) {diff *=12}
     change(parseFloat(value)+diff)
   }
 
   return <span >
       <label className="valueInput">{label}&nbsp;
       <input size={size} title={title} type="text"  {...{value,onChange}}></input>
-      <button title="Decrease (Shift +10 | Ctrl +2 | Alt +12)" onClick={makeOnClick(-parseFloat(step))}>-</button>
-      <button title="Increase (Shift -10 | Ctrl -2 | Alt -12)" onClick={makeOnClick(+parseFloat(step))}>+</button>
+      <button title="Decrease (Shift -12 | Ctrl -2)" onClick={makeOnClick(-parseFloat(step))}>-</button>
+      <button title="Increase (Shift +12 | Ctrl +2)" onClick={makeOnClick(+parseFloat(step))}>+</button>
       </label>
     </span>
 }
