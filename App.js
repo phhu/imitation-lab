@@ -203,12 +203,13 @@ function App() {
             title="Reset application to defaults, reset MIDI, and reload"
             onClick={reset}
           >Reset</button>
-          <button 
+          {/* <button 
             title="Reset MIDI"
             onClick={midiReset}
           >MIDI Reset</button> 
-          &nbsp;&nbsp;
+          &nbsp;&nbsp; */}
         </Declutter> 
+        <MelodySets/>
         <button 
           title="Toggle simplified UI"
           onClick={()=>dispatch(actions.declutter())}
@@ -261,8 +262,6 @@ function App() {
       <button onClick={()=>{ btnRecord.current.click() }}>REC</button>
       <button onClick={()=>{ btnStopRecording.current.click() }}>REC STOP</button> 
       */}
-
-      <MelodySets/>
 
       <Declutter>
         <ValueInput 

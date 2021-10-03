@@ -115,13 +115,7 @@ export default function Recorder({
         onClick={stop}
       >■</button>
       
-      <Declutter>
-        <Checkbox 
-          checked={useClick} 
-          label="Use click"
-          onChange={e=>dispatch(actions.useClick(e.target.checked))}
-        />    
-      </Declutter>
+
 
       <Score 
         scoreid="Rec" 
@@ -133,7 +127,16 @@ export default function Recorder({
         hasSave={true}
         btnPlay={btnRecPlay}
         btnStop={btnRecStop}
-      />
+      >
+        <Declutter>
+          <Checkbox 
+            checked={useClick} 
+            label="Use click"
+            onChange={e=>dispatch(actions.useClick(e.target.checked))}
+          />    
+        </Declutter>
+      </Score>
+
     </div>
   )
 }

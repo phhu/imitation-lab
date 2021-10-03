@@ -254,7 +254,7 @@ const slice = createSlice({
         const {target} = state.memes
         target.src = i.melodies?.[0]
         target.transpose=0
-        target.variationCount+=1
+        target.variationCount=0
         target.matchesRecording=null  //null=unknown
         target.isVarying = false
       }
@@ -270,12 +270,12 @@ const slice = createSlice({
       //console.log("got nextMelody.fulfilled")
       const {nextMelody, newCurrent,direction} = payload
       const {key,title} = state.memes['target']
-      const m = state.memes['target']
-      m.src={title, key, ...nextMelody}
-      m.transpose=0
-      m.variationCount=0
-      m.matchesRecording=null  //null=unknown
-      m.isVarying = false
+      const target = state.memes['target']
+      target.src={title, key, ...nextMelody}
+      target.transpose=0
+      target.variationCount=0
+      target.matchesRecording=null  //null=unknown
+      target.isVarying = false
       if (newCurrent || newCurrent==0){
         state.interpolate.current = newCurrent
       }

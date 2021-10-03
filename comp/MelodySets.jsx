@@ -20,6 +20,7 @@ export const MelodySets = ({}={}) => {
   return (<span id="melodySelector">
     <label>Set: 
       <Selector
+      title="Change to update melodies to a preset and reset target to start"
       value={current}
       options={sets}
       values={(o,i)=>o.name}

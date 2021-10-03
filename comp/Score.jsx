@@ -24,6 +24,7 @@ export default ({
   hasSave = false,
   btnPlay,
   btnStop,
+  children,
 }) => {
   const { 
     transpose=0,
@@ -85,7 +86,31 @@ export default ({
       "backgroundColor": matchesRecording ? "#afa" : "#eee",
     }}>
       {title && (<span>{title} </span>)}
+
+      <button 
+        title="Play this melody" 
+        onClick={play}
+        className="btnPlayScore"
+        ref={btnPlay}
+        style={{ 
+          backgroundColor: isPlaying ? "green" : "inherit",
+        }}
+      >{isPlaying ? "■":"▶" }</button>
+      <button 
+        className="btnStopScore" 
+        ref={btnStop}
+        title="Stop playing this melody" 
+        onClick={stop}
+      >■</button>
       <Declutter>
+
+
+        { hasToWorking &&
+          <button 
+            title="Set this melody as TARGET"
+            onClick={()=>dispatch(actions.memeToWorking(meme))}
+          >🎯</button>
+        }
         {hasSelect && (
         <Selector
           value={melody.key}
@@ -113,37 +138,8 @@ export default ({
             //}
           }}
         />
-        )} 
-      </Declutter>
-      <button 
-        title="Play this melody" 
-        onClick={play}
-        className="btnPlayScore"
-        ref={btnPlay}
-        style={{ 
-          backgroundColor: isPlaying ? "green" : "inherit",
-        }}
-      >{isPlaying ? "■":"▶" }</button>
-      <button 
-        className="btnStopScore" 
-        ref={btnStop}
-        title="Stop playing this melody" 
-        onClick={stop}
-      >■</button>
-      <Declutter>
-        <button 
-          title="Produce a variation of this melody using Google Magenta"
-          onClick={vary} id={varyButtonId} style={{
-          backgroundColor: isVarying ? "green": undefined
-        }}>Vary{variationCount?` (${variationCount})`:''}</button>
-
-        { hasToWorking &&
-          <button 
-            title="Set this melody as TARGET"
-            onClick={()=>dispatch(actions.memeToWorking(meme))}
-          >🎯</button>
-        }
-        {  hasSave &&
+        )}
+        {hasSave &&
           <button 
             title="Save melody (will appear in drop down lists)"
             onClick={()=>dispatch(actions.saveMelody({
@@ -151,8 +147,14 @@ export default ({
               name:window.prompt("Save melody name:","saved melody")
             }))}
           >💾</button>
-        }
+        } 
+        <button 
+          title="Produce a variation of this melody using Google Magenta"
+          onClick={vary} id={varyButtonId} style={{
+          backgroundColor: isVarying ? "green": undefined
+        }}>Vary{variationCount?` (${variationCount})`:''}</button>
       </Declutter>
+      {children}
       <div id={scoreDivId}></div>
     </div>
   )
