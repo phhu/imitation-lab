@@ -23,6 +23,7 @@ export const initialState = {
   midiOutput: 0,
   tempo: 100,
   declutter: true,
+  scoreType: 1,
   requireMatchForNext: false,
   player: {
     playClick: false
@@ -131,6 +132,9 @@ const slice = createSlice({
     "isInterpolating": (state,{payload})=>{state.interpolate.isInterpolating=!!payload},
     "isPlaying": (state,{payload})=>{
       state.memes[payload.meme].isPlaying=!!(payload?.value)
+    },
+    "toggleScoreType": (state,{payload})=>{
+      state.scoreType = limit(0,2)((payload ??state.scoreType + 1)%3)
     },
     "useClick": (state,{payload})=>{state.recorder.useClick=!!payload},
     "playClick": (state,{payload})=>{state.player.playClick=!!payload},

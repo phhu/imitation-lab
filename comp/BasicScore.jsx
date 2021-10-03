@@ -7,6 +7,11 @@ import {BLANK} from '../melodies'
 import {startPlayer, stopPlayer} from '../transport'
 import {Declutter} from './Declutter'
 
+export const useScoreVis = ()=> {
+
+
+}
+
 export default ({
   melody=BLANK,
   title,
@@ -21,19 +26,26 @@ export default ({
   const store = useStore()
   const dispatch = useDispatch()
   const declutter = useSelector(s=>s.declutter)
-  const [isPlaying, setIsPlaying] = useState(false)  
+  const scoreType = useSelector(s=>(s.scoreType ?? 1))
+  const [isPlaying, setIsPlaying] = useState(false) 
+  
+  const vis = ['StaffSVGVisualizer','StaffSVGVisualizer','PianoRollCanvasVisualizer']
+  const visTarget = [scoreDivId,scoreDivId,scoreDivId+"_canvas"]
+  //console.log("scoretype",scoreType,vis[scoreType],visTarget)
   useEffect(() => {
     try {
-      // WaterfallSVGVisualizer is bad...
-      const staff = new core.StaffSVGVisualizer(       
-        forceQuantized({stepsPerQuarter:4})(melody),    
-        document.getElementById(scoreDivId)
-      )
+      if (scoreType>0){
+        // WaterfallSVGVisualizer is bad...
+        const staff = new core[vis[scoreType]](            // vis[scoreType]
+          forceQuantized({stepsPerQuarter:4})(melody),    
+          document.getElementById(visTarget[scoreType])
+        )
+      }
     } catch(e){
       console.error("no score to draw",e)
       //console.error("Error in StaffSVGVisualizer:",e)
     }
-  },[melody,declutter])
+  },[melody,declutter,scoreType])
 
   const play = () => {
     //console.log('playing',scoreDivId,melody)
@@ -99,7 +111,8 @@ export default ({
           </Declutter>  
           </td>
           <td>
-          <div className="inlineBlock"  id={scoreDivId}></div>
+          {scoreType === 1 && <div className="inlineBlock"  id={scoreDivId}></div>}
+          {scoreType === 2 && <canvas className="inlineBlock"  id={scoreDivId+"_canvas"}></canvas>}
           </td>
         </tr></tbody>
       </table>

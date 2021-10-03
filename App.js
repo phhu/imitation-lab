@@ -252,6 +252,10 @@ function App() {
             onClick={midiReset}
           >MIDI Reset</button> 
           &nbsp;&nbsp;
+        <button 
+          title="Toggle score type"
+          onClick={()=>dispatch(actions.toggleScoreType())}
+          >Score</button>
         <MelodySets/>
         <button 
           title="Toggle simplified UI"

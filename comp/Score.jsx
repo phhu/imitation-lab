@@ -38,25 +38,30 @@ export default ({
   const melodies = useSelector(s=>s.melodies)
   const dispatch = useDispatch()
   const declutter = useSelector(s=>s.declutter)
-  
+  const scoreType = useSelector(s=>(s.scoreType ?? 1))
+
   //const [isPlaying, setIsPlaying] = useState(false)  
   const setIsPlaying = value => dispatch(actions.isPlaying({meme,value}))
   const scoreDivId = `score${scoreid}`
   const melody = transposeMelody(parseInt(transpose) || 0)(src) || BLANK
 
+  const vis = ['StaffSVGVisualizer','StaffSVGVisualizer','PianoRollCanvasVisualizer']
+  const visTarget = [scoreDivId,scoreDivId,scoreDivId+"_canvas"]
+  //console.log("scoretype",scoreType,vis[scoreType],visTarget)
   useEffect(() => {
     try {
-      // WaterfallSVGVisualizer is bad...
-      // Visualizer is ok - https://magenta.github.io/magenta-js/music/classes/_core_visualizer_.visualizer.html
-      const staff = new core.StaffSVGVisualizer (   // StaffSVGVisualizer       
-        forceQuantized({stepsPerQuarter:4})(melody),    
-        document.getElementById(scoreDivId)
-      )
+      if (scoreType>0){
+        // WaterfallSVGVisualizer is bad...
+        const staff = new core[vis[scoreType]](            // vis[scoreType]
+          forceQuantized({stepsPerQuarter:4})(melody),    
+          document.getElementById(visTarget[scoreType])
+        )
+      }
     } catch(e){
       console.error("no score to draw",e)
       //console.error("Error in StaffSVGVisualizer:",e)
     }
-  },[src,transpose,declutter])
+  },[src,transpose,declutter,scoreType])
 
   const play = () => {
     //console.log('playing',scoreDivId,melody)
@@ -155,7 +160,8 @@ export default ({
         }}>Vary{variationCount?` (${variationCount})`:''}</button>
       </Declutter>
       {children}
-      <div id={scoreDivId}></div>
+      {scoreType === 1 && <div className="inlineBlock"  id={scoreDivId}></div>}
+      {scoreType === 2 && <canvas className="inlineBlock"  id={scoreDivId+"_canvas"}></canvas>}
     </div>
   )
 }
