@@ -18,14 +18,6 @@
 
 ## notes
 
-API docs for google magenta: https://magenta.github.io/magenta-js/music/
-
-Need to look at https://github.com/surikov/webaudiofont
-
-Proof it works :https://surikov.github.io/webaudiofont/examples/midikey.html played from https://apps.musedlab.org/aqwertyon/?video=R7iNSUoQ4Lk&sound=rock_organ&
-
-Should look at https://github.com/surikov/webaudiofont - might be possible to be virtual instrument 
-
 ==sending midi==
 
 // see https://kulak.medium.com/web-midi-api-sending-notes-from-javascript-to-your-synth-1dfee9c57645
@@ -107,3 +99,27 @@ for octave shift
 # Magenta reference
 
 See https://hello-magenta.glitch.me/
+
+# Links
+
+<!--
+    <a href="https://surikov.github.io/webaudiofont/examples/midikey.html">midi out piano</a>
+    | <a href="https://apps.musedlab.org/aqwertyon/?video=R7iNSUoQ4Lk&sound=rock_organ&">Aqwertyon</a>  
+    | <a href="https://phhu.org/melody-conv">melody-conv</a>
+    | <a href="https://phhu.org/melody-interp/">melody-interp</a> 
+    | <a href="https://openprocessing.org/sketch/969279">v1</a> 
+    | <a href="https://phhu.org/imitate/">blog</a> 
+    | <a href="https://phhu.org/imitate/proposal">proposal</a> 
+    | <a href="https://webmidijs.org/docs/latest/">WebMidi</a>
+    | <a href="https://magenta.github.io/magenta-js/music/classes/_music_vae_model_.musicvae.html">MagentaAPI</a>
+    | <a href="https://magenta.github.io/magenta-js/music/modules/_core_.html">Core API</a>
+    | <a href="https://github.com/magenta/magenta-js/blob/master/music/src/core/player.ts#L748">core player.js</a>
+    | <a href="https://github.com/phhu/imitation-lab">Source</a>
+
+
+    https://clavis.nl/downloads/Engelstalige_handleiding_Yamaha_CP_33.pdf 
+
+
+    
+
+-->

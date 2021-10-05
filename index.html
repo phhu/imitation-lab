@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Imitation Lab</title>
-<link rel="shortcut icon" href="favicon3.png" /> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imitation Lab</title>
+  <link rel="shortcut icon" href="img/favicon3.png" /> 
+  <script src='https://cwilso.github.io/WebMIDIAPIShim/build/WebMIDIAPI.min.js'></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.58/Tone.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/1.2.8/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.0/es6/core.js"></script>
@@ -16,33 +17,9 @@
   <script src='https://surikov.github.io/webaudiofontdata/sound/12844_0_SBLive_sf2.js'></script>
 </head>
 <body>
-<!--
-    <a href="https://surikov.github.io/webaudiofont/examples/midikey.html">midi out piano</a>
-    | <a href="https://apps.musedlab.org/aqwertyon/?video=R7iNSUoQ4Lk&sound=rock_organ&">Aqwertyon</a>  
-    | <a href="https://phhu.org/melody-conv">melody-conv</a>
-    | <a href="https://phhu.org/melody-interp/">melody-interp</a> 
-    | <a href="https://openprocessing.org/sketch/969279">v1</a> 
-    | <a href="https://phhu.org/imitate/">blog</a> 
-    | <a href="https://phhu.org/imitate/proposal">proposal</a> 
-    | <a href="https://webmidijs.org/docs/latest/">WebMidi</a>
-    | <a href="https://magenta.github.io/magenta-js/music/classes/_music_vae_model_.musicvae.html">MagentaAPI</a>
-    | <a href="https://magenta.github.io/magenta-js/music/modules/_core_.html">Core API</a>
-    | <a href="https://github.com/magenta/magenta-js/blob/master/music/src/core/player.ts#L748">core player.js</a>
-    | <a href="https://github.com/phhu/imitation-lab">Source</a>
 
+  <div id="root"></div>
+  <script src="./index.js"></script>
 
-    https://clavis.nl/downloads/Engelstalige_handleiding_Yamaha_CP_33.pdf 
--->
-    
-
-    <div id="root"></div>
-    <script src="./index.js"></script>
-    <script>
-        //document.getElementById('b').click();
-        //document.querySelector('button').click();
-    </script> 
-    <!--
-    <script src="./ticTacToe.js"></script>
-    -->
 </body>
 </html>

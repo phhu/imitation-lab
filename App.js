@@ -242,11 +242,11 @@ function App() {
             title="Print app state to browser console"
             onClick={()=>console.log(store.getState())}
           >State</button>
-        </Declutter> 
         <button 
             title="Reset application to defaults, reset MIDI, and reload"
             onClick={reset}
         >Reset</button>
+        </Declutter> 
         <button 
             title="Reset MIDI"
             onClick={midiReset}
