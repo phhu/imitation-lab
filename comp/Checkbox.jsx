@@ -1,25 +1,25 @@
-import React from "react";
+import React from 'react'
 
 /* import Checkbox from './Checkbox'
-  <Checkbox 
-    checked={useClick} 
+  <Checkbox
+    checked={useClick}
     label="Use click"
     onChange={x=>dispatch(actions.useClick(e.target.checked))}
-  />    
+  />
 */
 
 const Checkbox = ({ label, checked, onChange, ...args }) => (
-  <span className="form-check">
+  <span className='form-check'>
     <label>
       <input
-        type="checkbox"
-        className="form-check-input"
+        type='checkbox'
+        className='form-check-input'
         name={label}
-        {...{checked, onChange, ...args}}
+        {...{ checked, onChange, ...args }}
       />
       {label}
     </label>
   </span>
-);
+)
 
-export default Checkbox;
+export default Checkbox

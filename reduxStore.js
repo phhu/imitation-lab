@@ -1,18 +1,18 @@
-import {createReducer, createAction, configureStore} from '@reduxjs/toolkit'
-import {reducer,actions,initialState} from './reduxMainSlice'
-import {assign} from 'lodash/fp'
+import { createReducer, createAction, configureStore } from '@reduxjs/toolkit'
+import { reducer, actions, initialState } from './reduxMainSlice'
+import { assign } from 'lodash/fp'
 
 export const loadState = () => {
   try {
-    const serializedState = localStorage.getItem("state");
+    const serializedState = localStorage.getItem('state')
     if (serializedState === null) {
-      return undefined;
+      return undefined
     }
-    return JSON.parse(serializedState);
+    return JSON.parse(serializedState)
   } catch (err) {
-    return undefined;
+    return undefined
   }
-};
+}
 
 // console.log("merged state",merge (initialState,(loadState() ||  {})))
 // console.log("merged state2",merge (initialState,loadState()))
@@ -21,25 +21,23 @@ export const loadState = () => {
 
 export const saveState = (state) => {
   try {
-    const serializesState = JSON.stringify(state);
-    localStorage.setItem("state", serializesState);
+    const serializesState = JSON.stringify(state)
+    localStorage.setItem('state', serializesState)
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
-};
+}
 
-export {actions}
+export { actions }
 
 export const store = configureStore({
   reducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware() ,//.concat(logger),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(), // .concat(logger),
   devTools: process.env.NODE_ENV !== 'production',
-  preloadedState: assign (initialState,loadState()),
-  //enhancers: [reduxBatch],
+  preloadedState: assign(initialState, loadState())
+  // enhancers: [reduxBatch],
 })
 
 store.subscribe(() => {
-  saveState(store.getState());
-});
-
-
+  saveState(store.getState())
+})

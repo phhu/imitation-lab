@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import {useDispatch, useSelector, useStore} from 'react-redux'
-import {actions} from '../reduxStore'
+import { useDispatch, useSelector, useStore } from 'react-redux'
+import { actions } from '../reduxStore'
 import Selector from './Selector'
-import {interpolateMelodies} from '../interpolate'
-import {doInterpolation} from '../interpolate'
+import { interpolateMelodies, doInterpolation } from '../interpolate'
 
-export const MelodySets = ({}={}) => {
-
+export const MelodySets = ({} = {}) => {
   // melodySets: {
   //   current:"test",
   //   sets: [
@@ -15,29 +13,30 @@ export const MelodySets = ({}={}) => {
   //   ],
   // },
 
-  const {sets,current} = useSelector(s=>s.melodySets)
+  const { sets, current } = useSelector(s => s.melodySets)
   const dispatch = useDispatch()
 
-  return (<span id="melodySelector">
-    <label>Set: 
-      <Selector
-      title="Change to update melodies to a preset and reset target to start"
-      value={current}
-      options={sets}
-      values={(o,i)=>o.name}
-      displayValues={(o,i)=>o.name}
-      change={(newSetName)=>{
-        dispatch(updateMelodySet({newSetName}))
-      }}
-    ></Selector>
-    </label>
-  </span>
+  return (
+    <span id='melodySelector'>
+      <label>Set:
+        <Selector
+          title='Change to update melodies to a preset and reset target to start'
+          value={current}
+          options={sets}
+          values={(o, i) => o.name}
+          displayValues={(o, i) => o.name}
+          change={(newSetName) => {
+            dispatch(updateMelodySet({ newSetName }))
+          }}
+        />
+      </label>
+    </span>
   )
 }
 
 export const updateMelodySet = ({
-  newSetName = ""
-}={}) => (dispatch, getState) => {
+  newSetName = ''
+} = {}) => (dispatch, getState) => {
   dispatch(actions.changeMelodySet(newSetName))
   doInterpolation(dispatch)
 }

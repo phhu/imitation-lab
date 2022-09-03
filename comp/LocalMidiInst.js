@@ -1,38 +1,37 @@
-import WebMidi, { InputEventNoteon, InputEventNoteoff } from "webmidi"
+import WebMidi, { InputEventNoteon, InputEventNoteoff } from 'webmidi'
 import React, { useState, useEffect } from 'react'
-import {useDispatch, useSelector, useStore} from 'react-redux'
-import {actions} from '../reduxStore'
+import { useDispatch, useSelector, useStore } from 'react-redux'
+import { actions } from '../reduxStore'
 import ValueInput from './ValueInput'
-import Checkbox from './Checkbox'   // http://react.tips/checkboxes-in-react-16/
-//const {cancelNote} = require('../utils')
-import {Declutter} from './Declutter'
-var webaudiofont = require('webaudiofont');
+import Checkbox from './Checkbox' // http://react.tips/checkboxes-in-react-16/
+// const {cancelNote} = require('../utils')
+import { Declutter } from './Declutter'
+const webaudiofont = require('webaudiofont')
 
 const tone = _tone_0000_JCLive_sf2_file
 const closedHat = _drum_42_0_SBLive_sf2
 const pedalHat = _drum_44_0_SBLive_sf2
-const AudioContextFunc = window.AudioContext || window.webkitAudioContext;
-const audioContext = new AudioContextFunc();
-const wafPlayer = new WebAudioFontPlayer(); //see https://github.com/surikov/webaudiofont/wiki
-wafPlayer.loader.decodeAfterLoading(audioContext, '_tone_0000_JCLive_sf2_file');
-wafPlayer.loader.decodeAfterLoading(audioContext, '_drum_35_0_SBLive_sf2');
+const AudioContextFunc = window.AudioContext || window.webkitAudioContext
+const audioContext = new AudioContextFunc()
+const wafPlayer = new WebAudioFontPlayer() // see https://github.com/surikov/webaudiofont/wiki
+wafPlayer.loader.decodeAfterLoading(audioContext, '_tone_0000_JCLive_sf2_file')
+wafPlayer.loader.decodeAfterLoading(audioContext, '_drum_35_0_SBLive_sf2')
 
-const cancelNote = pitch=>(note,i,arr)=>{
-  if(note.pitch === pitch){
-    note.envelope.cancel();
-    arr.splice(i, 1);
+const cancelNote = pitch => (note, i, arr) => {
+  if (note.pitch === pitch) {
+    note.envelope.cancel()
+    arr.splice(i, 1)
   }
 }
 
-export default function LocalMidiInst(props){
-
+export default function LocalMidiInst (props) {
   const midiNotes = []
   window.midiNotes = midiNotes
   const store = useStore()
   const dispatch = useDispatch()
-  const volume = useSelector(s=>s.localMidiInst.volume ?? 0.5)
-  const isOn = useSelector(s=>s.localMidiInst.on ?? true)
-  useEffect(()=>{
+  const volume = useSelector(s => s.localMidiInst.volume ?? 0.5)
+  const isOn = useSelector(s => s.localMidiInst.on ?? true)
+  useEffect(() => {
     // WebMidi.enable(function (err) {
     //   if (err) console.error("WebMidi error",err)
     //   //window.WebMidi = WebMidi
@@ -40,10 +39,10 @@ export default function LocalMidiInst(props){
     //   //console.log("outputs",WebMidi.outputs)
     //   const midiThruIn = WebMidi.inputs[0]
     //   //const midiThruOut = WebMidi.outputs[0]
-      try {
-        window.midiThruIn.addListener("noteon","all",(e)=>{
-          //console.log("*localMidiInst note on",e)
-          /*  see https://github.com/surikov/webaudiofont
+    try {
+      window.midiThruIn.addListener('noteon', 'all', (e) => {
+        // console.log("*localMidiInst note on",e)
+        /*  see https://github.com/surikov/webaudiofont
           audioContext - AudioContext
           target - a node to connect to, for example audioContext.destination
           preset - variable with the instrument preset
@@ -53,55 +52,57 @@ export default function LocalMidiInst(props){
           volume - 0.0 <=1.0 volume (0 is 'no value', 'no value' is 1)
           slides - array of pitch bends
           */
-          const {volume, on} = store.getState().localMidiInst
-          if(on){
-            var envelope = wafPlayer.queueWaveTable(
-              audioContext, 
-              audioContext.destination,   //target
-              tone,    // pedalHat            // preset
-              0,                // when 
-              e.note.number,    //pitch
-              9999,           // duration
-              volume           //volume // 123456789     e.note.velocity / 2000000
-            );
-            midiNotes.push({pitch: e.note.number,envelope });
-          }
-        })
+        const { volume, on } = store.getState().localMidiInst
+        if (on) {
+          const envelope = wafPlayer.queueWaveTable(
+            audioContext,
+            audioContext.destination, // target
+            tone, // pedalHat            // preset
+            0, // when
+            e.note.number, // pitch
+            9999, // duration
+            volume // volume // 123456789     e.note.velocity / 2000000
+          )
+          midiNotes.push({ pitch: e.note.number, envelope })
+        }
+      })
 
-        const midiNoteOff = pitch => midiNotes.forEach(cancelNote(pitch))
+      const midiNoteOff = pitch => midiNotes.forEach(cancelNote(pitch))
 
-        window.midiThruIn.addListener("noteoff","all",(e)=>{
-          const {volume, on} = store.getState().localMidiInst
-          if (on){
-          //console.log("*localMidiInst note off",e)
-            midiNoteOff(e.note.number)
-          }
-        })
-     } catch(e){
-        console.error("error adding Midi listeners",e)
-     }
-    //})
-  },[])
-  return <Declutter>
-    <div className="box">
-      <span title="An internal instrument listening on MIDI through.">INTERNAL PIANO</span> | 
+      window.midiThruIn.addListener('noteoff', 'all', (e) => {
+        const { volume, on } = store.getState().localMidiInst
+        if (on) {
+          // console.log("*localMidiInst note off",e)
+          midiNoteOff(e.note.number)
+        }
+      })
+    } catch (e) {
+      console.error('error adding Midi listeners', e)
+    }
+    // })
+  }, [])
+  return (
+    <Declutter>
+      <div className='box'>
+        <span title='An internal instrument listening on MIDI through.'>INTERNAL PIANO</span> |
 
-      <Checkbox  
-        title="Enable to get sound from KEYBOARD, via 'MIDI through' under PLAYER" 
-        label="on"
-        checked={isOn}
-        onChange={ e=>dispatch(actions.localInstOn(e.target.checked))  }
-      /> |
-      <ValueInput 
-        label="Volume"
-        title="Internal Piano volume. 0.1 quietest, 1 loudest" 
-        value={volume} 
-        step="0.1"
-        change={ x=>dispatch(actions.volume(x)) } 
-      /> 
+        <Checkbox
+          title="Enable to get sound from KEYBOARD, via 'MIDI through' under PLAYER"
+          label='on'
+          checked={isOn}
+          onChange={e => dispatch(actions.localInstOn(e.target.checked))}
+        /> |
+        <ValueInput
+          label='Volume'
+          title='Internal Piano volume. 0.1 quietest, 1 loudest'
+          value={volume}
+          step='0.1'
+          change={x => dispatch(actions.volume(x))}
+        />
 
-    </div>
-  </Declutter>
+      </div>
+    </Declutter>
+  )
 }
 
-export {WebMidi} 
+export { WebMidi }

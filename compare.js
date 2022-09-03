@@ -1,60 +1,59 @@
-import {actions} from './reduxStore'
-import {mapValues, isEqual,map} from 'lodash'
-import {playDrumNow} from './transport'
+import { actions } from './reduxStore'
+import { mapValues, isEqual, map } from 'lodash'
+import { playDrumNow } from './transport'
 
-export const sequencesMatch = (baseSeq,compSeq) => { 
+export const sequencesMatch = (baseSeq, compSeq) => {
   try {
-    if (baseSeq === null || compSeq ===null){return false;}
-    if (baseSeq.notes.length !== compSeq.notes.length){return false;}
-    
-    for (let i=0 ; i<baseSeq.notes.length; i++){
-      if(baseSeq.notes[i].pitch !== compSeq.notes[i].pitch){return false;}
+    if (baseSeq === null || compSeq === null) { return false }
+    if (baseSeq.notes.length !== compSeq.notes.length) { return false }
+
+    for (let i = 0; i < baseSeq.notes.length; i++) {
+      if (baseSeq.notes[i].pitch !== compSeq.notes[i].pitch) { return false }
     }
-    return true;
-  } catch(e){
-    console.warn("sequencesMatch failed: defaulting to false", baseSeq,compSeq, e)
-    return false;
+    return true
+  } catch (e) {
+    console.warn('sequencesMatch failed: defaulting to false', baseSeq, compSeq, e)
+    return false
   }
-};
+}
 
 const notesAsInt = notes => notes.map(n => ({
   ...n,
   quantizedStartStep: parseInt(n.quantizedStartStep),
-  quantizedEndStep: parseInt(n.quantizedEndStep),
+  quantizedEndStep: parseInt(n.quantizedEndStep)
 }))
 
-export const sequencesIdentical = (baseSeq,compSeq) => {
+export const sequencesIdentical = (baseSeq, compSeq) => {
   try {
-    return isEqual(notesAsInt(baseSeq.notes),notesAsInt(compSeq.notes))
-  } catch(e){
-    //console.error("sequencesIdentical error",error)
-    return false 
+    return isEqual(notesAsInt(baseSeq.notes), notesAsInt(compSeq.notes))
+  } catch (e) {
+    // console.error("sequencesIdentical error",error)
+    return false
   }
-
-}   //&& isEqual(baseSeq.quantizationInfo,compSeq.quantizationInfo) 
-   //&& isEqual(parseInt(baseSeq.totalQuantizedSteps),parseInt(compSeq.totalQuantizedSteps))
+} // && isEqual(baseSeq.quantizationInfo,compSeq.quantizationInfo)
+// && isEqual(parseInt(baseSeq.totalQuantizedSteps),parseInt(compSeq.totalQuantizedSteps))
 
 export const matchRecording = ({
-  sendRecording=true, 
+  sendRecording = true,
   playSound = false,
   playSoundOnFail = false,
-  checkInterpolations = false,
-}={}) => (recording) => (dispatch, getState) => {
-  const {memes,interpolate:i} = getState()
+  checkInterpolations = false
+} = {}) => (recording) => (dispatch, getState) => {
+  const { memes, interpolate: i } = getState()
   const matches = mapValues(
     memes,
-    (meme,key)=>((key==="recording") ? null :    // don't match recording against self
-      sequencesMatch(meme.src,recording)
-    ),
-  )
-  const interpolationMatches = (!checkInterpolations && i?.melodies.length) ? 
-    undefined : map(
-      i.melodies,
-      (melody)=> sequencesMatch(melody,recording)
+    (meme, key) => ((key === 'recording') ? null // don't match recording against self
+      : sequencesMatch(meme.src, recording)
     )
+  )
+  const interpolationMatches = (!checkInterpolations && i?.melodies.length)
+    ? undefined : map(
+        i.melodies,
+        (melody) => sequencesMatch(melody, recording)
+      )
 
-  if(playSound && matches.target){playDrumNow(62)}
-  if(playSoundOnFail && !(matches.target)){playDrumNow(64)}
+  if (playSound && matches.target) { playDrumNow(62) }
+  if (playSoundOnFail && !(matches.target)) { playDrumNow(64) }
 
   dispatch(actions.recording({
     recording: sendRecording && recording,

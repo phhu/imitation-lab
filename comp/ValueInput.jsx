@@ -1,53 +1,54 @@
 import React, { useState, useEffect, useRef } from 'react'
-//import {useDispatch, useSelector, useStore} from 'react-redux'
+// import {useDispatch, useSelector, useStore} from 'react-redux'
 
-export default function ValueInput({
-  change = (value)=>{console.log("changed to",value)},
+export default function ValueInput ({
+  change = (value) => { console.log('changed to', value) },
   value = 0,
-  validate = x=>parseInt(x),
-  label= "",
+  validate = x => parseInt(x),
+  label = '',
   title,
-  size=2,
-  step = 1,
-}={}){
-  //const onChange = (value)=>{console.log("changed")}
+  size = 2,
+  step = 1
+} = {}) {
+  // const onChange = (value)=>{console.log("changed")}
   const onChange = e => {
-    //console.log("changing")
-    //setValue(e.target.value)
+    // console.log("changing")
+    // setValue(e.target.value)
     change(e.target.value)
   }
   const prevValue = usePrevious(value)
-  if (prevValue != value){
-    //change(validate(value))
-  }
-  
-  const makeOnClick = diff => e => {
-    //shiftKey ctrlKey altKey metaKey
-    if (e.shiftKey) {diff *=12}
-    if (e.ctrlKey) {diff *=2}
-    //if (e.altKey) {diff *=12}
-    change(parseFloat(value)+diff)
+  if (prevValue != value) {
+    // change(validate(value))
   }
 
-  return <span >
-      <label className="valueInput">{label}&nbsp;
-      <input size={size} title={title} type="text"  {...{value,onChange}}></input>
-      <button title="Decrease (Shift -12 | Ctrl -2)" onClick={makeOnClick(-parseFloat(step))}>-</button>
-      <button title="Increase (Shift +12 | Ctrl +2)" onClick={makeOnClick(+parseFloat(step))}>+</button>
+  const makeOnClick = diff => e => {
+    // shiftKey ctrlKey altKey metaKey
+    if (e.shiftKey) { diff *= 12 }
+    if (e.ctrlKey) { diff *= 2 }
+    // if (e.altKey) {diff *=12}
+    change(parseFloat(value) + diff)
+  }
+
+  return (
+    <span>
+      <label className='valueInput'>{label}&nbsp;
+        <input size={size} title={title} type='text' {...{ value, onChange }} />
+        <button title='Decrease (Shift -12 | Ctrl -2)' onClick={makeOnClick(-parseFloat(step))}>-</button>
+        <button title='Increase (Shift +12 | Ctrl +2)' onClick={makeOnClick(+parseFloat(step))}>+</button>
       </label>
     </span>
+  )
 }
 
-
 // Hook
-function usePrevious(value) {
+function usePrevious (value) {
   // The ref object is a generic container whose current property is mutable ...
   // ... and can hold any value, similar to an instance property on a class
-  const ref = useRef();
+  const ref = useRef()
   // Store current value in ref
   useEffect(() => {
-    ref.current = value;
-  }, [value]); // Only re-run if value changes
+    ref.current = value
+  }, [value]) // Only re-run if value changes
   // Return previous value (happens before update in useEffect above)
-  return ref.current;
+  return ref.current
 }
